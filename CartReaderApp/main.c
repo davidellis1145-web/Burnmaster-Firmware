@@ -122,7 +122,7 @@ uint8_t gbxMenu()
   if(gbxtype == TYPE_GBA)
   {
     //
-    LED_CLEAR;
+    LED_GREEN_OFF;
     LED_BLUE_ON;
     OledClear();
     OledShowPicData(64,4,56,4,Icon_data_GBA);
@@ -152,7 +152,7 @@ uint8_t gbxMenu()
   else if(gbxtype == TYPE_GBC)
   {
     //
-    LED_CLEAR;
+    LED_BLUE_OFF;
     LED_GREEN_ON;
     OledClear();
     OledShowPicData(86,2,29,6,Icon_data_GBC);
