@@ -97,8 +97,8 @@ void aboutScreen()
   OledShowString(5,2,(char *)("Flash Master"),16);
   // Version contains custom integration for Spansion S29GL128N | S29GL256N | S29GL512N
   // Based on Funnyplaying 1.10 release. 1.01 having custom logic for folder evaluation
-  OledShowString(30,4,(char *)("Ver:1.01"),8);
-  OledShowString(30,5,(char *)("Mar. 2026"),8);
+  OledShowString(20,4,(char *)("Ver:1.01"),8);
+  OledShowString(20,5,(char *)("Mar. 2026"),8);
   OledShowString(4,6,(char *)("Dave's Game Emporium"),8);
 
   OledShowString(0,7,(char *)("Press OK Button..."),8);
