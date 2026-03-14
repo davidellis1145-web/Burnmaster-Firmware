@@ -531,7 +531,7 @@ void readROM_GBA()
 
   //clear the screen
   OledClear();
-  OledShowString(0,0,"Saving to :",8);
+  OledShowString(0,0,"Saving to:",8);
   OledShowString(0,1,folder,8);
 
   FIL tf;
@@ -647,7 +647,7 @@ void readSRAM_GBA(boolean browseFile, unsigned long sramSize, uint32_t pos)
     f_chdir(folder);
 
     // Save location
-    OledShowString(0,0,"Saving to :",8);
+    OledShowString(0,0,"Saving to:",8);
     OledShowString(0,1,folder,8);
   }
 
@@ -726,7 +726,7 @@ void writeSRAM_GBA(boolean browseFile, unsigned long sramSize, uint32_t pos)
   }
   else 
   {
-    print_Error("File doesnt exist!", false);
+    print_Error("File doesn't exist!", false);
   }
 }
 
@@ -1039,7 +1039,7 @@ unsigned long verifyEEP_GBA(word eepSize)
   FIL tf;
   if (f_open(&tf, filePath, FA_READ) != FR_OK) 
   {
-    print_Error("SD File Error!", true);
+    print_Error("SD Card Error!", true);
   }
 
   // Fill sd Buffer
@@ -1071,9 +1071,9 @@ unsigned long verifyEEP_GBA(word eepSize)
 void writeEeprom_GBA(word eepSize) {
   // Launch Filebrowser
   filePath[0] = '\0';
-  fileBrowser("/","Select eep file");
+  fileBrowser("/","Select EEP file");
 
-  OledShowString(0,0,"Writing eeprom...",8);
+  OledShowString(0,0,"Writing EEPROM...",8);
   
   FIL tf;
   //open file on sd card
@@ -1102,7 +1102,7 @@ void writeEeprom_GBA(word eepSize) {
   else 
   {
     OledShowString(20,0,"Error!",8);
-    print_Error("File doesnt exist!", false);
+    print_Error("File doesn't exist!", false);
   }
 }
 
@@ -1123,7 +1123,7 @@ void readEeprom_GBA(word eepSize) {
   f_chdir(folder);
 
   // Save location
-  OledShowString(0,0,"Saving to :",8);
+  OledShowString(0,0,"Saving to:",8);
   OledShowString(0,1,folder,8);
 
   FIL tf;
@@ -1131,7 +1131,7 @@ void readEeprom_GBA(word eepSize) {
   //open file on sd card
   if (f_open(&tf, fileName, FA_CREATE_ALWAYS | FA_WRITE) != FR_OK) 
   {
-    print_Error("SD File Error!", true);
+    print_Error("SD Card Error!", true);
   }
 
   // Each block contains 8 Bytes, so for a 8KB eeprom 1024 blocks need to be read
@@ -1353,7 +1353,7 @@ boolean blankcheckFLASH_GBA (unsigned long flashSize)
       }
     }
 
-    LED_GREEN_BLINK;
+    LED_RED_BLINK;
   }
   // Set CS_FLASH(PH0) high
   gpio_bit_set(CTRLGBA,CS_SRAM);
@@ -1422,7 +1422,7 @@ void readFLASH_GBA (boolean browseFile, unsigned long flashSize, uint32_t pos)
     f_chdir(folder);
 
     // Save location
-    OledShowString(0,0,"Saving to :",8);
+    OledShowString(0,0,"Saving to:",8);
     OledShowString(0,1,folder,8);
   }
 
@@ -1431,7 +1431,7 @@ void readFLASH_GBA (boolean browseFile, unsigned long flashSize, uint32_t pos)
   //open file on sd card
   if (f_open(&tf, fileName,FA_CREATE_ALWAYS | FA_WRITE) != FR_OK) 
   {
-    print_Error("SD File Error", true);
+    print_Error("SD Card Error", true);
   }
 
   // Seek to a new position in the file
@@ -1551,7 +1551,7 @@ void writeFLASH_GBA (boolean browseFile, unsigned long flashSize, uint32_t pos)
   else 
   {
     OledShowString(0,4,"Error!",8);
-    print_Error("File doesnt exist!", false);
+    print_Error("File doesn't exist!", false);
   }
 }
 
@@ -1573,7 +1573,7 @@ void verifyFLASH_GBA(unsigned long flashSize, uint32_t pos)
   gpio_bit_reset(CTRLGBA,CS_SRAM|GBA_RD);
 
   // Signal beginning of process
-  OledShowString(0,2,"Verify...",8);
+  OledShowString(0,2,"Verifying...",8);
    
 
   unsigned long wrError = 0;
@@ -1582,7 +1582,7 @@ void verifyFLASH_GBA(unsigned long flashSize, uint32_t pos)
   //open file on sd card
   if (f_open(&tf, filePath, FA_READ) != FR_OK)
   {
-    print_Error("SD File Error!", true);
+    print_Error("SD Card Error!", true);
   }
 
   // Seek to a new position in the file
@@ -1608,7 +1608,7 @@ void verifyFLASH_GBA(unsigned long flashSize, uint32_t pos)
 
   if (wrError == 0) 
   {
-    OledShowString(55,2,"OK",8);
+    OledShowString(55,2,"OK!",8);
   }
   else 
   {
@@ -1746,7 +1746,7 @@ void idFlashrom_GBA()
     }
   }
 
-  printf("GBA flash ID = 0x%s, ROMType : 0x%04x\n",flashid,romType);
+  printf("GBA flash ID = 0x%s, ROMType: 0x%04x\n",flashid,romType);
 }
 
 boolean blankcheckFlashrom_GBA() 
@@ -1754,7 +1754,7 @@ boolean blankcheckFlashrom_GBA()
   for (unsigned long currSector = 0; currSector < fileSize; currSector += 0x20000) 
   {
     // Blink led
-    LED_GREEN_BLINK;
+    LED_RED_BLINK;
 
     for (unsigned long currByte = 0; currByte < 0x20000; currByte += 2) {
       if (readWord_GBA(currSector + currByte) != 0xFFFF) 
@@ -2107,7 +2107,7 @@ void writeIntel4000_GBA(FIL * ptf)
   for (unsigned long currBlock = 0; currBlock < fileSize; currBlock += 0x20000) 
   {
     // Blink led
-    LED_BLUE_BLINK;
+    LED_RED_BLINK;
     showPersent(currBlock,fileSize,68,3);
     // Write to flashrom
     for (unsigned long currSdBuffer = 0; currSdBuffer < 0x20000; currSdBuffer += 512) 
@@ -2167,7 +2167,7 @@ void writeMSP55LV128_GBA(FIL * ptf)
   for (unsigned long currSector = 0; currSector < fileSize; currSector += 0x20000) 
   {
     // Blink led
-    LED_BLUE_BLINK;
+    LED_RED_BLINK;
     showPersent(currSector,fileSize,68,3);
     // Write to flashrom
     for (unsigned long currSdBuffer = 0; currSdBuffer < 0x20000; currSdBuffer += 512) 
@@ -2234,7 +2234,7 @@ void writeMSP55LV128_GBA(FIL * ptf)
                 delay(1000);
                 printf("write err1!\n");
 
-                LED_BLUE_BLINK;
+                LED_RED_BLINK;
                 goto _reProgram;
               }
               else
@@ -2250,7 +2250,7 @@ void writeMSP55LV128_GBA(FIL * ptf)
                 delay(2000);
                 printf("write err2!\n");
 
-                LED_BLUE_BLINK;
+                LED_RED_BLINK;
                 goto _reProgram;
               }
             }
@@ -2276,7 +2276,7 @@ void writeMX29GL128E_GBA(FIL * ptf)
    for (unsigned long currSector = 0; currSector < fileSize; currSector += 0x10000) 
   {
     // Blink led
-    LED_BLUE_BLINK;
+    LED_RED_BLINK;
     showPersent(currSector,fileSize,68,3);
     // Write to flashrom
     for (unsigned long currSdBuffer = 0; currSdBuffer < 0x10000; currSdBuffer += 512) 
@@ -2336,7 +2336,7 @@ void writeMX29GL128E_GBA(FIL * ptf)
                 delay(1000);
                 printf("write err1!\n");
 
-                LED_BLUE_BLINK;
+                LED_RED_BLINK;
                 goto _reProgram;
               }
               else
@@ -2352,7 +2352,7 @@ void writeMX29GL128E_GBA(FIL * ptf)
                 delay(1000);
                 printf("write err2!\n");
 
-                LED_BLUE_BLINK;
+                LED_RED_BLINK;
                 goto _reProgram;
               }
             }
@@ -2376,7 +2376,7 @@ void writeMX29GL128E_GBA_1(FIL * ptf)
   for (unsigned long currSector = 0; currSector < fileSize; currSector += 0x10000) 
   {
     // Blink led
-    LED_BLUE_BLINK;
+    LED_RED_BLINK;
     showPersent(currSector,fileSize,68,3);
     // Write to flashrom
     for (unsigned long currSdBuffer = 0; currSdBuffer < 0x10000; currSdBuffer += 512) 
@@ -2416,7 +2416,7 @@ void writeSpansion_GBA(FIL * ptf)
   for (unsigned long currSector = 0; currSector < fileSize; currSector += 0x20000) // was 0x20000
   {
     // Blink led
-    LED_BLUE_BLINK;
+    LED_RED_BLINK;
     showPersent(currSector,fileSize,68,3);
     // Write to flashrom
     for (unsigned long currSdBuffer = 0; currSdBuffer < 0x20000; currSdBuffer += 512) // was 0x20000
@@ -2481,7 +2481,7 @@ void writeSpansion_GBA(FIL * ptf)
                 delay(1000);
                 printf("write err1!\n");
 
-                LED_BLUE_BLINK;
+                LED_RED_BLINK;
                 goto _reProgram;
               }
               else
@@ -2497,7 +2497,7 @@ void writeSpansion_GBA(FIL * ptf)
                 delay(1000);
                 printf("write err2!\n");
 
-                LED_BLUE_BLINK;
+                LED_RED_BLINK;
                 goto _reProgram;
               }
             }
@@ -2527,7 +2527,7 @@ boolean verifyFlashrom_GBA()
     for (unsigned long currSector = 0; currSector < fileSize; currSector += 131072) 
     {
       // Blink led
-      LED_GREEN_BLINK;
+      LED_RED_BLINK;
       showPersent(currSector,fileSize,82,6);
       for (unsigned long currSdBuffer = 0; currSdBuffer < 131072; currSdBuffer += 512) 
       {
@@ -2582,7 +2582,7 @@ boolean verifyFlashrom_GBA_new()
     for (unsigned long currSector = 0; currSector < fileSize; currSector += 131072) 
     {
       // Blink led
-      LED_GREEN_BLINK;
+      LED_RED_BLINK;
       showPersent(currSector,fileSize,82,5);
       for (unsigned long currSdBuffer = 0; currSdBuffer < 131072; currSdBuffer += 512) 
       {
@@ -2630,7 +2630,7 @@ boolean verifyFlashromTest_GBA(uint32_t testSize)
   for (unsigned long currSector = 0; currSector < testSize; currSector += 131072) 
   {
     // Blink led
-    LED_GREEN_BLINK;
+    LED_RED_BLINK;
     showPersent(currSector,fileSize,96,6);
     for (unsigned long currSdBuffer = 0; currSdBuffer < 131072; currSdBuffer += 512) 
     {
@@ -2688,7 +2688,7 @@ void flashRepro_GBA()
           strcat(tmsg, "\n Spansion\n S29GL512N");
         }
         else {
-          sprintf(tmsg,"%s\n RomType : 0x%04x",tmsg,romType);
+          sprintf(tmsg,"%s\n RomType: 0x%04x",tmsg,romType);
           OledShowString(0,0,tmsg,8);
           print_Error("Unknown manufacturer", true);
         }
@@ -2709,7 +2709,7 @@ void flashRepro_GBA()
           strcat(tmsg,"\n ST\n M29W128GH");
         }
         else {
-          sprintf(tmsg,"%s\n RomType : 0x%04x",tmsg,romType);
+          sprintf(tmsg,"%s\n RomType: 0x%04x",tmsg,romType);
           OledShowString(0,0,tmsg,8);
           print_Error("Unknown manufacturer", true);
         }
@@ -2919,7 +2919,7 @@ void writeTEST_GBA(uint32_t testSize)
   for (unsigned long currSector = 0; currSector < testSize; currSector += 0x10000) 
   {
     // Blink led
-    LED_BLUE_BLINK;
+    LED_RED_BLINK;
     showPersent(currSector,testSize,88,5);
     word wWord = 0;
     word tw = 0;
@@ -2985,7 +2985,7 @@ void writeTEST_GBA(uint32_t testSize)
                 delay(1000);
                 printf("write err1!\n");
 
-                LED_BLUE_BLINK;
+                LED_RED_BLINK;
                 goto _reProgram;
               }
               else
@@ -3001,7 +3001,7 @@ void writeTEST_GBA(uint32_t testSize)
                 delay(1000);
                 printf("write err2!\n");
 
-                LED_BLUE_BLINK;
+                LED_RED_BLINK;
                 goto _reProgram;
               }
             }
@@ -3075,17 +3075,17 @@ void setup_GBA()
   OledClear();
 
   OledShowString(0,0,"Name: ",8);
-  OledShowString(0,40,romName,8);
+  OledShowString(35,0,romName,8);
   OledShowString(0,1,"Cart ID: ",8);
   OledShowString(60,1,cartID,8);
   OledShowString(0,2,"Rom Size: ",8);
   if (cartSize == 0)
-    OledShowString(64,2,"Unknown",8);
+    OledShowString(60,2,"Unknown",8);
   else 
   {
     //
     sprintf(tmsg,"%d MB",cartSize);    
-    OledShowString(64,2,tmsg,8);
+    OledShowString(60,2,tmsg,8);
   }
 
 
@@ -3105,15 +3105,15 @@ void setup_GBA()
       break;
 
     case 1:
-      strcat(tmsg,"4K Eeprom");
+      strcat(tmsg,"4K EEPROM");
       break;
 
     case 2:
-      strcat(tmsg,"64K Eeprom");
+      strcat(tmsg,"64K EEPROM");
       break;
 
     case 3:
-      strcat(tmsg,"256K Sram");
+      strcat(tmsg,"256K SRAM");
       break;
 
     case 4:
@@ -3125,12 +3125,12 @@ void setup_GBA()
       break;
 
     case 6:
-      strcat(tmsg,"512K Sram");
+      strcat(tmsg,"512K SRAM");
       break;
   }
   OledShowString(0,3,tmsg,8);
 
-  sprintf(tmsg,"Checksum: %s\nVersion: 1.%d",checksumStr,romVersion);
+  sprintf(tmsg,"Checksum: %s\nVersion:  1.%d",checksumStr,romVersion);
   OledShowString(0,4,tmsg,8);
 
   // Wait for user input
@@ -3161,13 +3161,13 @@ void TestMemGBA(boolean bFast)
 
 
 /******************************************
-   Menu
+   Menus
  *****************************************/
 // GBA menu items
 static const char GBAMenuItem1[] = "Flash GBA Cart";
-static const char GBAMenuItem2[] = "Read Rom";
-static const char GBAMenuItem3[] = "Read Save";
-static const char GBAMenuItem4[] = "Write Save";
+static const char GBAMenuItem2[] = "Read ROM";
+static const char GBAMenuItem3[] = "Read SRAM";
+static const char GBAMenuItem4[] = "Write SRAM";
 static const char GBAMenuItem5[] = "Force Savetype";
 static const char GBAMenuItem6[] = "Reset";
 static const char* const menuOptionsGBA[] = {GBAMenuItem1, GBAMenuItem2, GBAMenuItem3, GBAMenuItem4, GBAMenuItem5, GBAMenuItem6};
@@ -3194,7 +3194,7 @@ uint8_t gbaMenu() {
   // create menu with title and 4 options to choose from
 
   uint8_t bret = 0;
-  unsigned char retMenu = questionBox_OLED("GBA Cart Reader", menuOptionsGBA, 6, 1, 1, 1);
+  unsigned char retMenu = questionBox_OLED("GBA Main Menu", menuOptionsGBA, 6, 1, 1, 1);
   char tmsg[32] = {0};
 
   // wait for user choice to come back from the question box menu
@@ -3430,14 +3430,14 @@ uint8_t gbaMenu() {
           writeErrors = verifyEEP_GBA(4);
           if (writeErrors == 0) 
           {
-            OledShowString(0,4,"Verified OK",8);            
+            OledShowString(0,4,"Success!",8);            
           }
           else 
           {
             //
             sprintf(tmsg,"Error: %d bytes.",writeErrors);
             OledShowString(0,4,tmsg,8);
-            print_Error("Did not verify...", false);
+            print_Error("Verify failed...", false);
           }
           setROM_GBA();
           break;
@@ -3448,14 +3448,14 @@ uint8_t gbaMenu() {
           writeErrors = verifyEEP_GBA(64);
           if (writeErrors == 0) 
           {
-            OledShowString(0,4,"Verified OK",8);            
+            OledShowString(0,4,"Success!",8);            
           }
           else 
           {
             //
             sprintf(tmsg,"Error: %d bytes.",writeErrors);
             OledShowString(0,4,tmsg,8);
-            print_Error("Did not verify...", false);
+            print_Error("Verify failed...", false);
           }
           setROM_GBA();
           break;
@@ -3466,14 +3466,14 @@ uint8_t gbaMenu() {
           writeErrors = verifySRAM_GBA(32768, 0);
           if (writeErrors == 0) 
           {
-            OledShowString(0,4,"Verified OK",8);            
+            OledShowString(0,4,"Success!",8);            
           }
           else 
           {
             //
             sprintf(tmsg,"Error: %d bytes.",writeErrors);
             OledShowString(0,4,tmsg,8);
-            print_Error("Did not verify...", false);
+            print_Error("Verify failed...", false);
           }
           setROM_GBA();
           break;
@@ -3544,14 +3544,14 @@ uint8_t gbaMenu() {
           writeErrors = verifySRAM_GBA(65536, 0);
           if (writeErrors == 0) 
           {
-            OledShowString(0,7,"Verified OK",8);            
+            OledShowString(0,7,"Success!",8);            
           }
           else 
           {
             //
             sprintf(tmsg,"Error: %d bytes.",writeErrors);
             OledShowString(0,5,tmsg,8);
-            print_Error("Did not verify...", false);
+            print_Error("Verify failed...", false);
           }
           setROM_GBA();
           break;

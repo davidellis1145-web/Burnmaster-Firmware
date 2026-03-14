@@ -306,7 +306,7 @@ void showCartInfo_GB()
     if (romType == 252)
       tinfo = "Camera";
 
-    OledShowString(55,2,tinfo,8);
+    OledShowString(50,2,tinfo,8);
 
     OledShowString(2,3,"Rom Size: ",8);
     switch (romSize) {
@@ -343,13 +343,13 @@ void showCartInfo_GB()
         break;
     }
 
-    OledShowString(65,3,tinfo,8);
+    OledShowString(60,3,tinfo,8);
     OledShowString(2,4,"Banks: ",8);
     char tbanks[10] = {0};
     sprintf(tbanks,"%d",romBanks);
-    OledShowString(45,4,tbanks,8);
+    OledShowString(50,4,tbanks,8);
 
-    OledShowString(2,5,"Sram Size: ",8);
+    OledShowString(2,5,"SRAM Size: ",8);
     switch (sramSize) {
       case 0:
         if (romType == 6) {
@@ -377,13 +377,13 @@ void showCartInfo_GB()
 
       default: tinfo = "none";
     }
-    OledShowString(70,5,tinfo,8);
+    OledShowString(65,5,tinfo,8);
 
     OledShowString(2,6,"Checksum: ",8);
     OledShowString(65,6,checksumStr,8);
 
     // Wait for user input
-    OledShowString(0,7,"Press Button...",8);
+    OledShowString(0,7,"Press OK Button...",8);
     WaitOKBtn();
   }
   else {
@@ -443,7 +443,7 @@ void setup_GB() {
 void readROM_GB() {
   // Get name, add extension and convert to char array for sd lib
   strcpy(fileName, romName);
-  strcat(fileName, ".GB");
+  strcat(fileName, ".gb");
 
   // Find the highest existing folder number and use next one
   char basePath[64];
@@ -461,7 +461,7 @@ void readROM_GB() {
   rst = f_chdir(folder);
 
   OledClear();
-  OledShowString(0,0,"Saving to ",8);
+  OledShowString(0,0,"Saving to: ",8);
   OledShowString(4,1,folder,8);
   //printf("/..."));
 
@@ -482,7 +482,7 @@ void readROM_GB() {
     // Switch data pins to output
     dataOut_GB();
 
-    LED_GREEN_BLINK;
+    LED_BLUE_BLINK;
 
     // Set ROM bank for MBC2/3/4/5
     if (romType >= 5) {
@@ -533,7 +533,7 @@ uint16_t calc_checksum_GB (char* fileName, char* folder) {
     f_chdir(folder);
 
   // If file exists
-  //printf("\r\nChecksum for file : %s",fileName);
+  //printf("\r\nChecksum for file: %s",fileName);
   if (f_open(&tfile,fileName, FA_READ) == FR_OK) {
     //calcFilesize = myFile.fileSize() * 8 / 1024 / 1024; // unused
     for (i = 0; i < (f_size(&tfile) / 512); i++) {
@@ -546,7 +546,7 @@ uint16_t calc_checksum_GB (char* fileName, char* folder) {
     f_close(&tfile);
     //f_chdir();
     // Subtract checksum bytes
-    printf("\r\nCheckSum : %04x",calcChecksum);
+    printf("\r\nCheckSum: %04x",calcChecksum);
 
     byte b1 = readByte_GB(0x014E);
     byte b2 = readByte_GB(0x014F);
@@ -569,7 +569,7 @@ boolean compare_checksum_GB() {
   OledShowString(0,3,"Calculating Checksum",8);
 
   strcpy(fileName, romName);
-  strcat(fileName, ".GB");
+  strcat(fileName, ".gb");
 
   // Find the highest existing folder number
   char basePath[64];
@@ -661,7 +661,7 @@ void readSRAM_GB() {
     f_close(&tfile);
 
     // Signal end of process
-    OledShowString(0,0,"Saved to ",8);
+    OledShowString(0,0,"Saved to: ",8);
     OledShowString(4,1,folder,8);
     //printf("/"));
   }
@@ -721,7 +721,7 @@ void writeSRAM_GB() {
 
     }
     else {
-      print_Error("File doesnt exist", false);
+      print_Error("File doesn't exist", false);
     }
   }
   else {
@@ -814,7 +814,7 @@ void TestSramGB(byte bankCnt , word wTestSize)
   for (byte currBank = 0; currBank < bankCnt; currBank++) {
     writeByte_GB(0x4000, currBank);
 
-    LED_GREEN_BLINK;
+    LED_BLUE_BLINK;
     // Write RAM
     for (word sramAddress = 0xA000; sramAddress <= wTestSize; sramAddress++) {
       byte bdata = sramAddress & 0xFF;
@@ -850,7 +850,7 @@ void TestSramGB(byte bankCnt , word wTestSize)
     dataOut_GB();
     writeByte_GB(0x4000, currBank);
 
-    LED_RED_BLINK;
+    LED_BLUE_BLINK;
     // Read SRAM
     dataIn_GB();
     for (word sramAddress = 0xA000; sramAddress <= wTestSize; sramAddress++) {
@@ -1002,7 +1002,7 @@ void writeFlash29F_GB(byte MBC, boolean flashErase) {
       for (int currBank = 0; currBank < romBanks; currBank++) 
       {
         // Blink led
-        LED_GREEN_BLINK;
+        LED_BLUE_BLINK;
 
         dataOut_GB();
 
@@ -1043,7 +1043,7 @@ void writeFlash29F_GB(byte MBC, boolean flashErase) {
 
       for (int currBank = 0; currBank < romBanks; currBank++) {
         // Blink led
-        LED_GREEN_BLINK;
+        LED_BLUE_BLINK;
 
         // Set ROM bank
         writeByte_GB(0x2100, currBank);
@@ -1103,7 +1103,7 @@ void writeFlash29F_GB(byte MBC, boolean flashErase) {
 
       for (int currBank = 0; currBank < romBanks; currBank++) {
         // Blink led
-        LED_GREEN_BLINK;
+        LED_BLUE_BLINK;
 
         // Set ROM bank
         writeByte_GB(0x2000, currBank);
@@ -1179,7 +1179,7 @@ void writeFlash29F_GB(byte MBC, boolean flashErase) {
         romAddress = 0x4000;
       }
       // Blink led
-      LED_GREEN_BLINK;
+      LED_BLUE_BLINK;
 
       // Read up to 7FFF per bank
       while (romAddress <= 0x7FFF) {
@@ -1204,7 +1204,7 @@ void writeFlash29F_GB(byte MBC, boolean flashErase) {
     else {
       sprintf(msgbuf,"Error %d bytes...",writeErrors);
       OledShowString(0,2,msgbuf,8);
-      print_Error("Did not verify :(", true);
+      print_Error("Verify failed", true);
     }
   }
   else {
@@ -1481,7 +1481,7 @@ bool writeCFI_GB() {
     // After a completed erase D7 will output 1
     while ((statusReg & 0x80) != 0x80) {
       // Blink led
-      LED_GREEN_BLINK;
+      LED_BLUE_BLINK;
       delay(100);
       // Update Status
       statusReg = readByte_GB(0);
@@ -1495,7 +1495,7 @@ bool writeCFI_GB() {
     for (int currBank = 0; currBank < romBanks; currBank++) 
     {
       // Blink led
-      LED_GREEN_BLINK;
+      LED_BLUE_BLINK;
       showPersent(currBank,romBanks,84,2);
       dataOut_GB();
 
@@ -1553,7 +1553,7 @@ bool writeCFI_GB() {
     for (int currBank = 0; currBank < romBanks; currBank++) 
     {
       // Blink led
-      LED_GREEN_BLINK;
+      LED_BLUE_BLINK;
       showPersent(currBank,romBanks,10,4);
 
       // Set ROM bank
@@ -1677,7 +1677,7 @@ bool writeCFI_GB() {
         romAddress = 0x4000;
       }
       // Blink led
-      LED_GREEN_BLINK;
+      LED_BLUE_BLINK;
       showPersent(bank - 1,romBanks,72,5);
 
       // Read up to 7FFF per bank
@@ -1707,7 +1707,7 @@ bool writeCFI_GB() {
     else {
       sprintf(msgbuf,"Error:%d bytes",writeErrors);
       OledShowString(0,6,msgbuf,8);
-      print_Error("Did not verify...", false);
+      print_Error("Verify failed...", false);
     }
   }
   else {
@@ -1814,7 +1814,7 @@ void testCFI_GB(uint16_t testBanks) {
   for (int currBank = 0; currBank < testBanks; currBank++) 
   {
       // Blink led
-      LED_GREEN_BLINK;
+      LED_BLUE_BLINK;
       showPersent(currBank,testBanks,60,4);
 
       // Set ROM bank
@@ -1924,7 +1924,7 @@ void testCFI_GB(uint16_t testBanks) {
         romAddress = 0x4000;
       }
       // Blink led
-      LED_GREEN_BLINK;
+      LED_BLUE_BLINK;
       showPersent(bank - 1,testBanks,72,5);
 
       // Read up to 7FFF per bank
@@ -1949,7 +1949,7 @@ void testCFI_GB(uint16_t testBanks) {
       char msgbuf[64] = {0};
       sprintf(msgbuf,"Error:%d bytes",wErrors);
       OledShowString(0,6,msgbuf,8);
-      print_Error("Did not verify...", false);
+      print_Error("Verify failed...", false);
   }
 }
 
@@ -1974,8 +1974,8 @@ void TestMemGB(boolean bFast)
 
 
 // GB Flash items
-static const char GBFlashItem1[] = "Flash Cart";
-static const char GBFlashItem2[] = "Flash Cart and Save";
+static const char GBFlashItem1[] = "Flash ROM";
+static const char GBFlashItem2[] = "Flash ROM and SRAM";
 static const char GBFlashItem3[] = "29F Cart (MBC3)";
 static const char GBFlashItem4[] = "29F Cart (MBC5)";
 static const char GBFlashItem5[] = "29F Cart (CAM)";
@@ -2028,7 +2028,7 @@ uint8_t gbFlashMenu()
       {
         //
         OledClear();
-        OledShowString(0,0,"Save Sram Data:",8);
+        OledShowString(0,0,"Save SRAM Data:",8);
         //Get the save file name
         char * cpos = strrchr(filePath,'/');
         if(cpos){cpos++;strcpy(fileName,cpos);}
@@ -2051,7 +2051,7 @@ uint8_t gbFlashMenu()
           foldern = load_dword();
           for (int i = foldern; i >= 0; i--) 
           {
-            sprintf(filePath, "/GB/SAVE/%s/%d/%s.SAV", fileName, i, fileName);
+            sprintf(filePath, "/GB/SAVE/%s/%d/%s.sav", fileName, i, fileName);
             if (f_stat(filePath,&tfinfo) == FR_OK) 
             {
               //
@@ -2071,7 +2071,7 @@ uint8_t gbFlashMenu()
               {
                 sprintf(tmsg,"Error: %d bytes.",wrErrors);
                 OledShowString(0,2,tmsg,8);
-                print_Error("Did not verify...", false);
+                print_Error("Verify failed...", false);
               }
               break;
             }
@@ -2085,7 +2085,7 @@ uint8_t gbFlashMenu()
       }
       else 
       {
-        print_Error("Cart has no Sram", false);
+        print_Error("Cart has no SRAM", false);
       }
       break;
 
@@ -2157,10 +2157,10 @@ void gbFlashScreen()
 }
 
 // GB menu items
-static const char GBMenuItem1[] = "Flash GBC Cart";
-static const char GBMenuItem2[] = "Read Rom";
-static const char GBMenuItem3[] = "Read Save";
-static const char GBMenuItem4[] = "Write Save";
+static const char GBMenuItem1[] = "Flash GBC ROM";
+static const char GBMenuItem2[] = "Read ROM";
+static const char GBMenuItem3[] = "Read SRAM";
+static const char GBMenuItem4[] = "Write SRAM";
 static const char GBMenuItem5[] = "NPower GB Memory";
 static const char GBMenuItem6[] = "Reset";
 static const char* const menuOptionsGB[] = {GBMenuItem1, GBMenuItem2, GBMenuItem3, GBMenuItem4, GBMenuItem5, GBMenuItem6};
@@ -2171,7 +2171,7 @@ uint8_t gbMenu()
   uint8_t bret = 0;
   
   // create menu with title and 3 options to choose from
-  unsigned char gbMenu = questionBox_OLED("GB Cart Reader", menuOptionsGB, 6, 1, 1, 1);
+  unsigned char gbMenu = questionBox_OLED("GB(C) Main Menu", menuOptionsGB, 6, 1, 1, 1);
 
   // wait for user choice to come back from the question box menu
   switch (gbMenu)
@@ -2200,7 +2200,7 @@ uint8_t gbMenu()
         readSRAM_GB();
       }
       else {
-        print_Error("Cart has no Sram", false);
+        print_Error("Cart has no SRAM", false);
       }
       break;
 
@@ -2226,11 +2226,11 @@ uint8_t gbMenu()
           char tbufp[30] = {0};
           sprintf(tbufp,"Error: %d bytes.",wrErrors);
           OledShowString(0,1,tbufp,8);
-          print_Error("did not verify.", false);
+          print_Error("Verify failed", false);
         }
       }
       else {
-        print_Error("Cart has no Sram", false);
+        print_Error("Cart has no SRAM", false);
       }
       break;
 

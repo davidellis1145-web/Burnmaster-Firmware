@@ -100,7 +100,7 @@ void printSdBuffer(word startByte, word numBytes)
 
 void readROM_GBM(word numBanks) 
 {
-  OledShowString(0,0,"Reading Rom...",8);   
+  OledShowString(0,0,"Reading ROM...",8);   
 
   // Find the highest existing folder number and use next one
   char basePath[32];
@@ -425,7 +425,7 @@ void writeFlash_GBM()
     for (byte currBank = 0x1; currBank < fileSize; currBank++) 
     {
       // Blink led
-      LED_BLINK(LED1);
+      LED_RED_BLINK;
       showPersent(currBank - 1,fileSize,60,0);
 
       // all following banks: 0x4000-0x7FFF
@@ -709,7 +709,7 @@ void writeMapping_GBM()
     for (word currByte = 0; currByte < 128; currByte++) 
     {
       // Blink led
-      LED_BLINK(LED1);
+      LED_RED_BLINK;
       writeByte_GBM(currByte, sdBuffer[currByte]);
     }
     // Execute write
