@@ -13,7 +13,7 @@ To build the firmware, open `GDCartReader.emProject` in Embedded Studio, then ri
 
 ### Repository Notes:
 
-This repository is setup to auto-build the firmware when a commit is made, builds can be found under the [Actions tab](https://github.com/davidellis1145-web/Burnmaster-Firmware).
+This repository is setup to auto-build the firmware when a commit is made, builds can be found under the [Actions tab](https://github.com/davidellis1145-web/Burnmaster-Firmware/actions).
 
 
 This source code is heavily modified, I have nothing to do with funnyplaying or the development of the official firmware.
