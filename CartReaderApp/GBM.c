@@ -10,15 +10,11 @@
 #include "GBM.h"
 
 
-
-
-
 /**********************
   LOW LEVEL
 **********************/
 void delay_GBM()
 {
-  //
   __asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t");
   __asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t");
   __asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t");
@@ -35,7 +31,6 @@ byte readByte_GBM(word myAddress)
   GPIO_OCTL(ADDRLOW) = (GPIO_OCTL(ADDRLOW)&0xFFFF000F) + ((myAddress << 8)&0xFF00) + ((myAddress >> 8)&0xF0);
   GPIO_OCTL(ADDRHIGH) = (GPIO_OCTL(ADDRHIGH)&0xFFFFF0FF) + (myAddress & 0x0F00);
 
-  
   delay_GBM();
 
   // Switch CS(PH3) and RD(PH6) to LOW
@@ -130,13 +125,15 @@ void readROM_GBM(word numBanks)
       writeByte_GBM(0x2100, currBank);
 
       // Switch bank start address
-      if (currBank > 1) {
+      if (currBank > 1)
+	  {
         currAddress = 0x4000;
       }
 
       for (; currAddress < 0x7FFF; currAddress += 512) 
       {
-        for (int currByte = 0; currByte < 512; currByte++) {
+        for (int currByte = 0; currByte < 512; currByte++)
+		{
           sdBuffer[currByte] = readByte_GBM(currAddress + currByte);
         }
         UINT wdt;
@@ -159,7 +156,8 @@ void readROM_GBM(word numBanks)
 **********************/
 void send_GBM(byte myCommand) 
 {
-  switch (myCommand) {
+  switch (myCommand)
+  {
     case 0x01:
       //CMD_01h -> ???
       writeByte_GBM(0x0120, 0x01);
@@ -235,7 +233,8 @@ void send_GBM1(byte myCommand, word myAddress, byte myData)
   byte myAddrLow = myAddress & 0xFF;
   byte myAddrHigh = (myAddress >> 8) & 0xFF;
 
-  switch (myCommand) {
+  switch (myCommand)
+  {
     case 0x0F:
       // CMD_0Fh -> Write address/byte to flash
       writeByte_GBM(0x0120, 0x0F);
@@ -261,7 +260,8 @@ void switchGame_GBM(byte myData)
   writeByte_GBM(0x013F, 0xA5);
 }
 
-void resetFlash_GBM() {
+void resetFlash_GBM()
+{
   // Enable ports 0x0120 (F2)
   send_GBM(0x09);
 
@@ -286,10 +286,8 @@ boolean readFlashID_GBM()
 
   // Read the two id bytes into a string
   sprintf(flashid, "%02X%02X", readByte_GBM(0), readByte_GBM(1));
-  //
   OledShowString(0,1,"Flash ID: ",8);
   OledShowString(60,1,flashid,8);
-  //
   if (strcmp(flashid, "C289") == 0) 
   {
     resetFlash_GBM();
@@ -322,7 +320,9 @@ void eraseFlash_GBM()
   send_GBM1(0x0F, 0x5555, 0x40);
 
   // Wait for unprotect to complete
-  while ((readByte_GBM(0) & 0x80) != 0x80) {}
+  while ((readByte_GBM(0) & 0x80) != 0x80)
+  {
+  }
 
   // Send erase command
   send_GBM1(0x0F, 0x5555, 0xaa);
@@ -333,7 +333,9 @@ void eraseFlash_GBM()
   send_GBM1(0x0F, 0x5555, 0x10);
 
   // Wait for erase to complete
-  while ((readByte_GBM(0) & 0x80) != 0x80) {}
+  while ((readByte_GBM(0) & 0x80) != 0x80)
+  {
+  }
 
   // Reset flashrom
   resetFlash_GBM();
@@ -355,17 +357,21 @@ boolean blankcheckFlash_GBM()
   // Read rom
   word currAddress = 0;
 
-  for (byte currBank = 1; currBank < 64; currBank++) {
+  for (byte currBank = 1; currBank < 64; currBank++)
+  {
     // Set rom bank
     writeByte_GBM(0x2100, currBank);
 
     // Switch bank start address
-    if (currBank > 1) {
+    if (currBank > 1)
+	{
       currAddress = 0x4000;
     }
 
-    for (; currAddress < 0x7FFF; currAddress++) {
-      if (readByte_GBM(currAddress) != 0xFF) {
+    for (; currAddress < 0x7FFF; currAddress++)
+	{
+      if (readByte_GBM(currAddress) != 0xFF)
+	  {
         return 0;
       }
     }
@@ -416,7 +422,9 @@ void writeFlash_GBM()
     writeByte_GBM(0x5555, 0x40);
 
     // Check if flashrom is ready for writing or busy
-    while ((readByte_GBM(0) & 0x80) != 0x80) {}
+    while ((readByte_GBM(0) & 0x80) != 0x80)
+	{
+	}
 
     // first bank: 0x0000-0x7FFF,
     word currAddress = 0x0;
@@ -429,7 +437,8 @@ void writeFlash_GBM()
       showPersent(currBank - 1,fileSize,60,0);
 
       // all following banks: 0x4000-0x7FFF
-      if (currBank > 1) {
+      if (currBank > 1)
+	  {
         currAddress = 0x4000;
       }
 
@@ -457,7 +466,9 @@ void writeFlash_GBM()
         writeByte_GBM(0x5555, 0xA0);
 
         // Wait until flashrom is ready again
-        while ((readByte_GBM(0) & 0x80) != 0x80) {}
+        while ((readByte_GBM(0) & 0x80) != 0x80)
+		{
+		}
 
         // Enable access to ports 0x120 and 0x2100
         send_GBM(0x09);
@@ -471,14 +482,17 @@ void writeFlash_GBM()
         send_GBM(0x08);
 
         // Fill flash buffer
-        for (word currByte = 0; currByte < 128; currByte++) {
+        for (word currByte = 0; currByte < 128; currByte++)
+		{
           writeByte_GBM(currAddress + currByte, sdBuffer[currByte]);
         }
         // Execute write
         writeByte_GBM(currAddress + 127, 0xFF);
 
         // Wait for write to complete
-        while ((readByte_GBM(currAddress) & 0x80) != 0x80) {}
+        while ((readByte_GBM(currAddress) & 0x80) != 0x80)
+		{
+		}
       }
     }
 
@@ -576,7 +590,9 @@ void eraseMapping_GBM()
   send_GBM1(0x0F, 0x5555, 0x40);
 
   // Wait for unprotect to complete
-  while ((readByte_GBM(0) & 0x80) != 0x80) {}
+  while ((readByte_GBM(0) & 0x80) != 0x80)
+  {
+  }
 
   // Send erase command
   send_GBM1(0x0F, 0x5555, 0xAA);
@@ -587,7 +603,9 @@ void eraseMapping_GBM()
   send_GBM1(0x0F, 0x5555, 0x04);
 
   // Wait for erase to complete
-  while ((readByte_GBM(0) & 0x80) != 0x80) {}
+  while ((readByte_GBM(0) & 0x80) != 0x80)
+  {
+  }
 
   // Reset flashrom
   resetFlash_GBM();
@@ -669,7 +687,9 @@ void writeMapping_GBM()
     writeByte_GBM(0x5555, 0xE0);
 
     // Check if flashrom is ready for writing or busy
-    while ((readByte_GBM(0) & 0x80) != 0x80) {}
+    while ((readByte_GBM(0) & 0x80) != 0x80)
+	{
+	}
 
     // Fill SD buffer
     UINT rdt;
@@ -692,7 +712,9 @@ void writeMapping_GBM()
     writeByte_GBM(0x5555, 0xA0);
 
     // Wait until flashrom is ready again
-    while ((readByte_GBM(0) & 0x80) != 0x80) {}
+    while ((readByte_GBM(0) & 0x80) != 0x80)
+	{
+	}
 
     // Enable access to ports 0x120 and 0x2100
     send_GBM(0x09);
@@ -726,12 +748,11 @@ void writeMapping_GBM()
 }
 
 
-/******************************************
+/**********************
   Setup
-*****************************************/
+**********************/
 void setup_GBM() 
 {
-  //
   OledClear();
   // Set RST(PH0) to Input
   // Activate Internal Pullup Resistors
@@ -757,11 +778,11 @@ void setup_GBM()
   byte timeout = 0;
 
   // First byte of NP register is always 0x21
-  while (readByte_GBM(0x120) != 0x21) {
+  while (readByte_GBM(0x120) != 0x21)
+  {
     // Enable ports 0x120h (F2)
     send_GBM(0x09);
     delay_GBM();
-    //__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
     timeout++;
     if (timeout > 10) 
     {
@@ -772,9 +793,9 @@ void setup_GBM()
 }
 
 
-/******************************************
+/**********************
   Menu
-*****************************************/
+**********************/
 // GBM menu items
 static const char gbmMenuItem1[] = "Read ID";
 static const char gbmMenuItem2[] = "Read Flash";
@@ -794,20 +815,17 @@ uint8_t gbmMenu()
   // wait for user choice to come back from the question box menu
   switch (gbmMenu)
   {
-    // Read Flash ID
     case MENU_CANCEL:
       bret = 1;
       break;
+
+	// Read Flash ID
     case MENU_1:
-      // Clear screen
-      //OledClear();
       readFlashID_GBM();
       break;
 
-    // Read Flash
+	// Read Flash
     case MENU_2:
-      // Clear screen
-      //OledClear();
       // Print warning
       OledShowString(0,0,"Attention!\nAlways power cycle\ncartreader directly\nbefore reading\n\nPress OK Button\nto continue",8);
       WaitOKBtn();
@@ -823,10 +841,8 @@ uint8_t gbmMenu()
       readROM_GBM(64);
       break;
 
-    // Erase Flash
+	// Erase Flash
     case MENU_3:
-      // Clear screen
-      //OledClear();
       // Print warning
       OledShowString(0,0,"Attention!\nThis will erase your\nNP Cartridge.\n\n\nPress OK Button\nto continue",8);
       WaitOKBtn();
@@ -837,12 +853,9 @@ uint8_t gbmMenu()
 
     // Blankcheck Flash
     case MENU_4:
-      // Clear screen
-      //OledClear();
       if (blankcheckFlash_GBM()) 
       {
-        OledShowString(20,1,"OK",8);
-         
+        OledShowString(20,1,"OK",8);         
       }
       else 
       {
@@ -852,8 +865,6 @@ uint8_t gbmMenu()
 
     // Write Flash
     case MENU_5:
-      // Clear screen
-      //OledClear();
       filePath[0] = '\0';
       // Launch file browser
       fileBrowser("/","Select 1MB file:");
@@ -864,17 +875,11 @@ uint8_t gbmMenu()
 
     // Read mapping
     case MENU_6:
-      // Clear screen
-      //OledClear();
-      // Read mapping
       readMapping_GBM();
       break;
 
     // Write mapping
     case MENU_7:
-      // Clear screen
-      //OledClear();
-
       // Print warning
       OledShowString(0,0,"Attention!\nThis will erase your\nNP Cartridge's\nmapping data\n\nPress OK Button\nto continue",8);
       WaitOKBtn();
@@ -887,7 +892,6 @@ uint8_t gbmMenu()
       OledClear();
       // Clear screen
       OledClear();
-
       // Erase mapping
       eraseMapping_GBM();
       if (blankcheckMapping_GBM()) 
@@ -899,7 +903,6 @@ uint8_t gbmMenu()
         print_Error("Erasing failed!", false);
         break;
       }
-
       // Write mapping
       writeMapping_GBM();
       break;
@@ -916,14 +919,11 @@ uint8_t gbmMenu()
 
 void gbmScreen()
 {
-  //
   while(1)
   {
-    //
     setup_GBM();
     if(gbmMenu() > 0)
     {
-      //
       break;
     }
   }

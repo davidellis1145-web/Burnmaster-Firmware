@@ -10,11 +10,9 @@
 #define LED_R (8)
 
 
-
 void I2cInit(void);
 void SSD1306_WriteCmd(uint8_t var);
 void SSD1306_WriteData(uint8_t var);
-
 
 
 //坐标设置：也就是在哪里显示
@@ -37,13 +35,10 @@ void OledShowPicData(uint8_t x,uint8_t y,uint8_t wdt,uint8_t hgt,uint8_t *pPicDa
 void OledInit(void);
 
 
-
 void setColor_RGB(uint8_t r, uint8_t g, uint8_t b);
 void print_Error(char *errorMessage, uint8_t forceReset);
 void draw_progressbar(uint32_t processed, uint32_t total, uint8_t line);
 void showPersent(uint32_t processed, uint32_t total, uint8_t x, uint8_t line);
-
-
 
 
 //Leds

@@ -15,5 +15,4 @@
 
 void gbmScreen();
 
-
 #endif

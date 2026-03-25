@@ -1,4 +1,3 @@
-
 #include <gd32f10x.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,12 +5,9 @@
 #include "Display.h"
 
 
-
-/*********************************************************************
-*
-I2C Oled sdd1306 Display functions
-
-*/
+/***************************************
+  I2C Oled sdd1306 Display functions
+***************************************/
 
 /* [字库]：[ASC8x16E字库] [数据排列]:从左到右从上到下 [取模方式]:纵向8点下高位 [正负反色]:否 [去掉重复后]共95个字符
 [总字符库]：" !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~"*/
@@ -305,7 +301,6 @@ uint8_t F8X16[] = {
 };
 
 
-
 /* [字库]：[ASC5x8E字库] [数据排列]:从左到右从上到下 [取模方式]:纵向8点下高位 [正负反色]:否 [去掉重复后]共95个字符
 [总字符库]：" !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~"*/
 
@@ -503,7 +498,6 @@ uint8_t F5x8[] = {
 0x08,0x04,0x08,0x10,0x08};
 
 
-
 void I2cInit(void)
 {
     rcu_periph_clock_enable(RCU_I2C1);
@@ -522,7 +516,6 @@ void I2cInit(void)
     /* enable acknowledge */
     i2c_ack_config(I2C1, I2C_ACK_ENABLE);
 }
-
 
 
 void SSD1306_WriteCmd(uint8_t var)
@@ -662,7 +655,6 @@ void OledShowChar(uint8_t x,uint8_t y,uint8_t chr,uint8_t Char_Size)
 }
  
 
-
 //显示一个字符串
 uint8_t OledShowString(uint8_t x,uint8_t y,char *str,uint8_t Char_Size)
 {
@@ -672,7 +664,6 @@ uint8_t OledShowString(uint8_t x,uint8_t y,char *str,uint8_t Char_Size)
   {
     if(str[j] == '\n')
     {
-      //
       x=0;
       y+=1;
     }
@@ -718,10 +709,6 @@ uint8_t OledShowString(uint8_t x,uint8_t y,char *str,uint8_t Char_Size)
   I2cInit();
 
 
-  //delay(300);
-  //delay(300);
-
-
   //SSD1306复位之后，默认的是页寻址方式
   
   SSD1306_WriteCmd(0xAE);//--display off
@@ -744,49 +731,34 @@ uint8_t OledShowString(uint8_t x,uint8_t y,char *str,uint8_t Char_Size)
   SSD1306_WriteCmd(0x00);//no offset
 	
   SSD1306_WriteCmd(0xD5);//set display clock divide ratio/oscillator frequency  
-  SSD1306_WriteCmd(0x80);//
+  SSD1306_WriteCmd(0x80);
 	
   SSD1306_WriteCmd(0xD8);//set area color mode off
-  SSD1306_WriteCmd(0x05);//
+  SSD1306_WriteCmd(0x05);
 	
   SSD1306_WriteCmd(0xD9);//Set Pre-Charge Period
-  SSD1306_WriteCmd(0xF1);//
+  SSD1306_WriteCmd(0xF1);
 	
   SSD1306_WriteCmd(0xDA);//set com pin  hardware configuartion
-  SSD1306_WriteCmd(0x12);//
+  SSD1306_WriteCmd(0x12);
 	
   SSD1306_WriteCmd(0xDB);//set Vcomh
   SSD1306_WriteCmd(0x30);//0x20,0.77xVcc
 	
   SSD1306_WriteCmd(0x8D);//set charge pump enable
-  SSD1306_WriteCmd(0x14);//
+  SSD1306_WriteCmd(0x14);
 	
   SSD1306_WriteCmd(0xAF);//--turn on Oled panel
 }
 
 
-
-
 // Set RGB color
-void setColor_RGB(uint8_t r, uint8_t g, uint8_t b) {
-/*
-#ifdef enable_neopixel
-  // Dim Neopixel LEDs
-  if (r >= 100) r = 100;
-  if (g >= 100) g = 100;
-  if (b >= 100) b = 100;
-  pixels.clear();
-  pixels.setPixelColor(0, pixels.Color(100, 0, 0));
-  pixels.setPixelColor(1, pixels.Color(g, r, b));
-  pixels.setPixelColor(2, pixels.Color(g, r, b));
-  pixels.show();
-#else
-  rgb.setColor(r, g, b);
-#endif
-*/
+void setColor_RGB(uint8_t r, uint8_t g, uint8_t b)
+{
 }
 
-void print_Error(char *errorMessage, uint8_t forceReset) {
+void print_Error(char *errorMessage, uint8_t forceReset)
+{
   errorLvl = 1;
   setColor_RGB(255, 0, 0);
   OledShowString(0,5,errorMessage,8);
@@ -795,7 +767,6 @@ void print_Error(char *errorMessage, uint8_t forceReset) {
   {
     OledShowString(0,7,"Press OK To Reset...",8);
     WaitOKBtn();
-
 
     if (ignoreError == 0) 
     {
@@ -812,18 +783,18 @@ void print_Error(char *errorMessage, uint8_t forceReset) {
 }
 
 
-
-
-/******************************************
+/**********************
   Progressbar
-*****************************************/
-void draw_progressbar(uint32_t processed, uint32_t total, uint8_t line) {
+**********************/
+void draw_progressbar(uint32_t processed, uint32_t total, uint8_t line)
+{
   uint8_t current, i;
   static uint8_t previous;
   uint8_t steps = 20;
 
   //Find progressbar length and draw if processed size is not 0
-  if (processed == 0) {
+  if (processed == 0)
+  {
     previous = 0;
     OledShowString(0,line,"[",8);
     return;
@@ -832,17 +803,19 @@ void draw_progressbar(uint32_t processed, uint32_t total, uint8_t line) {
   // Progress bar
   current = (processed >= total) ? steps : (processed * steps / total);
 
-  //printf("\r\nCur:%d-Pri:%d / Ttl:%d",current,previous,total);
-
   //Draw "*" if needed
-  if (current > previous) {
-    for (i = previous + 1; i <= current; i++) {
+  if (current > previous)
+  {
+    for (i = previous + 1; i <= current; i++)
+	{
       // steps are 20, so 20 - 1 = 19.
-      if (i == (19)) {
+      if (i == (19))
+	  {
         //If end of progress bar, finish progress bar by drawing "]"
         OledShowString(114,line,"]",8);
       }
-      else {
+      else
+	  {
         OledShowChar(i*6,line,'*',8);
       }
     }
@@ -852,10 +825,8 @@ void draw_progressbar(uint32_t processed, uint32_t total, uint8_t line) {
 }
 
 
-
 void showPersent(uint32_t processed, uint32_t total, uint8_t x, uint8_t line)
 {
-  //
   char szt[16] = {0};
   static uint8_t oripst = 0;
   uint8_t tpst = processed*100/total;
@@ -872,15 +843,11 @@ void showPersent(uint32_t processed, uint32_t total, uint8_t x, uint8_t line)
 }
 
 
-
-
-
-/******************************************
+/**********************
   LEDS
-*****************************************/
+**********************/
 void LEDSInit()
 {
-  //
   gpio_init(GPIOA,GPIO_MODE_OUT_PP,GPIO_OSPEED_2MHZ,BITS(0,3));
   gpio_bit_set(GPIOA,BITS(0,3));
 }
@@ -888,20 +855,16 @@ void LEDSInit()
 
 void LED_ON(uint8_t LedNum)
 {
-  //
   gpio_bit_reset(GPIOA,LedNum);  
 }
 
 void LED_OFF(uint8_t LedNum)
 {
-  //
   gpio_bit_set(GPIOA,LedNum); 
 }
 
-
 void LED_BLINK(uint8_t LedNum)
 {
-  //
   static uint8_t ts = 0;
   ts = !ts;
   gpio_bit_write(GPIOA,LedNum,ts);
@@ -909,7 +872,6 @@ void LED_BLINK(uint8_t LedNum)
 
 void LED_CLEAR(void)
 {
-  //
   gpio_bit_set(GPIOA,BITS(0,3));
 
 }

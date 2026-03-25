@@ -9,7 +9,6 @@
 #include "fatfs/ff.h"
 
 
-
 #define byte uint8_t
 #define word uint16_t
 #define boolean uint8_t

@@ -10,11 +10,9 @@
 #include "GBA.h"
 
 
-
-
-/******************************************
-   Variables
- *****************************************/
+/**********************
+  Variables
+**********************/
 char calcChecksumStr[5];
 boolean readType;
 unsigned long cartSize;
@@ -23,23 +21,13 @@ byte romVersion = 0;
 byte forceSaveType = 0;
 
 
-
-
-
-/******************************************
-   Low level functions
-*****************************************/
+/***********************
+  Low level functions
+***********************/
 void delay_GBA()
 {
-  //__asm__("nop\n\t""nop\n\t");
   __asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-  //__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-  //__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-  //__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-  //__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-  //__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
 }
-
 
 
 void setROM_GBA() 
@@ -60,27 +48,18 @@ void setROM_GBA()
   delay(688);
 }
 
-
-
 //#define TEST_MY_CART
 
 word readWord_GBA(unsigned long Address) 
 {
-
-
   // Divide address by two to get word addressing
   unsigned long myAddress = Address >> 1;
-
 
   // Set address/data ports to output
   GPIO_CTL1(ADDR_1) = 0x33333333;//A0-A7
   GPIO_CTL0(ADDR_1) = (GPIO_CTL0(ADDR_1)&0xFFFF) + 0x33330000;//A12-A15
   GPIO_CTL1(ADDR_2) = (GPIO_CTL1(ADDR_2)&0xFFFF0000) + 0x3333;//A8-A11
   GPIO_CTL1(ADDR_3) = 0x33333333;
-  //gpio_init(ADDR_1,GPIO_MODE_OUT_PP,GPIO_OSPEED_10MHZ,BITS(4,15));
-  //gpio_init(ADDR_2,GPIO_MODE_OUT_PP,GPIO_OSPEED_10MHZ,BITS(8,11));
-  //gpio_init(ADDR_3,GPIO_MODE_OUT_PP,GPIO_OSPEED_10MHZ,BITS(8,15));
-
 
   // Output address to address pins,
   GPIO_OCTL(ADDR_1) = (GPIO_OCTL(ADDR_1)&0xFFFF000F) + ((myAddress << 8)&0xFF00) + ((myAddress >> 8)&0xF0);
@@ -104,13 +83,6 @@ word readWord_GBA(unsigned long Address)
   GPIO_CTL0(ADDR_1) = (GPIO_CTL0(ADDR_1)&0xFFFF) + 0x44440000;//A12-A15
   GPIO_CTL1(ADDR_2) = (GPIO_CTL1(ADDR_2)&0xFFFF0000) + 0x4444;//A8-A11
 
-  //gpio_init(ADDR_1,GPIO_MODE_IN_FLOATING,GPIO_OSPEED_10MHZ,BITS(4,15));
-  //gpio_init(ADDR_2,GPIO_MODE_IN_FLOATING,GPIO_OSPEED_10MHZ,BITS(8,11));
-  //gpio_init(ADDR_3,GPIO_MODE_IN_FLOATING,GPIO_OSPEED_10MHZ,BITS(8,15));
-
-    
-  //delay_GBA(); 
-
   // Pull RD(PH6) to LOW
   gpio_bit_reset(CTRLGBA,GBA_RD);
 
@@ -120,25 +92,18 @@ word readWord_GBA(unsigned long Address)
   delay_GBA();
 
   word myWord = GPIO_ISTAT(ADDR_1)&0xFFFF;
-  //printf("-%04x\n",myWord);
   myWord = ((myWord << 8) + (myWord >> 8))&0xF0FF;
   myWord += (GPIO_ISTAT(ADDR_2)&0x0F00);
 
   // Switch RD(PH6) to HIGH
   gpio_bit_set(CTRLGBA,GBA_RD|CS_ROM);
 
-  //delay_GBA();  
-  //gpio_bit_set(CTRLGBA,CS_ROM);
-  //delay_GBA();  
   return myWord;
 }
 
 
-
 word readWord_buf_GBA(unsigned long Address, uint16_t *outBuf, uint16_t cnt) 
 {
-
-
   // Divide address by two to get word addressing
   unsigned long myAddress = Address >> 1;
 
@@ -168,13 +133,6 @@ word readWord_buf_GBA(unsigned long Address, uint16_t *outBuf, uint16_t cnt)
   GPIO_CTL0(ADDR_1) = (GPIO_CTL0(ADDR_1)&0xFFFF) + 0x44440000;//A12-A15
   GPIO_CTL1(ADDR_2) = (GPIO_CTL1(ADDR_2)&0xFFFF0000) + 0x4444;//A8-A11
 
-  //gpio_init(ADDR_1,GPIO_MODE_IN_FLOATING,GPIO_OSPEED_10MHZ,BITS(4,15));
-  //gpio_init(ADDR_2,GPIO_MODE_IN_FLOATING,GPIO_OSPEED_10MHZ,BITS(8,11));
-  //gpio_init(ADDR_3,GPIO_MODE_IN_FLOATING,GPIO_OSPEED_10MHZ,BITS(8,15));
-
-    
-  //delay_GBA(); 
-
   for(WORD i = 0;i<cnt;i++)
   {
     // Pull RD(PH6) to LOW
@@ -184,7 +142,6 @@ word readWord_buf_GBA(unsigned long Address, uint16_t *outBuf, uint16_t cnt)
     delay_GBA();  
 
     word myWord = GPIO_ISTAT(ADDR_1)&0xFFFF;
-    //printf("-%04x\n",myWord);
     myWord = ((myWord << 8) + (myWord >> 8))&0xF0FF;
     myWord += (GPIO_ISTAT(ADDR_2)&0x0F00);
 
@@ -192,18 +149,13 @@ word readWord_buf_GBA(unsigned long Address, uint16_t *outBuf, uint16_t cnt)
     gpio_bit_set(CTRLGBA,GBA_RD);
 
     outBuf[i] = myWord;
-    //delay_GBA();  
-    //delay_GBA();  
-
   }
   gpio_bit_set(CTRLGBA,CS_ROM);
-  //delay_GBA();  
   return cnt;
 }
 
 void writeWord_GBA(unsigned long Address, word myWord) 
 {
-
   // Divide address by two to get word addressing
   unsigned long myAddress = Address >> 1;
 
@@ -213,9 +165,6 @@ void writeWord_GBA(unsigned long Address, word myWord)
   GPIO_CTL0(ADDR_1) = (GPIO_CTL0(ADDR_1)&0xFFFF) + 0x33330000;//A12-A15
   GPIO_CTL1(ADDR_2) = (GPIO_CTL1(ADDR_2)&0xFFFF0000) + 0x3333;//A8-A11
   GPIO_CTL1(ADDR_3) = 0x33333333;
-  //gpio_init(ADDR_1,GPIO_MODE_OUT_PP,GPIO_OSPEED_10MHZ,BITS(4,15));
-  //gpio_init(ADDR_2,GPIO_MODE_OUT_PP,GPIO_OSPEED_10MHZ,BITS(8,11));
-  //gpio_init(ADDR_3,GPIO_MODE_OUT_PP,GPIO_OSPEED_10MHZ,BITS(8,15));
 
   // Output address to address pins,
   GPIO_OCTL(ADDR_1) = (GPIO_OCTL(ADDR_1)&0xFFFF000F) + ((myAddress << 8)&0xFF00) + ((myAddress >> 8)&0xF0);
@@ -225,7 +174,6 @@ void writeWord_GBA(unsigned long Address, word myWord)
   // Pull CS(PH3) to LOW
   gpio_bit_reset(CTRLGBA,CS_ROM);
 
-  //__asm__("nop\n\t""nop\n\t");
   delay_GBA();
   delay_GBA();
   delay_GBA();
@@ -242,7 +190,6 @@ void writeWord_GBA(unsigned long Address, word myWord)
   // Pull WR(PH5) to LOW
   gpio_bit_reset(CTRLGBA,GBA_WR);
 
-  //__asm__("nop\n\t""nop\n\t");
   delay_GBA();
   delay_GBA();  
   delay_GBA();  
@@ -252,7 +199,6 @@ void writeWord_GBA(unsigned long Address, word myWord)
   // Switch CS_ROM(PH3) to HIGH
   delay_GBA();
   gpio_bit_set(CTRLGBA,CS_ROM);
-  //delay_GBA();    
  
 }
 
@@ -278,9 +224,9 @@ word swapBits(word n, word p1, word p2)
 }
 
 
-
 // Some repros have D0 and D1 switched
-word readWord_GAB(unsigned long myAddress) {
+word readWord_GAB(unsigned long myAddress)
+{
 #ifdef TEST_MY_CART
   word tempWord = readWord_GBA(myAddress);
 #else
@@ -289,7 +235,8 @@ word readWord_GAB(unsigned long myAddress) {
   return tempWord;
 }
 
-void writeWord_GAB(unsigned long myAddress, word myWord) {
+void writeWord_GAB(unsigned long myAddress, word myWord)
+{
 #ifdef TEST_MY_CART
   writeWord_GBA(myAddress, myWord);
 #else
@@ -323,8 +270,6 @@ byte readByte_GBA(unsigned long myAddress)
   // Hold address for at least 25ns and wait 150ns before access
   delay_GBA();
   delay_GBA();
-  //__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-  //__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
 
   // Read byte
   byte tempByte = GPIO_ISTAT(ADDR_3)>>8;
@@ -357,7 +302,6 @@ void writeByte_GBA(unsigned long myAddress, byte myData)
 
   // Leave WR low for at least 60ns
   delay_GBA();
-  //__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
 
   // Pull CE_SRAM(PH0) HIGH
   // Pull WE_SRAM(PH5) HIGH
@@ -365,13 +309,12 @@ void writeByte_GBA(unsigned long myAddress, byte myData)
 
   // Leave WR high for at least 50ns
   delay_GBA();
-  //__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
 }
 
 
-/******************************************
+/**********************
   GBA ROM Functions
-*****************************************/
+**********************/
 // Read info out of rom header
 void getCartInfo_GBA() 
 {
@@ -430,7 +373,6 @@ void getCartInfo_GBA()
 
         if(f_read(&tf,tempStr,4,&rdt)!=FR_OK)
         {
-          //
           f_close(&tf);
           break;
         }
@@ -450,7 +392,8 @@ void getCartInfo_GBA()
           {
             cartSize = cartSize * 10 + tb - 48;
           }
-          else {
+          else
+		  {
             cartSize = tb - 48;
           }
 
@@ -481,7 +424,8 @@ void getCartInfo_GBA()
     for (int addr = 0xA0; addr <= 0xAB; addr++) 
     {
       myByte = sdBuffer[addr];
-      if (((myByte >= 48 && myByte <= 57) || (myByte >= 65 && myByte <= 122)) && myLength < 15) {
+      if (((myByte >= 48 && myByte <= 57) || (myByte >= 65 && myByte <= 122)) && myLength < 15)
+	  {
         romName[myLength] = myByte;
         myLength++;
       }
@@ -495,7 +439,8 @@ void getCartInfo_GBA()
 
     // Calculate Checksum
     int calcChecksum = 0x00;
-    for (int n = 0xA0; n < 0xBD; n++) {
+    for (int n = 0xA0; n < 0xBD; n++)
+	{
       calcChecksum -= sdBuffer[n];
     }
     calcChecksum = (calcChecksum - 0x19) & 0xFF;
@@ -513,7 +458,6 @@ void getCartInfo_GBA()
     }
   }
 }
-
 
 
 // Dump ROM
@@ -542,7 +486,8 @@ void readROM_GBA()
   }
 
   // Read rom
-  for (int myAddress = 0; myAddress < cartSize; myAddress += 512) {
+  for (int myAddress = 0; myAddress < cartSize; myAddress += 512)
+  {
     // Blink led
     if (myAddress % 16384 == 0)
     {
@@ -593,7 +538,8 @@ boolean compare_checksum_GBA ()
 
     // Calculate Checksum
     int calcChecksum = 0x00;
-    for (int n = 0xA0; n < 0xBD; n++) {
+    for (int n = 0xA0; n < 0xBD; n++)
+	{
       calcChecksum -= sdBuffer[n];
     }
     calcChecksum = (calcChecksum - 0x19) & 0xFF;
@@ -615,19 +561,17 @@ boolean compare_checksum_GBA ()
     }
   }
   // Else show error
-  else {
+  else
+  {
     print_Error("Failed to open rom.", false);
     return 0;
   }
 }
 
 
-
-
-
-/******************************************
+/****************************
   GBA SRAM SAVE Functions
-*****************************************/
+****************************/
 void readSRAM_GBA(boolean browseFile, unsigned long sramSize, uint32_t pos) 
 {
   if (browseFile) 
@@ -664,8 +608,10 @@ void readSRAM_GBA(boolean browseFile, unsigned long sramSize, uint32_t pos)
 
   setAddrOutMode();
 
-  for (unsigned long currAddress = 0; currAddress < sramSize; currAddress += 512) {
-    for (int c = 0; c < 512; c++) {
+  for (unsigned long currAddress = 0; currAddress < sramSize; currAddress += 512)
+  {
+    for (int c = 0; c < 512; c++)
+	{
       // Read byte
       sdBuffer[c] = readByte_GBA(currAddress + c);
     }
@@ -695,7 +641,6 @@ void writeSRAM_GBA(boolean browseFile, unsigned long sramSize, uint32_t pos)
   FIL tf;
   if (f_open(&tf, filePath, FA_READ) == FR_OK) 
   {
-
     OledShowString(0,1,"SRAM writing...",8);
 
     // Seek to a new position in the file
@@ -722,7 +667,6 @@ void writeSRAM_GBA(boolean browseFile, unsigned long sramSize, uint32_t pos)
     f_close(&tf);
     showPersent(1,1,6,2);
     OledShowString(0,3,"finished!",8);
-
   }
   else 
   {
@@ -746,7 +690,8 @@ unsigned long verifySRAM_GBA(unsigned long sramSize, uint32_t pos)
     
     setAddrOutMode();
 
-    for (unsigned long currAddress = 0; currAddress < sramSize; currAddress += 512) {
+    for (unsigned long currAddress = 0; currAddress < sramSize; currAddress += 512)
+	{
       //fill sdBuffer
       UINT rdt;
       f_read(&tf, sdBuffer, 512, &rdt);
@@ -756,7 +701,8 @@ unsigned long verifySRAM_GBA(unsigned long sramSize, uint32_t pos)
         // Read byte
         byte bt = readByte_GBA(currAddress + c);
         //printf("\r\n%02x",bt);
-        if (bt != sdBuffer[c]) {
+        if (bt != sdBuffer[c])
+		{
           writeErrors++;
         }
       }
@@ -775,13 +721,10 @@ unsigned long verifySRAM_GBA(unsigned long sramSize, uint32_t pos)
 
 void TestSRAM_GBA(unsigned long sramSize)
 {
-  //
   OledClear();
-  //
   OledShowString(0,0,"Start SRAM testing...",8);
   OledShowString(0,1,"write:",8);
 
-  //
   setAddrOutMode();
   for (unsigned long currAddress = 0; currAddress < sramSize; currAddress++) 
   {
@@ -797,45 +740,49 @@ void TestSRAM_GBA(unsigned long sramSize)
 
   setAddrOutMode();
   uint32_t wErrors = 0;
-  for (unsigned long currAddress = 0; currAddress < sramSize; currAddress++) {
+  for (unsigned long currAddress = 0; currAddress < sramSize; currAddress++)
+  {
     // Read byte
     byte bt = currAddress & 0xFF;
     byte br = readByte_GBA(currAddress);
     //printf("\r\n%02x",bt);
-    if (bt != br) {
+    if (bt != br)
+	{
       wErrors++;
     }
     if(bt == 0xFF)showPersent(currAddress,sramSize,96,1);
   }
   showPersent(1,1,96,1);
   char msgbuf[64] = {0};
-  if(wErrors > 0){
-    //
+  if(wErrors > 0)
+  {
     sprintf(msgbuf,"Error %d bytes...",wErrors);
-  }else{
-    //
+  }
+  else
+  {
     strcpy(msgbuf,"RAM Test ok!");
   }
   OledShowString(0,2,msgbuf,8);
 }
 
 
-/******************************************
+/******************************
   GBA Eeprom SAVE Functions
-*****************************************/
-
-
+******************************/
 // Send address as bits to eeprom
 void send_GBA(word currAddr, word numBits) 
 {
-  for (word addrBit = numBits; addrBit > 0; addrBit--) {
+  for (word addrBit = numBits; addrBit > 0; addrBit--)
+  {
     // If you want the k-th bit of n, then do
     // (n & ( 1 << k )) >> k
-    if (((currAddr & ( 1 << (addrBit - 1))) >> (addrBit - 1))) {
+    if (((currAddr & ( 1 << (addrBit - 1))) >> (addrBit - 1)))
+	{
       // Set A0(PF0) to High
       gpio_bit_set(ADDR_1,GPIO_PIN_8);
     }
-    else {
+    else
+	{
       // Set A0(PF0) to Low
       gpio_bit_reset(ADDR_1,GPIO_PIN_8);
     }
@@ -886,17 +833,20 @@ void writeBlock_EEP(word startAddr, word eepSize)
     gpio_bit_set(CTRLGBA,GBA_WR);
 
     // Send either 6 or 14 bit address
-    if (eepSize == 4) {
+    if (eepSize == 4)
+	{
       send_GBA(currAddr, 6);
     }
-    else {
+    else
+	{
       send_GBA(currAddr, 14);
     }
 
     __asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
 
     // Send data
-    for (byte currByte = 0; currByte < 8; currByte++) {
+    for (byte currByte = 0; currByte < 8; currByte++)
+	{
       send_GBA(sdBuffer[(currAddr - startAddr) * 8 + currByte], 8);
     }
 
@@ -929,7 +879,8 @@ void writeBlock_EEP(word startAddr, word eepSize)
 }
 
 // Reads 512 bytes from eeprom
-void readBlock_EEP(word startAddress, word eepSize) {
+void readBlock_EEP(word startAddress, word eepSize)
+{
   // Setup
   // Set A0(PF0) to Output
   // Set A23/D7(PC7) to Output
@@ -962,10 +913,12 @@ void readBlock_EEP(word startAddress, word eepSize) {
     gpio_bit_set(CTRLGBA,GBA_WR);
 
     // Send either 6 or 14 bit address
-    if (eepSize == 4) {
+    if (eepSize == 4)
+	{
       send_GBA(currAddr, 6);
     }
-    else {
+    else
+	{
       send_GBA(currAddr, 14);
     }
 
@@ -1021,7 +974,8 @@ void readBlock_EEP(word startAddress, word eepSize) {
 
 
     // OR 8 bits into one byte for a total of 8 bytes
-    for (byte j = 0; j < 64; j += 8) {
+    for (byte j = 0; j < 64; j += 8)
+	{
       sdBuffer[((currAddr - startAddress) * 8) + (j / 8)] = tempBits[0 + j] << 7 | tempBits[1 + j] << 6 | tempBits[2 + j] << 5 | tempBits[3 + j] << 4 | tempBits[4 + j] << 3 | tempBits[5 + j] << 2 | tempBits[6 + j] << 1 | tempBits[7 + j];
     }
   }
@@ -1068,7 +1022,8 @@ unsigned long verifyEEP_GBA(word eepSize)
 
 
 // Write eeprom from file
-void writeEeprom_GBA(word eepSize) {
+void writeEeprom_GBA(word eepSize)
+{
   // Launch Filebrowser
   filePath[0] = '\0';
   fileBrowser("/","Select EEP file");
@@ -1107,7 +1062,8 @@ void writeEeprom_GBA(word eepSize) {
 }
 
 // Read eeprom to file
-void readEeprom_GBA(word eepSize) {
+void readEeprom_GBA(word eepSize)
+{
   // Get name, add extension and convert to char array for sd lib
   strcpy(fileName, romName);
   strcat(fileName, ".eep");
@@ -1153,10 +1109,9 @@ void readEeprom_GBA(word eepSize) {
 }
 
 
-
-/******************************************
+/****************************
   GBA FLASH SAVE Functions
-*****************************************/
+****************************/
 // SST 39VF512 Flashrom
 byte readByteFlash_GBA(unsigned long myAddress) 
 {
@@ -1180,10 +1135,8 @@ byte readByteFlash_GBA(unsigned long myAddress)
 
 void writeByteFlash_GBA(unsigned long myAddress, byte myData) 
 {
-  //
   GPIO_OCTL(ADDR_1) = (GPIO_OCTL(ADDR_1)&0xFFFF000F) + ((myAddress << 8)&0xFF00) + ((myAddress >> 8)&0xF0);
   GPIO_OCTL(ADDR_2) = (GPIO_OCTL(ADDR_2)&0xFFFFF0FF) + (myAddress & 0x0F00);
-
   GPIO_OCTL(ADDR_3) = (GPIO_OCTL(ADDR_3)&0xFFFF00FF) + (myData<<8);
 
   // Arduino running at 16Mhz -> one nop = 62.5ns
@@ -1237,7 +1190,6 @@ void eraseFLASH_GBA()
   // Wait until all is erased
   delay(500);
 }
-
 
 
 void idFlash_GBA() 
@@ -1312,6 +1264,7 @@ void resetFLASH_GBA()
   delay(100);
 }
 
+
 boolean blankcheckFLASH_GBA (unsigned long flashSize) 
 {
   // Output a HIGH signal on CS_ROM(PH3) WE_FLASH(PH5)
@@ -1338,15 +1291,19 @@ boolean blankcheckFLASH_GBA (unsigned long flashSize)
   // Output a LOW signal on OE_FLASH(PH6)
   gpio_bit_reset(CTRLGBA,GBA_RD);
 
-  for (unsigned long currAddress = 0; currAddress < flashSize; currAddress += 512) {
+  for (unsigned long currAddress = 0; currAddress < flashSize; currAddress += 512)
+  {
     // Fill buffer
-    for (int c = 0; c < 512; c++) {
+    for (int c = 0; c < 512; c++)
+	{
       // Read byte
       sdBuffer[c] = readByteFlash_GBA(currAddress + c);
     }
     // Check buffer
-    for (unsigned long currByte = 0; currByte < 512; currByte++) {
-      if (sdBuffer[currByte] != 0xFF) {
+    for (unsigned long currByte = 0; currByte < 512; currByte++)
+	{
+      if (sdBuffer[currByte] != 0xFF)
+	  {
         currByte = 512;
         currAddress = flashSize;
         blank = 0;
@@ -1457,7 +1414,6 @@ void readFLASH_GBA (boolean browseFile, unsigned long flashSize, uint32_t pos)
     UINT wdt;
     f_write(&tf, sdBuffer, 512, &wdt);
 
-
   }
   showPersent(1,1,20,3);
   f_close(&tf);
@@ -1528,7 +1484,8 @@ void writeFLASH_GBA (boolean browseFile, unsigned long flashSize, uint32_t pos)
       UINT rdt;
       f_read(&tf, sdBuffer, 512, &rdt);
 
-      for (int c = 0; c < 512; c++) {
+      for (int c = 0; c < 512; c++)
+	  {
         // Write command sequence
         writeByteFlash_GBA(0x5555, 0xaa);
         writeByteFlash_GBA(0x2aaa, 0x55);
@@ -1594,9 +1551,11 @@ void verifyFLASH_GBA(unsigned long flashSize, uint32_t pos)
     UINT rdt;
     f_read(&tf, sdBuffer, 512, &rdt);
 
-    for (int c = 0; c < 512; c++) {
+    for (int c = 0; c < 512; c++)
+	{
       // Read byte
-      if (sdBuffer[c] != readByteFlash_GBA(currAddress + c)) {
+      if (sdBuffer[c] != readByteFlash_GBA(currAddress + c))
+	  {
         wrError++;
       }
     }
@@ -1619,12 +1578,9 @@ void verifyFLASH_GBA(unsigned long flashSize, uint32_t pos)
 }
 
 
-
-
-/******************************************
+/********************************************************************
   GBA REPRO Functions (32MB Intel 4000L0YBQ0 and 16MB MX29GL128E)
-
-*****************************************/
+********************************************************************/
 unsigned long fileSize;
 
 // Reset to read mode
@@ -1648,12 +1604,14 @@ void resetSpansion_GBA()
   delay(1);
 }
 
-boolean sectorCheckMX29GL128E_GBA() {
+boolean sectorCheckMX29GL128E_GBA()
+{
   boolean sectorProtect = 0;
   writeWord_GAB(0xAAA, 0xAA);
   writeWord_GAB(0x555, 0x55);
   writeWord_GAB(0xAAA, 0x90);
-  for (unsigned long currSector = 0x0; currSector < 0xFFFFFF; currSector += 0x20000) {
+  for (unsigned long currSector = 0x0; currSector < 0xFFFFFF; currSector += 0x20000)
+  {
     if (readWord_GAB(currSector + 0x04) != 0x0)
       sectorProtect = 1;
   }
@@ -1678,7 +1636,8 @@ void idFlashrom_GBA()
   {
     cartSize = 0x2000000;
   }
-  else {
+  else
+  {
     // Send swapped MX29GL128E/MSP55LV128 ID command to flashrom
     writeWord_GAB(0xAAA, 0xAA);
     writeWord_GAB(0x555, 0x55);
@@ -1692,7 +1651,8 @@ void idFlashrom_GBA()
     sprintf(flashid, "%02X%02X", ((readWord_GAB(0x2) >> 8) & 0xFF), (readWord_GAB(0x2) & 0xFF));
 
     // MX29GL128E or MSP55LV128
-    if (strcmp(flashid, "227E") == 0 || strcmp(flashid, "227A") == 0) {
+    if (strcmp(flashid, "227E") == 0 || strcmp(flashid, "227A") == 0)
+	{
       // MX is 0xC2 and MSP is 0x4 or 0x1
       romType = (readWord_GAB(0x0) & 0xFF);
       cartSize = 0x1000000;
@@ -1718,21 +1678,25 @@ void idFlashrom_GBA()
       sprintf(flashid, "%02X%02X", ((readWord_GBA(0x2) >> 8) & 0xFF), (readWord_GBA(0x2) & 0xFF));
       romType = (readWord_GBA(0x0) & 0xFF);
       // Spansion
-      if(manufacturerid == 0x1) {
+      if(manufacturerid == 0x1)
+	  {
         // S29GL128N
-        if(strcmp(flashid, "217E") == 0 && romType == 0x1) {
+        if(strcmp(flashid, "217E") == 0 && romType == 0x1)
+		{
           cartSize = 0x8000000;
           resetSpansion_GBA();
           return;
         }
         // S29GL256N
-        if(strcmp(flashid, "227E") == 0 && romType == 0x1) {
+        if(strcmp(flashid, "227E") == 0 && romType == 0x1)
+		{
           cartSize = 0x10000000;
           resetSpansion_GBA();
           return;
         }
         // S29GL512N
-        if(strcmp(flashid, "237E") == 0 && romType == 0x1) {
+        if(strcmp(flashid, "237E") == 0 && romType == 0x1)
+		{
           cartSize = 0x20000000;
           resetSpansion_GBA();
           return;
@@ -1756,7 +1720,8 @@ boolean blankcheckFlashrom_GBA()
     // Blink led
     LED_RED_BLINK;
 
-    for (unsigned long currByte = 0; currByte < 0x20000; currByte += 2) {
+    for (unsigned long currByte = 0; currByte < 0x20000; currByte += 2)
+	{
       if (readWord_GBA(currSector + currByte) != 0xFFFF) 
       {
         return 0;
@@ -1774,7 +1739,8 @@ void eraseIntel4000_GBA()
     lastBlock = fileSize;
 
   // Erase 4 blocks with 16kwords each
-  for (unsigned long currBlock = 0x0; currBlock < 0x1FFFF; currBlock += 0x8000) {
+  for (unsigned long currBlock = 0x0; currBlock < 0x1FFFF; currBlock += 0x8000)
+  {
     // Unlock Block
     writeWord_GBA(currBlock, 0x60);
     writeWord_GBA(currBlock, 0xD0);
@@ -1785,7 +1751,8 @@ void eraseIntel4000_GBA()
 
     // Read the status register
     word statusReg = readWord_GBA(currBlock);
-    while ((statusReg | 0xFF7F) != 0xFFFF) {
+    while ((statusReg | 0xFF7F) != 0xFFFF)
+	{
       statusReg = readWord_GBA(currBlock);
     }
 
@@ -1806,7 +1773,8 @@ void eraseIntel4000_GBA()
 
     // Read the status register
     word statusReg = readWord_GBA(currBlock);
-    while ((statusReg | 0xFF7F) != 0xFFFF) {
+    while ((statusReg | 0xFF7F) != 0xFFFF)
+	{
       statusReg = readWord_GBA(currBlock);
     }
     // Blink led
@@ -1817,9 +1785,11 @@ void eraseIntel4000_GBA()
   showPersent(1,1,70,2);
 
   // Erase the second chip
-  if (fileSize > 0x1000000) {
+  if (fileSize > 0x1000000)
+  {
     // 126 blocks with 64kwords each
-    for (unsigned long currBlock = 0x1000000; currBlock < 0x1FDFFFF; currBlock += 0x1FFFF) {
+    for (unsigned long currBlock = 0x1000000; currBlock < 0x1FDFFFF; currBlock += 0x1FFFF)
+	{
       // Unlock Block
       writeWord_GBA(currBlock, 0x60);
       writeWord_GBA(currBlock, 0xD0);
@@ -1830,7 +1800,8 @@ void eraseIntel4000_GBA()
 
       // Read the status register
       word statusReg = readWord_GBA(currBlock);
-      while ((statusReg | 0xFF7F) != 0xFFFF) {
+      while ((statusReg | 0xFF7F) != 0xFFFF)
+	  {
         statusReg = readWord_GBA(currBlock);
       }
       // Blink led
@@ -1838,7 +1809,8 @@ void eraseIntel4000_GBA()
     }
 
     // 4 blocks with 16kword each
-    for (unsigned long currBlock = 0x1FE0000; currBlock < 0x1FFFFFF; currBlock += 0x8000) {
+    for (unsigned long currBlock = 0x1FE0000; currBlock < 0x1FFFFFF; currBlock += 0x8000)
+	{
       // Unlock Block
       writeWord_GBA(currBlock, 0x60);
       writeWord_GBA(currBlock, 0xD0);
@@ -1849,7 +1821,8 @@ void eraseIntel4000_GBA()
 
       // Read the status register
       word statusReg = readWord_GBA(currBlock);
-      while ((statusReg | 0xFF7F) != 0xFFFF) {
+      while ((statusReg | 0xFF7F) != 0xFFFF)
+	  {
         statusReg = readWord_GBA(currBlock);
       }
       // Blink led
@@ -1866,7 +1839,8 @@ void eraseIntel4400_GBA()
     lastBlock = fileSize;
 
   // Erase 4 blocks with 16kwords each
-  for (unsigned long currBlock = 0x0; currBlock < 0x1FFFF; currBlock += 0x8000) {
+  for (unsigned long currBlock = 0x0; currBlock < 0x1FFFF; currBlock += 0x8000)
+  {
     // Unlock Block
     writeWord_GBA(currBlock, 0x60);
     writeWord_GBA(currBlock, 0xD0);
@@ -1877,7 +1851,8 @@ void eraseIntel4400_GBA()
 
     // Read the status register
     word statusReg = readWord_GBA(currBlock);
-    while ((statusReg | 0xFF7F) != 0xFFFF) {
+    while ((statusReg | 0xFF7F) != 0xFFFF)
+	{
       statusReg = readWord_GBA(currBlock);
     }
 
@@ -1898,7 +1873,8 @@ void eraseIntel4400_GBA()
 
     // Read the status register
     word statusReg = readWord_GBA(currBlock);
-    while ((statusReg | 0xFF7F) != 0xFFFF) {
+    while ((statusReg | 0xFF7F) != 0xFFFF)
+	{
       statusReg = readWord_GBA(currBlock);
     }
     // Blink led
@@ -1909,9 +1885,11 @@ void eraseIntel4400_GBA()
   showPersent(1,1,70,2);
 
   /* No need to erase the second chip as max rom size is 32MB
-    if (fileSize > 0x2000000) {
+    if (fileSize > 0x2000000)
+	{
     // 255 blocks with 64kwords each
-    for (unsigned long currBlock = 0x2000000; currBlock < 0x3FDFFFF; currBlock += 0x1FFFF) {
+    for (unsigned long currBlock = 0x2000000; currBlock < 0x3FDFFFF; currBlock += 0x1FFFF)
+	{
       // Unlock Block
       writeWord_GBA(currBlock, 0x60);
       writeWord_GBA(currBlock, 0xD0);
@@ -1922,7 +1900,8 @@ void eraseIntel4400_GBA()
 
       // Read the status register
       word statusReg = readWord_GBA(currBlock);
-      while ((statusReg | 0xFF7F) != 0xFFFF) {
+      while ((statusReg | 0xFF7F) != 0xFFFF)
+	  {
         statusReg = readWord_GBA(currBlock);
       }
       // Blink led
@@ -1930,7 +1909,8 @@ void eraseIntel4400_GBA()
     }
 
     // 4 blocks with 16kword each
-    for (unsigned long currBlock = 0x3FE0000; currBlock < 0x3FFFFFF; currBlock += 0x8000) {
+    for (unsigned long currBlock = 0x3FE0000; currBlock < 0x3FFFFFF; currBlock += 0x8000)
+	{
       // Unlock Block
       writeWord_GBA(currBlock, 0x60);
       writeWord_GBA(currBlock, 0xD0);
@@ -1941,7 +1921,8 @@ void eraseIntel4400_GBA()
 
       // Read the status register
       word statusReg = readWord_GBA(currBlock);
-      while ((statusReg | 0xFF7F) != 0xFFFF) {
+      while ((statusReg | 0xFF7F) != 0xFFFF)
+	  {
         statusReg = readWord_GBA(currBlock);
       }
       // Blink led
@@ -1956,7 +1937,8 @@ void sectorEraseMSP55LV128_GBA(unsigned long lastSector)
 {
   // Erase 256 sectors with 64kbytes each
   unsigned long currSector;
-  for (currSector = 0x0; currSector < lastSector; currSector += 0x10000) {
+  for (currSector = 0x0; currSector < lastSector; currSector += 0x10000)
+  {
     writeWord_GAB(0xAAA, 0xAA);
     delayMicroseconds(deley_us_lv128);   
     writeWord_GAB(0x555, 0x55);
@@ -1976,8 +1958,8 @@ void sectorEraseMSP55LV128_GBA(unsigned long lastSector)
 
     // Read the status register
     word statusReg = readWord_GAB(currSector);
-    while ((statusReg | 0xFF7F) != 0xFFFF) {
-    
+    while ((statusReg | 0xFF7F) != 0xFFFF)
+	{
       delayMicroseconds(deley_us_lv128);        
       statusReg = readWord_GAB(currSector);
     }
@@ -1990,12 +1972,12 @@ void sectorEraseMSP55LV128_GBA(unsigned long lastSector)
 }
 
 
-
 void sectorEraseTest_GBA(unsigned long lastSector) 
 {
   // Erase 256 sectors with 64kbytes each
   unsigned long currSector;
-  for (currSector = 0x0; currSector < lastSector; currSector += 0x10000) {
+  for (currSector = 0x0; currSector < lastSector; currSector += 0x10000)
+  {
     writeWord_GAB(0xAAA, 0xAA);
     delayMicroseconds(deley_us_lv128);   
     writeWord_GAB(0x555, 0x55);
@@ -2015,8 +1997,8 @@ void sectorEraseTest_GBA(unsigned long lastSector)
 
     // Read the status register
     word statusReg = readWord_GAB(currSector);
-    while ((statusReg | 0xFF7F) != 0xFFFF) {
-    
+    while ((statusReg | 0xFF7F) != 0xFFFF)
+	{
       delayMicroseconds(deley_us_lv128);        
       statusReg = readWord_GAB(currSector);
     }
@@ -2029,12 +2011,12 @@ void sectorEraseTest_GBA(unsigned long lastSector)
 }
 
 
-
 void sectorEraseMX29GL128E_GBA(unsigned long lastSector) 
 {
   // Erase 128 sectors with 128kbytes each
   unsigned long currSector;
-  for (currSector = 0x0; currSector < lastSector; currSector += 0x20000) {
+  for (currSector = 0x0; currSector < lastSector; currSector += 0x20000)
+  {
     writeWord_GAB(0xAAA, 0xAA);
     writeWord_GAB(0x555, 0x55);
     writeWord_GAB(0xAAA, 0x80);
@@ -2046,7 +2028,8 @@ void sectorEraseMX29GL128E_GBA(unsigned long lastSector)
     showPersent(currSector,lastSector,68,2);
     // Read the status register
     word statusReg = readWord_GAB(currSector);
-    while ((statusReg | 0xFF7F) != 0xFFFF) {
+    while ((statusReg | 0xFF7F) != 0xFFFF)
+	{
       statusReg = readWord_GAB(currSector);
     }
 
@@ -2060,7 +2043,8 @@ void sectorEraseSpansion_GBA(unsigned long lastSector)
 {
   // Erase 128 sectors with 128kbytes each
   unsigned long currSector;
-  for (currSector = 0x0; currSector < lastSector; currSector += 0x20000) {
+  for (currSector = 0x0; currSector < lastSector; currSector += 0x20000)
+  {
     writeWord_GBA(0xAAA, 0xAA);
     writeWord_GBA(0x555, 0x55);
     writeWord_GBA(0xAAA, 0x80);
@@ -2072,18 +2056,21 @@ void sectorEraseSpansion_GBA(unsigned long lastSector)
     showPersent(currSector,lastSector,68,2);
     // Read the status register
     word statusReg = readWord_GBA(currSector);
-    while ((statusReg | 0xFF7F) != 0xFFFF) {
+    while ((statusReg | 0xFF7F) != 0xFFFF)
+	{
       statusReg = readWord_GBA(currSector);
     }
     showPersent(1,1,68,2);
   }
 }
 
+
 void sectorEraseMX29GL128E_GBA_1(unsigned long lastSector) 
 {
   // Erase 128 sectors with 128kbytes each
   unsigned long currSector;
-  for (currSector = 0x0; currSector < lastSector; currSector += 0x10000) {
+  for (currSector = 0x0; currSector < lastSector; currSector += 0x10000)
+  {
     writeWord_GAB(0xAAA, 0xAA);
     writeWord_GAB(0x555, 0x55);
     writeWord_GAB(0xAAA, 0x80);
@@ -2095,12 +2082,14 @@ void sectorEraseMX29GL128E_GBA_1(unsigned long lastSector)
     showPersent(currSector,lastSector,68,2);
     // Read the status register
     word statusReg = readWord_GAB(currSector);
-    while ((statusReg | 0xFF7F) != 0xFFFF) {
+    while ((statusReg | 0xFF7F) != 0xFFFF)
+	{
       statusReg = readWord_GAB(currSector);
     }
   }
   showPersent(1,1,68,2);
 }
+
 
 void writeIntel4000_GBA(FIL * ptf) 
 {
@@ -2117,7 +2106,8 @@ void writeIntel4000_GBA(FIL * ptf)
       f_read(ptf, sdBuffer, 512, &rdt);
 
       // Write 32 words at a time
-      for (int currWriteBuffer = 0; currWriteBuffer < 512; currWriteBuffer += 64) {
+      for (int currWriteBuffer = 0; currWriteBuffer < 512; currWriteBuffer += 64)
+	  {
         // Unlock Block
         writeWord_GBA(currBlock + currSdBuffer + currWriteBuffer, 0x60);
         writeWord_GBA(currBlock + currSdBuffer + currWriteBuffer, 0xD0);
@@ -2127,7 +2117,8 @@ void writeIntel4000_GBA(FIL * ptf)
 
         // Check Status register
         word statusReg = readWord_GBA(currBlock + currSdBuffer + currWriteBuffer);
-        while ((statusReg | 0xFF7F) != 0xFFFF) {
+        while ((statusReg | 0xFF7F) != 0xFFFF)
+		{
           statusReg = readWord_GBA(currBlock + currSdBuffer + currWriteBuffer);
         }
 
@@ -2135,7 +2126,8 @@ void writeIntel4000_GBA(FIL * ptf)
         writeWord_GBA(currBlock + currSdBuffer + currWriteBuffer, 0x1F);
 
         // Write buffer
-        for (byte currByte = 0; currByte < 64; currByte += 2) {
+        for (byte currByte = 0; currByte < 64; currByte += 2)
+		{
           // Join two bytes into one word
           word currWord = ( ( sdBuffer[currWriteBuffer + currByte + 1] & 0xFF ) << 8 ) | ( sdBuffer[currWriteBuffer + currByte] & 0xFF );
           writeWord_GBA(currBlock + currSdBuffer + currWriteBuffer + currByte, currWord);
@@ -2146,7 +2138,8 @@ void writeIntel4000_GBA(FIL * ptf)
 
         // Read the status register at last written address
         statusReg = readWord_GBA(currBlock + currSdBuffer + currWriteBuffer + 62);
-        while ((statusReg | 0xFF7F) != 0xFFFF) {
+        while ((statusReg | 0xFF7F) != 0xFFFF)
+		{
           delay_GBA();
           statusReg = readWord_GBA(currBlock + currSdBuffer + currWriteBuffer + 62);
         }
@@ -2157,13 +2150,8 @@ void writeIntel4000_GBA(FIL * ptf)
 }
 
 
-
-
-
-
 void writeMSP55LV128_GBA(FIL * ptf) 
 {
-
   for (unsigned long currSector = 0; currSector < fileSize; currSector += 0x20000) 
   {
     // Blink led
@@ -2174,13 +2162,17 @@ void writeMSP55LV128_GBA(FIL * ptf)
     {
       // Fill SD buffer
       UINT rdt;
-      //if(f_read(ptf, sdBuffer, 512, &rdt)!= FR_OK){printf("\nF_read err!");};
+      /*
+	  if(f_read(ptf, sdBuffer, 512, &rdt)!= FR_OK)
+	  {
+		printf("\nF_read err!");
+	  }
+	  */
       f_read(ptf, sdBuffer, 512, &rdt);
        
       // Write 16 words at a time
       for (int currWriteBuffer = 0; currWriteBuffer < 512; currWriteBuffer += 32) 
       {
-
         _reProgram:
         // Write Buffer command
         writeWord_GAB(0xAAA, 0xAA);
@@ -2221,7 +2213,6 @@ void writeMSP55LV128_GBA(FIL * ptf)
             
             if((statusReg | 0xFF7F) != (currWord | 0xFF7F))
             {
-              //
               if(statusReg&0x20)
               {
                 //write buffer abort reset
@@ -2258,7 +2249,6 @@ void writeMSP55LV128_GBA(FIL * ptf)
           }
           else
           {
-            //
             statusReg = readWord_GAB(currSector + currSdBuffer + currWriteBuffer + 30);
           }
         }
@@ -2268,7 +2258,6 @@ void writeMSP55LV128_GBA(FIL * ptf)
   }
   showPersent(1,1,68,3);
 }
-
 
 
 void writeMX29GL128E_GBA(FIL * ptf) 
@@ -2286,7 +2275,8 @@ void writeMX29GL128E_GBA(FIL * ptf)
       f_read(ptf, sdBuffer, 512, &rdt);
 
       // Write 32 words at a time
-      for (int currWriteBuffer = 0; currWriteBuffer < 512; currWriteBuffer += 32) {
+      for (int currWriteBuffer = 0; currWriteBuffer < 512; currWriteBuffer += 32)
+	  {
         _reProgram:
         // Write Buffer command
         writeWord_GAB(0xAAA, 0xAA);
@@ -2314,7 +2304,8 @@ void writeMX29GL128E_GBA(FIL * ptf)
         // Read the status register
         word statusReg = readWord_GAB(currSector + currSdBuffer + currWriteBuffer + 30);
 
-        while ((statusReg | 0xFF7F) != (currWord | 0xFF7F)) {
+        while ((statusReg | 0xFF7F) != (currWord | 0xFF7F))
+		{
           delayMicroseconds(deley_us_lv128);
           if(statusReg&0x22)
           {
@@ -2323,7 +2314,6 @@ void writeMX29GL128E_GBA(FIL * ptf)
             
             if((statusReg | 0xFF7F) != (currWord | 0xFF7F))
             {
-              //
               if(statusReg&0x20)
               {
                 //write buffer abort reset
@@ -2360,7 +2350,6 @@ void writeMX29GL128E_GBA(FIL * ptf)
           }
           else
           {
-            //
             statusReg = readWord_GAB(currSector + currSdBuffer + currWriteBuffer + 30);
           }
         }
@@ -2386,8 +2375,8 @@ void writeMX29GL128E_GBA_1(FIL * ptf)
       f_read(ptf, sdBuffer, 512, &rdt);
 
       // Write 32 words at a time
-      for (int currWriteBuffer = 0; currWriteBuffer < 512; currWriteBuffer += 2) {
-
+      for (int currWriteBuffer = 0; currWriteBuffer < 512; currWriteBuffer += 2)
+	  {
         word currWord = *(word *)(sdBuffer + currWriteBuffer);
         // Write Buffer command
         writeWord_GAB(0xAAA, 0xAA);
@@ -2399,7 +2388,8 @@ void writeMX29GL128E_GBA_1(FIL * ptf)
         // Read the status register
         word statusReg = readWord_GAB(currSector + currSdBuffer + currWriteBuffer);
 
-        while ((statusReg | 0xFF7F) != (currWord | 0xFF7F)) {
+        while ((statusReg | 0xFF7F) != (currWord | 0xFF7F))
+		{
           delay_GBA();
           statusReg = readWord_GAB(currSector + currSdBuffer + currWriteBuffer);
         }
@@ -2426,7 +2416,8 @@ void writeSpansion_GBA(FIL * ptf)
       f_read(ptf, sdBuffer, 512, &rdt);
 
       // Write 16 words at a time
-      for (int currWriteBuffer = 0; currWriteBuffer < 512; currWriteBuffer += 32) {
+      for (int currWriteBuffer = 0; currWriteBuffer < 512; currWriteBuffer += 32)
+	  {
         _reProgram:
         // Write Buffer command
         writeWord_GBA(0xAAA, 0xAA);
@@ -2459,7 +2450,8 @@ void writeSpansion_GBA(FIL * ptf)
         // Read the status register
         word statusReg = readWord_GBA(currSector + currSdBuffer + currWriteBuffer + 30);
 
-        while ((statusReg | 0xFF7F) != (currWord | 0xFF7F)) {
+        while ((statusReg | 0xFF7F) != (currWord | 0xFF7F))
+		{
           delayMicroseconds(deley_us_lv128);
           if(statusReg&0x22)
           {
@@ -2468,7 +2460,6 @@ void writeSpansion_GBA(FIL * ptf)
             
             if((statusReg | 0xFF7F) != (currWord | 0xFF7F))
             {
-              //
               if(statusReg&0x20)
               {
                 //write buffer abort reset
@@ -2505,7 +2496,6 @@ void writeSpansion_GBA(FIL * ptf)
           }
           else
           {
-            //
             statusReg = readWord_GBA(currSector + currSdBuffer + currWriteBuffer + 30);
           }
         }
@@ -2543,7 +2533,8 @@ boolean verifyFlashrom_GBA()
           delayMicroseconds(1);
 
           // Compare both
-          if (readWord_GBA(currSector + currSdBuffer + currByte * 2) != currWord) {
+          if (readWord_GBA(currSector + currSdBuffer + currByte * 2) != currWord)
+		  {
             writeErrors++;
             f_close(&tf);
             return 0;
@@ -2555,10 +2546,12 @@ boolean verifyFlashrom_GBA()
     showPersent(1,1,82,6);
     // Close the file:
     f_close(&tf);
-    if (writeErrors == 0) {
+    if (writeErrors == 0)
+	{
       return 1;
     }
-    else {
+    else
+	{
       return 0;
     }
   }
@@ -2595,7 +2588,8 @@ boolean verifyFlashrom_GBA_new()
         {
           // Join two bytes into one word
           word currWord =  ((word *)sdBuffer)[i];
-          if (tbuf[i] != currWord) {
+          if (tbuf[i] != currWord)
+		  {
             writeErrors++;
             f_close(&tf);
             return 0;
@@ -2607,10 +2601,12 @@ boolean verifyFlashrom_GBA_new()
     showPersent(1,1,82,5);
     // Close the file:
     f_close(&tf);
-    if (writeErrors == 0) {
+    if (writeErrors == 0)
+	{
       return 1;
     }
-    else {
+    else
+	{
       return 0;
     }
   }
@@ -2620,7 +2616,6 @@ boolean verifyFlashrom_GBA_new()
     return true;
   }
 }
-
 
 
 boolean verifyFlashromTest_GBA(uint32_t testSize) 
@@ -2638,7 +2633,8 @@ boolean verifyFlashromTest_GBA(uint32_t testSize)
       for (int i = 0; i < (512>>1); i++) 
       {
         // Join two bytes into one word
-        if (tbuf[i] != (wWord & 0x7FFF)) {
+        if (tbuf[i] != (wWord & 0x7FFF))
+		{
           wErrors++;
           return 0;
         }
@@ -2647,14 +2643,15 @@ boolean verifyFlashromTest_GBA(uint32_t testSize)
     }
   }
   showPersent(1,1,96,6);
-  if (wErrors == 0) {
+  if (wErrors == 0)
+  {
     return 1;
   }
-  else {
+  else
+  {
     return 0;
   }
 }
-
 
 
 void flashRepro_GBA() 
@@ -2674,20 +2671,25 @@ void flashRepro_GBA()
     if (strcmp(flashid, "217E") == 0 ||strcmp(flashid, "227E") == 0 || strcmp(flashid, "237E") == 0 || strcmp(flashid, "227A") == 0) 
     {
       // Spansion
-      if(manufacturerid == 0x1) {
+      if(manufacturerid == 0x1)
+	  {
         // S29GL256N
-        if (strcmp(flashid, "227E") == 0 && romType == 0x1) {
+        if (strcmp(flashid, "227E") == 0 && romType == 0x1)
+		{
           strcat(tmsg, "\n Spansion\n S29GL256N");
         }
         // S29GL128N
-        else if (strcmp(flashid, "217E") == 0 && romType == 0x1) {
+        else if (strcmp(flashid, "217E") == 0 && romType == 0x1)
+		{
           strcat(tmsg, "\n Spansion\n S29GL128N");
         }
         // S29GL512N
-        else if (strcmp(flashid, "217E") == 0 && romType == 0x1) {
+        else if (strcmp(flashid, "217E") == 0 && romType == 0x1)
+		{
           strcat(tmsg, "\n Spansion\n S29GL512N");
         }
-        else {
+        else
+		{
           sprintf(tmsg,"%s\n RomType: 0x%04x",tmsg,romType);
           OledShowString(0,0,tmsg,8);
           print_Error("Unknown manufacturer", true);
@@ -2696,19 +2698,24 @@ void flashRepro_GBA()
       else 
       {
         // MX is 0xC2 and MSP55LV128 is 0x4 and MSP55LV128N 0x1
-        if (romType == 0xC2) {
+        if (romType == 0xC2)
+		{
           strcat(tmsg,"\n Macronix\n MX29GL128E");
         }
-        else if ((romType == 0x1) || (romType == 0x4)) {
+        else if ((romType == 0x1) || (romType == 0x4))
+		{
           strcat(tmsg,"\n Fujitsu\n MSP55LV128N");
         }
-        else if (romType == 0x89) {
+        else if (romType == 0x89)
+		{
           strcat(tmsg,"\n Intel\n PC28F256M29");
         }
-        else if (romType == 0x20) {
+        else if (romType == 0x20)
+		{
           strcat(tmsg,"\n ST\n M29W128GH");
         }
-        else {
+        else
+		{
           sprintf(tmsg,"%s\n RomType: 0x%04x",tmsg,romType);
           OledShowString(0,0,tmsg,8);
           print_Error("Unknown manufacturer", true);
@@ -2716,11 +2723,13 @@ void flashRepro_GBA()
       }
     }
     // Intel 4000L0YBQ0
-    else if (strcmp(flashid, "8802") == 0) {
+    else if (strcmp(flashid, "8802") == 0)
+	{
       strcat(tmsg,"\n Intel\n 4000L0YBQ0");
     }
     // Intel 4400L0ZDQ0
-    else if (strcmp(flashid, "8816") == 0) {
+    else if (strcmp(flashid, "8816") == 0)
+	{
       strcat(tmsg,"\n Intel\n 4400L0ZDQ0");
     }
 
@@ -2743,43 +2752,56 @@ void flashRepro_GBA()
       OledShowString(0,0,tmsg,8);
 
       // Erase needed sectors
-      if (strcmp(flashid, "8802") == 0) {
+      if (strcmp(flashid, "8802") == 0)
+	  {
         OledShowString(10,2,"Erasing...",8);
 
         eraseIntel4000_GBA();
         resetIntel_GBA(0x200000);
       }
-      else if (strcmp(flashid, "8816") == 0) {
+      else if (strcmp(flashid, "8816") == 0)
+	  {
         OledShowString(10,2,"Erasing...",8);
         eraseIntel4400_GBA();
         resetIntel_GBA(0x200000);
       }
-      else if (strcmp(flashid, "227E") == 0 || strcmp(flashid, "227A") == 0) {
-        //if (sectorCheckMX29GL128E_GBA()) {
-        //print_Error(F("Sector Protected"), true);
-        //}
-        //else {
+      else if (strcmp(flashid, "227E") == 0 || strcmp(flashid, "227A") == 0)
+	  {
+        /*if (sectorCheckMX29GL128E_GBA())
+		  {
+			print_Error(F("Sector Protected"), true);
+		  }
+          else
+		  {
+		  */
+
+
         OledShowString(10,2,"Erasing...",8);
         // Spansion
-        if(manufacturerid == 0x1) {
+        if(manufacturerid == 0x1)
+		{
           // S29GLXXXN
-          if((strcmp(flashid, "227E") == 0 || strcmp(flashid, "217E") == 0 || strcmp(flashid, "237E") == 0) && romType == 0x1) {
+          if((strcmp(flashid, "227E") == 0 || strcmp(flashid, "217E") == 0 || strcmp(flashid, "237E") == 0) && romType == 0x1)
+		  {
             sectorEraseSpansion_GBA(fileSize - 1);
           }
         }
         else
         {
-          if ((romType == 0xC2) || (romType == 0x89)) {
+          if ((romType == 0xC2) || (romType == 0x89))
+		  {
             //MX29GL128E
             //PC28F256M29 (0x89)
             
             sectorEraseMX29GL128E_GBA(fileSize - 1);
             
           }
-          else if (romType == 0x20){
+          else if (romType == 0x20)
+		  {
             sectorEraseMX29GL128E_GBA_1(fileSize - 1);
           }
-          else if ((romType == 0x1) || (romType == 0x4)) {
+          else if ((romType == 0x1) || (romType == 0x4))
+		  {
             //MSP55LV128(N)
             //#ifndef TEST_MY_CART
             sectorEraseMSP55LV128_GBA(fileSize - 1);
@@ -2789,14 +2811,16 @@ void flashRepro_GBA()
         //}
       }
       
-      // Skip blankcheck to save time
       
-        //if (blankcheckFlashrom_GBA() == false) {
-        //OledClear();
-          //OledShowString(10,2,"Checking Err!",8);
-          //f_close(&tf);
-          //print_Error("cart not empty!",true);
-        //}
+    /*  //Skip blankcheck to save time
+		if (blankcheckFlashrom_GBA() == false)
+		{
+			OledClear();
+			OledShowString(10,2,"Checking Err!",8);
+			f_close(&tf);
+			print_Error("cart not empty!",true);
+		}
+	 */
 
       //Write flashrom
       OledShowString(10,3,"Writing...",8);
@@ -2813,24 +2837,28 @@ void flashRepro_GBA()
         if(manufacturerid == 0x1)
         {
           // S29GLXXXN
-          if((strcmp(flashid, "227E") == 0 || strcmp(flashid, "217E") == 0 || strcmp(flashid, "237E") == 0) && romType == 0x1) {
+          if((strcmp(flashid, "227E") == 0 || strcmp(flashid, "217E") == 0 || strcmp(flashid, "237E") == 0) && romType == 0x1)
+		  {
             OledShowString(0,1,"S29GLXXXN",8);
             writeSpansion_GBA(&tf);
           }
         }
         else 
         {
-          if ((romType == 0xC2) || (romType == 0x89)) {
+          if ((romType == 0xC2) || (romType == 0x89))
+		  {
             //MX29GL128E (0xC2)
             //PC28F256M29 (0x89)
             OledShowString(0,1,"29 GL",8);
             writeMX29GL128E_GBA(&tf);
           }
-          else if (romType == 0x20){
+          else if (romType == 0x20)
+		  {
             OledShowString(0,1,"ST M29",8);
             writeMX29GL128E_GBA_1(&tf);
           }
-          else if ((romType == 0x1) || (romType == 0x4)) {
+          else if ((romType == 0x1) || (romType == 0x4))
+		  {
             //MSP55LV128(N)
             OledShowString(0,1,"MSP55LV",8);
             writeMSP55LV128_GBA(&tf);
@@ -2874,7 +2902,6 @@ void flashRepro_GBA()
       }
 
 
-
       if (verifyFlashrom_GBA_new() == 1) 
       {
         //OledShowString(74,6,"OK!",8);
@@ -2886,7 +2913,8 @@ void flashRepro_GBA()
       }
       /* Skipped blankcheck
         }
-        else {
+        else
+		{
         print_Error(F("failed"), true);
         }
       */
@@ -2896,7 +2924,8 @@ void flashRepro_GBA()
       sprintf(tmsg,"Use Time: %d(s)",use_tick);
       OledShowString(10,6,tmsg,8);
     }
-    else {
+    else
+	{
       print_Error("Can't open file!", true);
     }
   }
@@ -2909,13 +2938,8 @@ void flashRepro_GBA()
 }
 
 
-
-
-
-
 void writeTEST_GBA(uint32_t testSize) 
 {
-
   for (unsigned long currSector = 0; currSector < testSize; currSector += 0x10000) 
   {
     // Blink led
@@ -2973,7 +2997,6 @@ void writeTEST_GBA(uint32_t testSize)
             
             if((statusReg | 0xFF7F) != (tw | 0xFF7F))
             {
-              //
               if(statusReg&0x20)
               {
                 writeWord_GAB(0xAAA, 0xAA);
@@ -3009,7 +3032,6 @@ void writeTEST_GBA(uint32_t testSize)
           }
           else
           {
-            //
             statusReg = readWord_GAB(currSector + currSdBuffer + 30);
           }
         }
@@ -3059,13 +3081,11 @@ void flashTest_GBA(uint32_t testSize)
 }
 
 
-
-/******************************************
-   Setup
- *****************************************/
+/**********************
+  Setup
+**********************/
 void setup_GBA() 
 {
-  //
   char tmsg[64] = {0};
 
   setROM_GBA();
@@ -3083,7 +3103,6 @@ void setup_GBA()
     OledShowString(60,2,"Unknown",8);
   else 
   {
-    //
     sprintf(tmsg,"%d MB",cartSize);    
     OledShowString(60,2,tmsg,8);
   }
@@ -3093,7 +3112,8 @@ void setup_GBA()
   //deal with the save type, some roms' flag maybe one type, but the PHY Cart is not.
   //this works by Patches to the rom file...
   strcpy(tmsg,"Save: ");
-  if(forceSaveType != 0){
+  if(forceSaveType != 0)
+  {
     saveType = forceSaveType;
     strcat(tmsg,"f-");
   }
@@ -3139,17 +3159,16 @@ void setup_GBA()
 }
 
 
-
-
-
 void TestMemGBA(boolean bFast)
 {
-  //
   setup_GBA();
-  if(bFast){
+  if(bFast)
+  {
     TestSRAM_GBA(0x2000);
     flashTest_GBA(0x20000);
-  }else{
+  }
+  else
+  {
     TestSRAM_GBA(0x20000);
     flashTest_GBA(0x2000000);
   }
@@ -3159,10 +3178,9 @@ void TestMemGBA(boolean bFast)
 }
 
 
-
-/******************************************
-   Menus
- *****************************************/
+/**********************
+  Menus
+**********************/
 // GBA menu items
 static const char GBAMenuItem1[] = "Flash GBA Cart";
 static const char GBAMenuItem2[] = "Read ROM";
@@ -3190,7 +3208,8 @@ static const char GBASaveItem5[] = "512K FLASHROM";
 static const char GBASaveItem6[] = "1M FLASHROM";
 static const char* const saveOptionsGBA[] = {GBASaveItem1, GBASaveItem2, GBASaveItem3, GBASaveItem4, GBASaveItem5, GBASaveItem6};
 
-uint8_t gbaMenu() {
+uint8_t gbaMenu()
+{
   // create menu with title and 4 options to choose from
 
   uint8_t bret = 0;
@@ -3434,7 +3453,6 @@ uint8_t gbaMenu() {
           }
           else 
           {
-            //
             sprintf(tmsg,"Error: %d bytes.",writeErrors);
             OledShowString(0,4,tmsg,8);
             print_Error("Verify failed...", false);
@@ -3452,7 +3470,6 @@ uint8_t gbaMenu() {
           }
           else 
           {
-            //
             sprintf(tmsg,"Error: %d bytes.",writeErrors);
             OledShowString(0,4,tmsg,8);
             print_Error("Verify failed...", false);
@@ -3470,7 +3487,6 @@ uint8_t gbaMenu() {
           }
           else 
           {
-            //
             sprintf(tmsg,"Error: %d bytes.",writeErrors);
             OledShowString(0,4,tmsg,8);
             print_Error("Verify failed...", false);
@@ -3548,7 +3564,6 @@ uint8_t gbaMenu() {
           }
           else 
           {
-            //
             sprintf(tmsg,"Error: %d bytes.",writeErrors);
             OledShowString(0,5,tmsg,8);
             print_Error("Verify failed...", false);
@@ -3562,7 +3577,6 @@ uint8_t gbaMenu() {
       
     case MENU_5:
       {
-       
         // create submenu with title and 7 options to choose from
         unsigned char GBASaveMenu = questionBox_OLED("Select save type:", saveOptionsGBA, 6, 1, 1, 1);
 
@@ -3612,25 +3626,16 @@ uint8_t gbaMenu() {
 }
 
 
-
 void gbaScreen()
 {
-  //
   while(1)
   {
-    //
     setup_GBA();
     if(gbaMenu() > 0)
     {
-      //
       break;
     }
   }
 }
 
-
-
-
-//******************************************
-// End of File
-//******************************************
+/*************************** End of file ****************************/
