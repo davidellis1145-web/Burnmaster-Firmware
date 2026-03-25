@@ -183,74 +183,6 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 }
 
 
-/*
----BEGIN ORIGIN---
-uint8_t my_mkdir(char * dir)
-{
-  uint8_t bret = false;
-  bool opendir_err = 0;
-  char SonPath[10][30]; //最多10层，每层最多30字符
-  char RootPath[128];   //最低已存在路径
-  memset(SonPath, '\0', sizeof(SonPath)); //初始化
-  strcpy(RootPath, dir);
-  uint8_t num = 0;           // 剔除的次数
-  DIR W_Ddir;
-
-  do                      //遍历寻找文件夹
-  {
-    char *dot = strrchr(RootPath, '\\');   //剔除一层
-    if(dot == NULL)dot = strrchr(RootPath, '/');
-    if(dot == NULL)
-    {
-      if(RootPath[0])
-	  {
-		dot = RootPath;
-	  }
-      else break;
-    }
-
-    strcpy(SonPath[num], dot);
-    FRESULT W_Dresult = f_opendir(&W_Ddir, RootPath); //检测文件夹
-    if(W_Dresult == FR_OK)
-    {
-            printf("Exist[%s]\r\n",RootPath);
-            f_closedir(&W_Ddir);
-            break;
-    }
-    else
-    {
-            printf("Err - %d[%s]\r\n",W_Dresult, RootPath);
-            if(W_Dresult == FR_NO_PATH)
-            {
-                    opendir_err = 1;
-                    num ++;
-                    SonPath[num][0] = 0;
-                    dot[0] = 0x00;
-            }
-            else return bret;
-    }
-  }
-  while(1);
-
-  if(opendir_err == 1)
-  {
-    //遍历创建文件夹
-    opendir_err = 0;
-    for(int i=0;i<num;i++)
-    {
-            strcat(RootPath, SonPath[num-i-1]);
-            FRESULT W_Dresult = f_mkdir(RootPath);
-            if(W_Dresult == FR_OK) { printf(">> Mk dir OK[%s]\r\n", RootPath); bret = true;}
-            else printf(">> Err - %d [%s]\r\n",W_Dresult, RootPath);
-    }
-  }
-  else bret = true;
-  return  bret;
-}
----END ORIGIN---
-*/
-
-// ---Start of edited---
 uint8_t my_mkdir(char * dir)
 {
 	uint8_t bret = false;
@@ -320,7 +252,6 @@ uint8_t my_mkdir(char * dir)
 	else bret = true;
 	return  bret;
 }
-//---End of edited---
 
 
 /**********************
@@ -416,9 +347,12 @@ next_page1:
           filePath[i] = 0x00;
           break;
         }
+		else
+		{
+		  f_closedir(&tdir);
+		  goto browserstart;
+		}
       }
-      f_closedir(&tdir);
-      goto browserstart;
     }
     break;
     case MENU_1:

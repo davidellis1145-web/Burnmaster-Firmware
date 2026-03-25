@@ -87,7 +87,7 @@ void aboutScreen()
   OledClear();
   OledShowString(0,0,(char *)("Game Boy"),16);
   OledShowString(5,2,(char *)("Flash Master"),16);
-  // Version contains custom integration for Spansion S29GL128N | S29GL256N | S29GL512N
+  // Contains custom integration for Spansion S29GL128N | S29GL256N | S29GL512N
   // Based on Funnyplaying 1.10 release.
   OledShowString(20,4,(char *)("Ver:1.00"),8);
   OledShowString(20,5,(char *)("Mar. 2026"),8);
