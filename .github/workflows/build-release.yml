@@ -9,10 +9,10 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout Burnmaster-Firmware
+      - name: Checkout FlashMaster-Firmware
         uses: actions/checkout@v4
         with:
-          path: Burnmaster-Firmware
+          path: FlashMaster-Firmware
           
       - name: Install EmeddedStudio
         run: |
@@ -24,9 +24,9 @@ jobs:
       - name: Compile Firmware
         run: |
             cd arm_segger_embedded_studio_v622a_linux_x64/bin
-            ./emBuild -config "Debug" ${{ github.workspace }}//Burnmaster-Firmware/CartReaderApp/GDCartReader.emProject
+            ./emBuild -config "Debug" ${{ github.workspace }}//FlashMaster-Firmware/CartReaderApp/GDCartReader.emProject
           
       - uses: actions/upload-artifact@v4
         with:
-          name: Burnmaster-Firmware
-          path: ${{ github.workspace }}//Burnmaster-Firmware/CartReaderApp/Output/Debug/Exe/GDCartReader.bin
+          name: FlashMaster-Firmware
+          path: ${{ github.workspace }}//FlashMaster-Firmware/CartReaderApp/Output/Debug/Exe/GDCartReader.bin
