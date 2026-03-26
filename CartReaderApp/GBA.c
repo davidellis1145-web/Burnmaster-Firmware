@@ -48,7 +48,6 @@ void setROM_GBA()
   delay(688);
 }
 
-//#define TEST_MY_CART
 
 word readWord_GBA(unsigned long Address) 
 {
@@ -71,10 +70,6 @@ word readWord_GBA(unsigned long Address)
 
   delay_GBA();
   delay_GBA();
-
-  #ifdef TEST_MY_CART
-  //delayMicroseconds(1);
-  #endif
 
   // Set address/data ports to input
   GPIO_OCTL(ADDR_1) = (GPIO_OCTL(ADDR_1)&0xFFFF000F);
@@ -179,10 +174,6 @@ void writeWord_GBA(unsigned long Address, word myWord)
   delay_GBA();
 
   
-  #ifdef TEST_MY_CART
-  //delayMicroseconds(1);
-  #endif
-
   // Output data
   GPIO_OCTL(ADDR_1) = (GPIO_OCTL(ADDR_1)&0xF) + (((myWord << 8) + (myWord >> 8)) & 0xFFF0);
   GPIO_OCTL(ADDR_2) = (GPIO_OCTL(ADDR_2)&0xF0FF) + (myWord&0x0F00);
@@ -227,21 +218,13 @@ word swapBits(word n, word p1, word p2)
 // Some repros have D0 and D1 switched
 word readWord_GAB(unsigned long myAddress)
 {
-#ifdef TEST_MY_CART
-  word tempWord = readWord_GBA(myAddress);
-#else
   word tempWord = swapBits(readWord_GBA(myAddress), 0, 1);
-#endif
   return tempWord;
 }
 
 void writeWord_GAB(unsigned long myAddress, word myWord)
 {
-#ifdef TEST_MY_CART
-  writeWord_GBA(myAddress, myWord);
-#else
   writeWord_GBA(myAddress, swapBits(myWord, 0, 1));
-#endif
 }
 
 
@@ -669,7 +652,7 @@ void writeSRAM_GBA(boolean browseFile, unsigned long sramSize, uint32_t pos)
     // Close the file:
     f_close(&tf);
     showPersent(1,1,6,2);
-    OledShowString(0,3,"finished!",8);
+    OledShowString(0,3,"Done!",8);
   }
   else 
   {
@@ -703,7 +686,6 @@ unsigned long verifySRAM_GBA(unsigned long sramSize, uint32_t pos)
       {
         // Read byte
         byte bt = readByte_GBA(currAddress + c);
-        //printf("\r\n%02x",bt);
         if (bt != sdBuffer[c])
 		{
           writeErrors++;
@@ -748,7 +730,6 @@ void TestSRAM_GBA(unsigned long sramSize)
     // Read byte
     byte bt = currAddress & 0xFF;
     byte br = readByte_GBA(currAddress);
-    //printf("\r\n%02x",bt);
     if (bt != br)
 	{
       wErrors++;
@@ -804,7 +785,6 @@ void writeBlock_EEP(word startAddr, word eepSize)
   // Set A0(PF0) to Output
   gpio_init(ADDR_1,GPIO_MODE_OUT_PP,GPIO_OSPEED_50MHZ,GPIO_PIN_8|GPIO_PIN_7);
   // Set A23/D7(PC7) to Output
-  //gpio_init(ADDR_1,GPIO_MODE_OUT_PP,GPIO_OSPEED_50MHZ,GPIO_PIN_7);
 
   // Set CS_ROM(PH3) WR(PH5) RD(PH6) to High
   gpio_bit_set(CTRLGBA,GBA_RD|GBA_WR|CS_ROM);
@@ -868,7 +848,8 @@ void writeBlock_EEP(word startAddr, word eepSize)
     // Set A0(PF0) to Input
     gpio_init(ADDR_1,GPIO_MODE_IN_FLOATING,GPIO_OSPEED_50MHZ,GPIO_PIN_8);
 
-    do {
+    do
+	{
       // Set  CS_ROM(PH3) RD(PH6) to LOW
       gpio_bit_reset(CTRLGBA,CS_ROM);
       // Set  CS_ROM(PH3) RD(PH6) to High
@@ -1416,7 +1397,7 @@ void readFLASH_GBA (boolean browseFile, unsigned long flashSize, uint32_t pos)
     // Write sdBuffer to file
     UINT wdt;
     f_write(&tf, sdBuffer, 512, &wdt);
-
+    OledShowString(20,4,"     ",8);
   }
   showPersent(1,1,20,3);
   f_close(&tf);
@@ -1886,52 +1867,6 @@ void eraseIntel4400_GBA()
   }
 
   showPersent(1,1,70,2);
-
-  /* No need to erase the second chip as max rom size is 32MB
-    if (fileSize > 0x2000000)
-	{
-    // 255 blocks with 64kwords each
-    for (unsigned long currBlock = 0x2000000; currBlock < 0x3FDFFFF; currBlock += 0x1FFFF)
-	{
-      // Unlock Block
-      writeWord_GBA(currBlock, 0x60);
-      writeWord_GBA(currBlock, 0xD0);
-
-      // Erase Command
-      writeWord_GBA(currBlock, 0x20);
-      writeWord_GBA(currBlock, 0xD0);
-
-      // Read the status register
-      word statusReg = readWord_GBA(currBlock);
-      while ((statusReg | 0xFF7F) != 0xFFFF)
-	  {
-        statusReg = readWord_GBA(currBlock);
-      }
-      // Blink led
-      LED_RED_BLINK;
-    }
-
-    // 4 blocks with 16kword each
-    for (unsigned long currBlock = 0x3FE0000; currBlock < 0x3FFFFFF; currBlock += 0x8000)
-	{
-      // Unlock Block
-      writeWord_GBA(currBlock, 0x60);
-      writeWord_GBA(currBlock, 0xD0);
-
-      // Erase Command
-      writeWord_GBA(currBlock, 0x20);
-      writeWord_GBA(currBlock, 0xD0);
-
-      // Read the status register
-      word statusReg = readWord_GBA(currBlock);
-      while ((statusReg | 0xFF7F) != 0xFFFF)
-	  {
-        statusReg = readWord_GBA(currBlock);
-      }
-      // Blink led
-      LED_RED_BLINK;
-    }
-    }*/
 }
 
 #define deley_us_lv128 (1)
@@ -2165,12 +2100,6 @@ void writeMSP55LV128_GBA(FIL * ptf)
     {
       // Fill SD buffer
       UINT rdt;
-      /*
-	  if(f_read(ptf, sdBuffer, 512, &rdt)!= FR_OK)
-	  {
-		printf("\nF_read err!");
-	  }
-	  */
       f_read(ptf, sdBuffer, 512, &rdt);
        
       // Write 16 words at a time
@@ -2190,7 +2119,6 @@ void writeMSP55LV128_GBA(FIL * ptf)
         for (byte currByte = 0; currByte < 16; currByte++) 
         {
           // Join two bytes into one word
-          //delay_GBA();
           delayMicroseconds(deley_us_lv128);
           currWord = ((word *)sdBuffer)[(currWriteBuffer>>1) + currByte];
           writeWord_GBA(currSector + currSdBuffer + currWriteBuffer + currByte*2, currWord);
@@ -2231,8 +2159,7 @@ void writeMSP55LV128_GBA(FIL * ptf)
                 LED_RED_BLINK;
                 goto _reProgram;
               }
-              else
-              if(statusReg&0x2)
+              else if(statusReg&0x2)
               {
                 //write buffer abort reset
                 writeWord_GAB(0xAAA, 0xAA);
@@ -2332,8 +2259,7 @@ void writeMX29GL128E_GBA(FIL * ptf)
                 LED_RED_BLINK;
                 goto _reProgram;
               }
-              else
-              if(statusReg&0x2)
+              else if(statusReg&0x2)
               {
                 //write buffer abort reset
                 writeWord_GAB(0xAAA, 0xAA);
@@ -2396,8 +2322,6 @@ void writeMX29GL128E_GBA_1(FIL * ptf)
           delay_GBA();
           statusReg = readWord_GAB(currSector + currSdBuffer + currWriteBuffer);
         }
-
-        //delay(1);
       }
     }
   }
@@ -2478,8 +2402,7 @@ void writeSpansion_GBA(FIL * ptf)
                 LED_RED_BLINK;
                 goto _reProgram;
               }
-              else
-              if(statusReg&0x2)
+              else if(statusReg&0x2)
               {
                 //write buffer abort reset
                 writeWord_GBA(0xAAA, 0xAA);
@@ -2770,15 +2693,6 @@ void flashRepro_GBA()
       }
       else if (strcmp(flashid, "227E") == 0 || strcmp(flashid, "227A") == 0)
 	  {
-        /*if (sectorCheckMX29GL128E_GBA())
-		  {
-			print_Error(F("Sector Protected"), true);
-		  }
-          else
-		  {
-		  */
-
-
         OledShowString(10,2,"Erasing...",8);
         // Spansion
         if(manufacturerid == 0x1)
@@ -2805,27 +2719,12 @@ void flashRepro_GBA()
           }
           else if ((romType == 0x1) || (romType == 0x4))
 		  {
-            //MSP55LV128(N)
-            //#ifndef TEST_MY_CART
             sectorEraseMSP55LV128_GBA(fileSize - 1);
-            //#endif
           }
         }
-        //}
       }
-      
-      
-    /*  //Skip blankcheck to save time
-		if (blankcheckFlashrom_GBA() == false)
-		{
-			OledClear();
-			OledShowString(10,2,"Checking Err!",8);
-			f_close(&tf);
-			print_Error("cart not empty!",true);
-		}
-	 */
-
-      //Write flashrom
+	  
+	  //Write flashrom
       OledShowString(10,3,"Writing...",8);
       OledShowString(0,4,filePath,8);
 
@@ -3640,5 +3539,3 @@ void gbaScreen()
     }
   }
 }
-
-/*************************** End of file ****************************/

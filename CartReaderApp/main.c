@@ -77,8 +77,8 @@ static const char gbxMenuTestFast[] = "Quick Test";
 static const char gbxAbout[] = "About...";
 static const char gbxReset[] = "Reset";
 
-static const char* const menuOptionsGBC[] = {gbxMenuItem1,gbxMenuTestFast,gbxMenuTestAll,gbxAbout,gbxReset};
-static const char* const menuOptionsGBA[] = {gbxMenuItem2,gbxMenuTestFast,gbxMenuTestAll,gbxAbout,gbxReset};
+static const char* const menuOptionsGBC[] = {gbxMenuItem1,gbxMenuTestFast,gbxMenuTestAll,gbxAbout};
+static const char* const menuOptionsGBA[] = {gbxMenuItem2,gbxMenuTestFast,gbxMenuTestAll,gbxAbout};
 static const char* const menuOptionsGBx[] = {gbxMenuItem1, gbxMenuItem2};
 
 
@@ -88,10 +88,10 @@ void aboutScreen()
   OledShowString(0,0,(char *)("Game Boy"),16);
   OledShowString(5,2,(char *)("Flash Master"),16);
   // Contains custom integration for Spansion S29GL128N | S29GL256N | S29GL512N
-  // Based on Funnyplaying 1.10 release.
+  // Based on Funnyplaying v1.10 release.
   OledShowString(20,4,(char *)("Ver:1.00"),8);
   OledShowString(20,5,(char *)("Mar. 2026"),8);
-  OledShowString(4,6,(char *)("Dave's Game Emporium"),8);
+  OledShowString(3,6,(char *)("Dave's Game Emporium"),8);
   OledShowString(0,7,(char *)("Press OK Button..."),8);
 
   WaitOKBtn();
@@ -114,11 +114,11 @@ uint8_t gbxMenu()
     LED_BLUE_ON;   //make sure GBA mode led is on
     OledClear();
     OledShowPicData(64,4,56,4,Icon_data_GBA); //draws GBA icon
-    gbType = questionBox_OLED("Game Boy Flash Master", menuOptionsGBA, 5, 1, 1, 0);    
+    gbType = questionBox_OLED("Game Boy Flash Master", menuOptionsGBA, 4, 1, 1, 0);    
     switch (gbType)
     {
       case 0:  //cancel btn clicked
-        bret = 1;
+        ResetSystem();
         break;
       case 1:
         gbaScreen();
@@ -132,9 +132,6 @@ uint8_t gbxMenu()
       case 4:
         aboutScreen();
         break;
-	  case 5:
-		ResetSystem();
-		break;
     }
   }
   else if(gbxtype == TYPE_GBC)
@@ -143,11 +140,11 @@ uint8_t gbxMenu()
     LED_GREEN_ON;  //make sure GB mode led is on
     OledClear();
     OledShowPicData(86,2,29,6,Icon_data_GBC);  //draws GB icon
-    gbType = questionBox_OLED("Game Boy Flash Master", menuOptionsGBC, 5, 1, 1, 0);    
+    gbType = questionBox_OLED("Game Boy Flash Master", menuOptionsGBC, 4, 1, 1, 0);    
     switch (gbType)
     {
       case 0:  //cancel btn clicked
-        bret = 1;
+        ResetSystem();
         break;
       case 1:
         gbScreen();
@@ -161,9 +158,6 @@ uint8_t gbxMenu()
       case 4:
         aboutScreen();
         break;
-	  case 5:
-		ResetSystem();
-		break;
     }
   }
   else 
@@ -173,7 +167,7 @@ uint8_t gbxMenu()
     switch (gbType)
     {
       case 0:  //cancel btn clicked
-        bret = 1;
+        ResetSystem();
         break;
       case 1:
         gbScreen();
@@ -389,9 +383,11 @@ void SDCardInit()
   sd_error_enum sd_error;
   uint16_t i = 5;
   /* initialize the card */
-  do{
+  do
+  {
       sd_error = sd_io_init();
-  }while((SD_OK != sd_error) && (--i));
+  }
+  while((SD_OK != sd_error) && (--i));
   
   if(i)
   {
@@ -484,5 +480,3 @@ int main(void)
   SysClockFree();
   exit(EXIT_SUCCESS);
 }
-
-/*************************** End of file ****************************/

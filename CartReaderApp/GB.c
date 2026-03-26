@@ -1565,11 +1565,6 @@ bool writeCFI_GB()
         currAddr = 0x4000;
         endAddr = 0x7FFF;
       }
-      /*else
-      {
-        // 0x2A8000 fix  <--todo... delete section?
-        
-      }*/
 
       while (currAddr <= endAddr)
       {
@@ -1816,10 +1811,6 @@ void testCFI_GB(uint16_t testBanks)
         currAddr = 0x4000;
         endAddr = 0x7FFF;
       }
-      /*else
-      {
-        // 0x2A8000 fix   <-- todo delete section?
-      }*/
 
       while (currAddr <= endAddr)
       {
@@ -2237,5 +2228,3 @@ void gbScreen()
     if(b>0)break;
   }
 }
-
-/*************************** End of file ****************************/

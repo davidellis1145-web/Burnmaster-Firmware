@@ -347,12 +347,9 @@ next_page1:
           filePath[i] = 0x00;
           break;
         }
-		else
-		{
-		  f_closedir(&tdir);
-		  goto browserstart;
-		}
       }
+      f_closedir(&tdir);
+      goto browserstart;
     }
     break;
     case MENU_1:
