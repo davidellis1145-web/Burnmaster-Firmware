@@ -1973,6 +1973,7 @@ uint8_t gbFlashMenu()
 
   unsigned char gbFlash = questionBox_OLED("Select type:", menuOptionsGBFlash, 6, 1, 1, 1);
   OledClear();
+  LED_BLUE_OFF; // Make sure blue led is off after blinking
   // wait for user choice to come back from the question box menu
   switch (gbFlash)
   {
@@ -2138,6 +2139,7 @@ static const char* const menuOptionsGB[] = {GBMenuItem1, GBMenuItem2, GBMenuItem
 uint8_t gbMenu() 
 {
   uint8_t bret = 0;
+  LED_BLUE_OFF; // Make sure blue led is off after blinkng (posibly redundant)
   
   // create menu with title and 3 options to choose from
   unsigned char gbMenu = questionBox_OLED("GB(C) Main Menu", menuOptionsGB, 6, 1, 1, 1);

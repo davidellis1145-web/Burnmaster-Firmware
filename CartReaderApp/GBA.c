@@ -1294,7 +1294,7 @@ boolean blankcheckFLASH_GBA (unsigned long flashSize)
       }
     }
 
-    LED_RED_BLINK;
+    LED_GREEN_BLINK;
   }
   // Set CS_FLASH(PH0) high
   gpio_bit_set(CTRLGBA,CS_SRAM);
@@ -1387,7 +1387,7 @@ void readFLASH_GBA (boolean browseFile, unsigned long flashSize, uint32_t pos)
 
   for (unsigned long currAddress = 0; currAddress < flashSize; currAddress += 512) 
   {
-    LED_RED_BLINK;
+    LED_GREEN_BLINK;
     showPersent(currAddress,flashSize,20,3);
     for (int c = 0; c < 512; c++) 
     {
@@ -1702,7 +1702,7 @@ boolean blankcheckFlashrom_GBA()
   for (unsigned long currSector = 0; currSector < fileSize; currSector += 0x20000) 
   {
     // Blink led
-    LED_RED_BLINK;
+    LED_GREEN_BLINK;
 
     for (unsigned long currByte = 0; currByte < 0x20000; currByte += 2)
 	{
@@ -1740,7 +1740,7 @@ void eraseIntel4000_GBA()
       statusReg = readWord_GBA(currBlock);
     }
 
-    LED_RED_BLINK;
+    LED_GREEN_BLINK;
     showPersent(currBlock,lastBlock,70,2);
   }
 
@@ -1762,7 +1762,7 @@ void eraseIntel4000_GBA()
       statusReg = readWord_GBA(currBlock);
     }
     // Blink led
-    LED_RED_BLINK;
+    LED_GREEN_BLINK;
     showPersent(currBlock,lastBlock,70,2);
   }
 
@@ -1789,7 +1789,7 @@ void eraseIntel4000_GBA()
         statusReg = readWord_GBA(currBlock);
       }
       // Blink led
-      LED_RED_BLINK;
+      LED_GREEN_BLINK;
     }
 
     // 4 blocks with 16kword each
@@ -1810,7 +1810,7 @@ void eraseIntel4000_GBA()
         statusReg = readWord_GBA(currBlock);
       }
       // Blink led
-      LED_RED_BLINK;
+      LED_GREEN_BLINK;
     }
   }
 }
@@ -1840,7 +1840,7 @@ void eraseIntel4400_GBA()
       statusReg = readWord_GBA(currBlock);
     }
 
-    LED_RED_BLINK;
+    LED_GREEN_BLINK;
     showPersent(currBlock,lastBlock,70,2);
   }
 
@@ -1862,7 +1862,7 @@ void eraseIntel4400_GBA()
       statusReg = readWord_GBA(currBlock);
     }
     // Blink led
-    LED_RED_BLINK;
+    LED_GREEN_BLINK;
     showPersent(currBlock,lastBlock,70,2);
   }
 
@@ -1891,7 +1891,7 @@ void sectorEraseMSP55LV128_GBA(unsigned long lastSector)
     delayMicroseconds(deley_us_lv128);    
 
     // Blink LED
-    LED_RED_BLINK;
+    LED_GREEN_BLINK;
     showPersent(currSector,lastSector,68,2);
 
     // Read the status register
@@ -1930,7 +1930,7 @@ void sectorEraseTest_GBA(unsigned long lastSector)
     delayMicroseconds(deley_us_lv128);    
 
     // Blink LED
-    LED_RED_BLINK;
+    LED_GREEN_BLINK;
     showPersent(currSector,lastSector,88,4);
 
     // Read the status register
@@ -1962,7 +1962,7 @@ void sectorEraseMX29GL128E_GBA(unsigned long lastSector)
     writeWord_GAB(0x555, 0x55);
     writeWord_GAB(currSector, 0x30);
     // Blink LED
-    LED_RED_BLINK;
+    LED_GREEN_BLINK;
     showPersent(currSector,lastSector,68,2);
     // Read the status register
     word statusReg = readWord_GAB(currSector);
@@ -1990,7 +1990,7 @@ void sectorEraseSpansion_GBA(unsigned long lastSector)
     writeWord_GBA(0x555, 0x55);
     writeWord_GBA(currSector, 0x30);
     // Blink LED
-    LED_RED_BLINK;
+    LED_GREEN_BLINK;
     showPersent(currSector,lastSector,68,2);
     // Read the status register
     word statusReg = readWord_GBA(currSector);
@@ -2016,7 +2016,7 @@ void sectorEraseMX29GL128E_GBA_1(unsigned long lastSector)
     writeWord_GAB(0x555, 0x55);
     writeWord_GAB(currSector, 0x30);
     // Blink LED
-    LED_RED_BLINK;
+    LED_GREEN_BLINK;
     showPersent(currSector,lastSector,68,2);
     // Read the status register
     word statusReg = readWord_GAB(currSector);
@@ -2034,7 +2034,7 @@ void writeIntel4000_GBA(FIL * ptf)
   for (unsigned long currBlock = 0; currBlock < fileSize; currBlock += 0x20000) 
   {
     // Blink led
-    LED_RED_BLINK;
+    LED_GREEN_BLINK;
     showPersent(currBlock,fileSize,68,3);
     // Write to flashrom
     for (unsigned long currSdBuffer = 0; currSdBuffer < 0x20000; currSdBuffer += 512) 
@@ -2093,7 +2093,7 @@ void writeMSP55LV128_GBA(FIL * ptf)
   for (unsigned long currSector = 0; currSector < fileSize; currSector += 0x20000) 
   {
     // Blink led
-    LED_RED_BLINK;
+    LED_GREEN_BLINK;
     showPersent(currSector,fileSize,68,3);
     // Write to flashrom
     for (unsigned long currSdBuffer = 0; currSdBuffer < 0x20000; currSdBuffer += 512) 
@@ -2156,7 +2156,7 @@ void writeMSP55LV128_GBA(FIL * ptf)
                 delay(1000);
                 printf("write err1!\n");
 
-                LED_RED_BLINK;
+                LED_GREEN_BLINK;
                 goto _reProgram;
               }
               else if(statusReg&0x2)
@@ -2171,7 +2171,7 @@ void writeMSP55LV128_GBA(FIL * ptf)
                 delay(2000);
                 printf("write err2!\n");
 
-                LED_RED_BLINK;
+                LED_GREEN_BLINK;
                 goto _reProgram;
               }
             }
@@ -2195,7 +2195,7 @@ void writeMX29GL128E_GBA(FIL * ptf)
    for (unsigned long currSector = 0; currSector < fileSize; currSector += 0x10000) 
   {
     // Blink led
-    LED_RED_BLINK;
+    LED_GREEN_BLINK;
     showPersent(currSector,fileSize,68,3);
     // Write to flashrom
     for (unsigned long currSdBuffer = 0; currSdBuffer < 0x10000; currSdBuffer += 512) 
@@ -2256,7 +2256,7 @@ void writeMX29GL128E_GBA(FIL * ptf)
                 delay(1000);
                 printf("write err1!\n");
 
-                LED_RED_BLINK;
+                LED_GREEN_BLINK;
                 goto _reProgram;
               }
               else if(statusReg&0x2)
@@ -2271,7 +2271,7 @@ void writeMX29GL128E_GBA(FIL * ptf)
                 delay(1000);
                 printf("write err2!\n");
 
-                LED_RED_BLINK;
+                LED_GREEN_BLINK;
                 goto _reProgram;
               }
             }
@@ -2294,7 +2294,7 @@ void writeMX29GL128E_GBA_1(FIL * ptf)
   for (unsigned long currSector = 0; currSector < fileSize; currSector += 0x10000) 
   {
     // Blink led
-    LED_RED_BLINK;
+    LED_GREEN_BLINK;
     showPersent(currSector,fileSize,68,3);
     // Write to flashrom
     for (unsigned long currSdBuffer = 0; currSdBuffer < 0x10000; currSdBuffer += 512) 
@@ -2333,7 +2333,7 @@ void writeSpansion_GBA(FIL * ptf)
   for (unsigned long currSector = 0; currSector < fileSize; currSector += 0x20000) // was 0x20000
   {
     // Blink led
-    LED_RED_BLINK;
+    LED_GREEN_BLINK;
     showPersent(currSector,fileSize,68,3);
     // Write to flashrom
     for (unsigned long currSdBuffer = 0; currSdBuffer < 0x20000; currSdBuffer += 512) // was 0x20000
@@ -2399,7 +2399,7 @@ void writeSpansion_GBA(FIL * ptf)
                 delay(1000);
                 printf("write err1!\n");
 
-                LED_RED_BLINK;
+                LED_GREEN_BLINK;
                 goto _reProgram;
               }
               else if(statusReg&0x2)
@@ -2414,7 +2414,7 @@ void writeSpansion_GBA(FIL * ptf)
                 delay(1000);
                 printf("write err2!\n");
 
-                LED_RED_BLINK;
+                LED_GREEN_BLINK;
                 goto _reProgram;
               }
             }
@@ -2443,7 +2443,7 @@ boolean verifyFlashrom_GBA()
     for (unsigned long currSector = 0; currSector < fileSize; currSector += 131072) 
     {
       // Blink led
-      LED_RED_BLINK;
+      LED_GREEN_BLINK;
       showPersent(currSector,fileSize,82,6);
       for (unsigned long currSdBuffer = 0; currSdBuffer < 131072; currSdBuffer += 512) 
       {
@@ -2501,7 +2501,7 @@ boolean verifyFlashrom_GBA_new()
     for (unsigned long currSector = 0; currSector < fileSize; currSector += 131072) 
     {
       // Blink led
-      LED_RED_BLINK;
+      LED_GREEN_BLINK;
       showPersent(currSector,fileSize,82,5);
       for (unsigned long currSdBuffer = 0; currSdBuffer < 131072; currSdBuffer += 512) 
       {
@@ -2551,7 +2551,7 @@ boolean verifyFlashromTest_GBA(uint32_t testSize)
   for (unsigned long currSector = 0; currSector < testSize; currSector += 131072) 
   {
     // Blink led
-    LED_RED_BLINK;
+    LED_GREEN_BLINK;
     showPersent(currSector,fileSize,96,6);
     for (unsigned long currSdBuffer = 0; currSdBuffer < 131072; currSdBuffer += 512) 
     {
@@ -2845,7 +2845,7 @@ void writeTEST_GBA(uint32_t testSize)
   for (unsigned long currSector = 0; currSector < testSize; currSector += 0x10000) 
   {
     // Blink led
-    LED_RED_BLINK;
+    LED_GREEN_BLINK;
     showPersent(currSector,testSize,88,5);
     word wWord = 0;
     word tw = 0;
@@ -2910,7 +2910,7 @@ void writeTEST_GBA(uint32_t testSize)
                 delay(1000);
                 printf("write err1!\n");
 
-                LED_RED_BLINK;
+                LED_GREEN_BLINK;
                 goto _reProgram;
               }
               else
@@ -2926,7 +2926,7 @@ void writeTEST_GBA(uint32_t testSize)
                 delay(1000);
                 printf("write err2!\n");
 
-                LED_RED_BLINK;
+                LED_GREEN_BLINK;
                 goto _reProgram;
               }
             }
@@ -2989,6 +2989,7 @@ void flashTest_GBA(uint32_t testSize)
 void setup_GBA() 
 {
   char tmsg[64] = {0};
+  LED_GREEN_OFF; // Make sure green led is off after blinking
 
   setROM_GBA();
 
@@ -3115,6 +3116,7 @@ uint8_t gbaMenu()
   // create menu with title and 4 options to choose from
 
   uint8_t bret = 0;
+  LED_GREEN_OFF; // Make sure green led is off after blinking
   unsigned char retMenu = questionBox_OLED("GBA Main Menu", menuOptionsGBA, 6, 1, 1, 1);
   char tmsg[32] = {0};
 
