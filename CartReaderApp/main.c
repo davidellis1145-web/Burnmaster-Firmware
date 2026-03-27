@@ -41,7 +41,7 @@ uint8_t GetGBType()
 }
 
 
-//Icons data
+// Icons data
 uint8_t Icon_data_GBC[] = 
 {
 0xFC, 0x02, 0x02, 0xF2, 0x12, 0x12, 0x12, 0xD2, 0xD2, 0xD2, 0xD2, 0xD2, 0xD2, 0xD2, 0xD2, 0xD2, 0xD2, 0xD2, 0xD2, 0xD2, 0xD2, 0xD2, 0x12, 0x12, 0x12, 0xE2, 0x02, 0x06, 0xFC,
@@ -65,7 +65,7 @@ uint8_t Icon_data_GBA[] =
 };
 
 
-//Game Boy Menu
+// Game Boy Menu
 /**********************
   Menu
 **********************/
@@ -89,7 +89,7 @@ void aboutScreen()
   OledShowString(5,2,(char *)("Flash Master"),16);
   // Contains custom integration for Spansion S29GL128N | S29GL256N | S29GL512N
   // Based on Funnyplaying v1.10 release.
-  OledShowString(20,4,(char *)("Ver:1.00"),8);
+  OledShowString(20,4,(char *)("Ver:1.01"),8);
   OledShowString(20,5,(char *)("Mar. 2026"),8);
   OledShowString(3,6,(char *)("Dave's Game Emporium"),8);
   OledShowString(0,7,(char *)("Press OK Button..."),8);
@@ -110,14 +110,14 @@ uint8_t gbxMenu()
 
   if(gbxtype == TYPE_GBA)
   {
-    LED_GREEN_OFF; //make sure GB mode led is off
-    LED_BLUE_ON;   //make sure GBA mode led is on
+    LED_GREEN_OFF; // make sure GB mode led is off
+    LED_BLUE_ON;   // make sure GBA mode led is on
     OledClear();
-    OledShowPicData(64,4,56,4,Icon_data_GBA); //draws GBA icon
+    OledShowPicData(64,4,56,4,Icon_data_GBA); // draws GBA icon
     gbType = questionBox_OLED("Game Boy Flash Master", menuOptionsGBA, 4, 1, 1, 0);    
     switch (gbType)
     {
-      case 0:  //cancel btn clicked
+      case 0:  // cancel btn clicked
         ResetSystem();
         break;
       case 1:
@@ -136,14 +136,14 @@ uint8_t gbxMenu()
   }
   else if(gbxtype == TYPE_GBC)
   {
-    LED_BLUE_OFF;  //make sure GBA mode led is off
-    LED_GREEN_ON;  //make sure GB mode led is on
+    LED_BLUE_OFF;  // make sure GBA mode led is off
+    LED_GREEN_ON;  // make sure GB mode led is on
     OledClear();
-    OledShowPicData(86,2,29,6,Icon_data_GBC);  //draws GB icon
+    OledShowPicData(86,2,29,6,Icon_data_GBC);  // draws GB icon
     gbType = questionBox_OLED("Game Boy Flash Master", menuOptionsGBC, 4, 1, 1, 0);    
     switch (gbType)
     {
-      case 0:  //cancel btn clicked
+      case 0:  // cancel btn clicked
         ResetSystem();
         break;
       case 1:
@@ -166,7 +166,7 @@ uint8_t gbxMenu()
 
     switch (gbType)
     {
-      case 0:  //cancel btn clicked
+      case 0:  // cancel btn clicked
         ResetSystem();
         break;
       case 1:
@@ -198,7 +198,7 @@ void gbxScreen()
 static const char modeItem1[] = "Game Boy";
 static const char modeItem2[] = "About";
 static const char modeItem3[] = "Reset";
-static const char* const modeOptions[] = {modeItem1, modeItem2/*, modeItem3*/};
+static const char* const modeOptions[] = {modeItem1, modeItem2};
 
 
 // All included slots
@@ -207,7 +207,6 @@ void mainMenu()
   // create menu with title and 6 options to choose from
   unsigned char modeMenu;
   // Copy menuOptions out of progmem
-  //convertPgm(modeOptions, 7);
   LED_CLEAR();
   modeMenu = questionBox_OLED("Game Boy Flash Master", modeOptions, 2, 1, 1, 1);
 
@@ -267,7 +266,7 @@ sd_error_enum sd_io_init(void)
     }
     if (SD_OK == status)
     {
-        //set data transfer mode
+        // set data transfer mode
         status = sd_transfer_mode_config( SD_POLLING_MODE );
         printf("Set SD to Polling Mode.\r\n");
     }
@@ -382,7 +381,7 @@ void SDCardInit()
   FRESULT res_sd;  
   sd_error_enum sd_error;
   uint16_t i = 5;
-  /* initialize the card */
+  // initialize the card
   do
   {
       sd_error = sd_io_init();
@@ -400,15 +399,15 @@ void SDCardInit()
       print_Error("No SD Card detected!",true);
   }
   
-  /* get the information of the card and print it out by USART */
+  // get the information of the card and print it out by USART
   card_info_get();
 
   //在外部SPI Flash挂载文件系统，文件系统挂载时会对SPI设备初始化
   res_sd = f_mount(&fs,"",1);
 
 
-  /*----------------------- 格式化测试 ---------------------------*/  
-  /* 如果没有文件系统就格式化创建创建文件系统 */
+  /*----------------------- 格式化测试 ---------------------------  
+     如果没有文件系统就格式化创建创建文件系统 */
   if(res_sd == FR_NO_FILESYSTEM)
   {
           printf("\r\n!No File System...");
@@ -418,7 +417,7 @@ void SDCardInit()
           printf("\r\n!Mount Failed(%d)",res_sd);
           while(1)
 		  {
-		  }//semicolon (;) <-deleted because changed from single line "{};" if broken, change back.
+		  }
   }
   else
   {
@@ -435,7 +434,6 @@ void test()
 
   // Config led gpio
   rcu_periph_clock_enable(RCU_GPIOC);
-  //gpio_init(GPIOB,GPIO_MODE_OUT_PP,GPIO_OSPEED_2MHZ,GPIO_PIN_14);
   gpio_init(GPIOC,GPIO_MODE_OUT_PP,GPIO_OSPEED_2MHZ,GPIO_PIN_13);
 
   while(1)

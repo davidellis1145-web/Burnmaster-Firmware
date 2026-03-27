@@ -399,7 +399,6 @@ void setup_GB()
   // Set Data Pins (D0-D7) to Input
   gpio_init(DATA,GPIO_MODE_IN_FLOATING,GPIO_OSPEED_50MHZ,BITS(8,15));
   // Disable Internal Pullups
-  //PORTC = 0x00;
 
   delay(100);
 
@@ -498,7 +497,7 @@ void readROM_GB()
     }
   }
 
-  // Close the file:
+  // Close the file
   f_close(&tfile);
 }
 
@@ -647,7 +646,7 @@ void readSRAM_GB()
     writeByte_GB(0x0000, 0x00);
     dataIn_GB();
 
-    // Close the file:
+    // Close the file
     f_close(&tfile);
 
     // Signal end of process
@@ -707,7 +706,7 @@ void writeSRAM_GB()
       // Set pins to input
       dataIn_GB();
 
-      // Close the file:
+      // Close the file
       f_close(&tfile);
       OledClear();
       OledShowString(0,2,"SRAM writing finished",8);
@@ -777,7 +776,7 @@ unsigned long verifySRAM_GB()
       writeByte_GB(0x0000, 0x00);
       dataIn_GB();
     }
-    // Close the file:
+    // Close the file
     f_close(&tfile);
     return writeErrors;
   }
@@ -884,9 +883,9 @@ void TestSramGB(byte bankCnt , word wTestSize)
 /*******************************************
   29F016/29F032/29F033 flashrom functions
 *******************************************/
-// Write 29F032 flashrom
-// A0-A13 directly connected to cart edge -> 16384(0x0-0x3FFF) bytes per bank -> 256(0x0-0xFF) banks
-// A14-A21 connected to MBC5
+/* Write 29F032 flashrom
+   A0-A13 directly connected to cart edge -> 16384(0x0-0x3FFF) bytes per bank -> 256(0x0-0xFF) banks
+   A14-A21 connected to MBC5 */
 void writeFlash29F_GB(byte MBC, boolean flashErase)
 {
   // Launch filebrowser
@@ -984,7 +983,6 @@ void writeFlash29F_GB(byte MBC, boolean flashErase)
     if (flashErase) 
     {
       OledShowString(0,3,"Erasing flash...",8);
-      //display_Update();
 
       // Erase flash
       writeByte_GB(0x555, 0xaa);
@@ -1218,7 +1216,7 @@ void writeFlash29F_GB(byte MBC, boolean flashErase)
         romAddress += 512;
       }
     }
-    // Close the file:
+    // Close the file
     f_close(&tf);
 
     if (writeErrors == 0)
@@ -1253,8 +1251,7 @@ unsigned long flashBanks;
    This function reads a byte and compensates for the differences.
    This is only necessary for commands to the flash, not for data read from the flash, the MBC or SRAM.
 
-   address needs to be the x8 mode address of the flash register that should be read.
-*/
+   address needs to be the x8 mode address of the flash register that should be read. */
 byte readByteCompensated(int address)
 {
   byte data = readByte_GB(address >> (flashX16Mode ? 1 : 0));
@@ -1271,8 +1268,8 @@ byte readByteCompensated(int address)
    This function writes a byte and compensates for the differences.
    This is only necessary for commands to the flash, not for data written to the flash, the MBC or SRAM.
    .
-   address needs to be the x8 mode address of the flash register that should be read.
-*/
+   address needs to be the x8 mode address of the flash register that should be read. */
+
 void writeByteCompensated(int address, byte data)
 {
   byte td;
@@ -1305,8 +1302,8 @@ void startCFIMode(boolean x16Mode)
 }
 
 /* Identify the different flash chips.
-   Sets the global variables flashBanks, flashX16Mode and flashSwitchLastBits
-*/
+   Sets the global variables flashBanks, flashX16Mode and flashSwitchLastBits */
+
 void identifyCFI_GB() 
 {
   // Reset flash
@@ -1325,26 +1322,26 @@ void identifyCFI_GB()
   char cfiQRYx16[7];
   sprintf(cfiQRYx8, "%02X%02X%02X", readByte_GB(0x20), readByte_GB(0x22), readByte_GB(0x24));
   sprintf(cfiQRYx16, "%02X%02X%02X", readByte_GB(0x10), readByte_GB(0x11), readByte_GB(0x12)); // some devices use x8-style CFI Query command even though they are in x16 command mode
-  if (strcmp(cfiQRYx8, "515259") == 0) 
-  { // QRY in x8 mode
+  if (strcmp(cfiQRYx8, "515259") == 0) // QRY in x8 mode
+  {
     printf("Normal CFI x8 Mode");
     flashX16Mode = false;
     flashSwitchLastBits = false;
   } 
-  else if (strcmp(cfiQRYx8, "52515A") == 0) 
-  { // QRY in x8 mode with switched last bit
+  else if (strcmp(cfiQRYx8, "52515A") == 0) // QRY in x8 mode with switched last bit
+  {
     printf("Switched CFI x8 Mode");
     flashX16Mode = false;
     flashSwitchLastBits = true;
   } 
-  else if (strcmp(cfiQRYx16, "515259") == 0) 
-  { // QRY in x16 mode
+  else if (strcmp(cfiQRYx16, "515259") == 0) // QRY in x16 mode
+  {
     printf("Normal CFI x16 Mode");
     flashX16Mode = true;
     flashSwitchLastBits = false;
   } 
-  else if (strcmp(cfiQRYx16, "52515A") == 0) 
-  { // QRY in x16 mode with switched last bit
+  else if (strcmp(cfiQRYx16, "52515A") == 0) // QRY in x16 mode with switched last bit
+  {
     printf("Switched CFI x16 Mode");
     flashX16Mode = true;
     flashSwitchLastBits = true;
@@ -1381,10 +1378,10 @@ void identifyCFI_GB()
   delay(100);
 }
 
-// Write 29F032 flashrom
-// A0-A13 directly connected to cart edge -> 16384(0x0-0x3FFF) bytes per bank -> 256(0x0-0xFF) banks
-// A14-A21 connected to MBC5
-// identifyFlash_GB() needs to be run before this!
+/* Write 29F032 flashrom
+   A0-A13 directly connected to cart edge -> 16384(0x0-0x3FFF) bytes per bank -> 256(0x0-0xFF) banks
+   A14-A21 connected to MBC5
+   identifyFlash_GB() needs to be run before this! */
 
 bool writeCFI_GB()
 {
@@ -1454,7 +1451,6 @@ bool writeCFI_GB()
     {
       int SA = ((currSector >> 1)?0x4000:0) + (currSector & 0x01)*0x2000;
       dataOut_GB();
-      //writeByte_GB(0x2000, 0);
       writeByte_GB(0x2100, currSector >> 1);
       delayMicroseconds(1); 
       
@@ -1558,7 +1554,7 @@ bool writeCFI_GB()
 
       // Set ROM bank
       writeByte_GB(0x2100, currBank);
-      writeByte_GB(0x3000, 0x0);//bank addr high byte, maybe recovered by normal write, need to reset to zero here.
+      writeByte_GB(0x3000, 0x0); //bank addr high byte, maybe recovered by normal write, need to reset to zero here.
 
       if (currBank > 0) 
       {
@@ -1583,8 +1579,7 @@ bool writeCFI_GB()
           delay_GB();
           // Set data pins to input
           dataIn_GB();
-
-                    delay_GB();
+		  delay_GB();
           // Setting CS(PH3) and OE/RD(PH6) LOW
           gpio_bit_reset(CTRL,CS);
           gpio_bit_reset(CTRL,RD);
@@ -1689,7 +1684,7 @@ bool writeCFI_GB()
     }
 
     showPersent(1,1,72,5);
-    // Close the file:
+    // Close the file
     f_close(&tf);
 
     if (writeErrors == 0)
@@ -1978,7 +1973,7 @@ uint8_t gbFlashMenu()
   switch (gbFlash)
   {
 	case 0:
-      //cancel btn clicked
+      // cancel btn clicked
       bret = 1;
       break;
 	case 1:
@@ -2008,7 +2003,7 @@ uint8_t gbFlashMenu()
       {
         OledClear();
         OledShowString(0,0,"Save SRAM Data:",8);
-        //Get the save file name
+        // Get the save file name
         char * cpos = strrchr(filePath,'/');
         if(cpos)
 			{
@@ -2017,7 +2012,7 @@ uint8_t gbFlashMenu()
 			}
         else
 			strcpy(fileName,filePath);
-        //Remove file ext name
+        // Remove file ext name
         int pos = -1;
         while (fileName[++pos] != '\0')
 		{
@@ -2073,17 +2068,17 @@ uint8_t gbFlashMenu()
       }
       break;
 	case 3:
-      //Flash MBC3
+      // Flash MBC3
       writeFlash29F_GB(3, 1);
       // Reset
       break;
 	case 4:
-      //Flash MBC5
+      // Flash MBC5
       writeFlash29F_GB(5, 1);
       break;
 	case 5:
-      //Flash GB Camera
-      //MBC3
+      // Flash GB Camera
+      // MBC3
       writeFlash29F_GB(3, 1);
       OledShowString(0,7,"Press OK Button...",8);
       WaitOKBtn();
@@ -2098,7 +2093,7 @@ uint8_t gbFlashMenu()
       WaitOKBtn();
 
       // Flash second bank without erase
-      //MBC3
+      // MBC3
       writeFlash29F_GB(3, 0);
       break;
 	case 6:
@@ -2148,7 +2143,7 @@ uint8_t gbMenu()
   switch (gbMenu)
   {
     case 0:
-      //cancel btn clicked
+      // cancel btn clicked
       bret = 1;
       break;
     case 1:

@@ -60,7 +60,7 @@ word readWord_GBA(unsigned long Address)
   GPIO_CTL1(ADDR_2) = (GPIO_CTL1(ADDR_2)&0xFFFF0000) + 0x3333;//A8-A11
   GPIO_CTL1(ADDR_3) = 0x33333333;
 
-  // Output address to address pins,
+  // Output address to address pins
   GPIO_OCTL(ADDR_1) = (GPIO_OCTL(ADDR_1)&0xFFFF000F) + ((myAddress << 8)&0xFF00) + ((myAddress >> 8)&0xF0);
   GPIO_OCTL(ADDR_2) = (GPIO_OCTL(ADDR_2)&0xFFFFF0FF) + (myAddress & 0x0F00);
   GPIO_OCTL(ADDR_3) = (GPIO_OCTL(ADDR_3)&0xFFFF00FF) + ((myAddress >> 8)&0xFF00);
@@ -110,7 +110,7 @@ word readWord_buf_GBA(unsigned long Address, uint16_t *outBuf, uint16_t cnt)
   GPIO_CTL1(ADDR_3) = 0x33333333;
 
 
-  // Output address to address pins,
+  // Output address to address pins
   GPIO_OCTL(ADDR_1) = (GPIO_OCTL(ADDR_1)&0xFFFF000F) + ((myAddress << 8)&0xFF00) + ((myAddress >> 8)&0xF0);
   GPIO_OCTL(ADDR_2) = (GPIO_OCTL(ADDR_2)&0xFFFFF0FF) + (myAddress & 0x0F00);
   GPIO_OCTL(ADDR_3) = (GPIO_OCTL(ADDR_3)&0xFFFF00FF) + ((myAddress >> 8)&0xFF00);
@@ -161,7 +161,7 @@ void writeWord_GBA(unsigned long Address, word myWord)
   GPIO_CTL1(ADDR_2) = (GPIO_CTL1(ADDR_2)&0xFFFF0000) + 0x3333;//A8-A11
   GPIO_CTL1(ADDR_3) = 0x33333333;
 
-  // Output address to address pins,
+  // Output address to address pins
   GPIO_OCTL(ADDR_1) = (GPIO_OCTL(ADDR_1)&0xFFFF000F) + ((myAddress << 8)&0xFF00) + ((myAddress >> 8)&0xF0);
   GPIO_OCTL(ADDR_2) = (GPIO_OCTL(ADDR_2)&0xFFFFF0FF) + (myAddress & 0x0F00);
   GPIO_OCTL(ADDR_3) = (GPIO_OCTL(ADDR_3)&0xFFFF00FF) + ((myAddress >> 8)&0xFF00);
@@ -202,7 +202,7 @@ word swapBits(word n, word p1, word p2)
   // Move p2'th to rightmost side
   word bit2 =  (n >> p2) & 1;
 
-  // XOR the two bits */
+  // XOR the two bits
   word x = (bit1 ^ bit2);
 
   // Put the xor bit back to their original positions
@@ -242,7 +242,7 @@ byte readByte_GBA(unsigned long myAddress)
   // Set data port to input
   GPIO_CTL1(ADDR_3) = 0x44444444;
 
-  // Output address to address pins,
+  // Output address to address pins
   GPIO_OCTL(ADDR_1) = (GPIO_OCTL(ADDR_1)&0xFFFF000F) + ((myAddress << 8)&0xFF00) + ((myAddress >> 8)&0xF0);
   GPIO_OCTL(ADDR_2) = (GPIO_OCTL(ADDR_2)&0xFFFFF0FF) + (myAddress & 0x0F00);
 
@@ -392,7 +392,7 @@ void getCartInfo_GBA()
           f_lseek(&tf,f_tell(&tf) + 7);
         }
       }
-      // Close the file:
+      // Close the file
       f_close(&tf);
     }
     else 
@@ -459,13 +459,13 @@ void readROM_GBA()
   my_mkdir(folder);
   f_chdir(folder);
 
-  //clear the screen
+  // clear the screen
   OledClear();
   OledShowString(0,0,"Saving to:",8);
   OledShowString(0,1,folder,8);
 
   FIL tf;
-  //open file on sd card
+  // open file on sd card
   if (f_open(&tf,fileName, FA_CREATE_ALWAYS|FA_WRITE) != FR_OK) 
   {
     print_Error("Can't create file!", true);
@@ -493,7 +493,7 @@ void readROM_GBA()
 
   showPersent(1,1,20,3);
 
-  // Close the file:
+  // Close the file
   f_close(&tf);
 }
 
@@ -581,7 +581,7 @@ void readSRAM_GBA(boolean browseFile, unsigned long sramSize, uint32_t pos)
     OledShowString(0,1,folder,8);
   }
 
-  //open file on sd card
+  // open file on sd card
   FIL tf;
   if (f_open(&tf, fileName, FA_CREATE_ALWAYS|FA_WRITE) != FR_OK) 
   {
@@ -606,7 +606,7 @@ void readSRAM_GBA(boolean browseFile, unsigned long sramSize, uint32_t pos)
     UINT wdt;
     f_write(&tf, sdBuffer, 512, &wdt);
   }
-  // Close the file:
+  // Close the file
   f_close(&tf);
 
   // Signal end of process
@@ -623,7 +623,7 @@ void writeSRAM_GBA(boolean browseFile, unsigned long sramSize, uint32_t pos)
     OledClear();
   }
 
-  //open file on sd card
+  // open file on sd card
   FIL tf;
   if (f_open(&tf, filePath, FA_READ) == FR_OK) 
   {
@@ -637,7 +637,7 @@ void writeSRAM_GBA(boolean browseFile, unsigned long sramSize, uint32_t pos)
 
     for (unsigned long currAddress = 0; currAddress < sramSize; currAddress += 512) 
     {
-      //fill sdBuffer
+      // fill sdBuffer
       UINT rdt;
       f_read(&tf, sdBuffer, 512, &rdt);
 
@@ -649,7 +649,7 @@ void writeSRAM_GBA(boolean browseFile, unsigned long sramSize, uint32_t pos)
 
       showPersent(currAddress,sramSize,6,2);
     }
-    // Close the file:
+    // Close the file
     f_close(&tf);
     showPersent(1,1,6,2);
     OledShowString(0,3,"Done!",8);
@@ -662,7 +662,7 @@ void writeSRAM_GBA(boolean browseFile, unsigned long sramSize, uint32_t pos)
 
 unsigned long verifySRAM_GBA(unsigned long sramSize, uint32_t pos) 
 {
-  //open file on sd card
+  // open file on sd card
   FIL tf;
   if (f_open(&tf, filePath, FA_READ) == FR_OK) 
   {
@@ -678,7 +678,7 @@ unsigned long verifySRAM_GBA(unsigned long sramSize, uint32_t pos)
 
     for (unsigned long currAddress = 0; currAddress < sramSize; currAddress += 512)
 	{
-      //fill sdBuffer
+      // fill sdBuffer
       UINT rdt;
       f_read(&tf, sdBuffer, 512, &rdt);
 
@@ -692,7 +692,7 @@ unsigned long verifySRAM_GBA(unsigned long sramSize, uint32_t pos)
         }
       }
     }
-    // Close the file:
+    // Close the file
     f_close(&tf);
     return writeErrors;
   }
@@ -713,7 +713,7 @@ void TestSRAM_GBA(unsigned long sramSize)
   setAddrOutMode();
   for (unsigned long currAddress = 0; currAddress < sramSize; currAddress++) 
   {
-    //fill sdBuffer
+    // fill sdBuffer
     byte wb = currAddress & 0xFF;
     // Write byte
     writeByte_GBA(currAddress, wb);
@@ -1033,7 +1033,7 @@ void writeEeprom_GBA(word eepSize)
       delayMicroseconds(200);//???
     }
 
-    // Close the file:
+    // Close the file
     f_close(&tf);
     OledShowString(0,1,"Done.",8);
     
@@ -1265,7 +1265,6 @@ boolean blankcheckFLASH_GBA (unsigned long flashSize)
   // Set data pins to input
   GPIO_CTL1(ADDR_3) = 0x44444444;
   // Disable Pullups
-  //PORTC = 0x00;
 
   boolean blank = 1;
 
@@ -1302,9 +1301,9 @@ boolean blankcheckFLASH_GBA (unsigned long flashSize)
   return blank;
 }
 
-// The MX29L010 is 131072 bytes in size and has 16 sectors per bank
-// each sector is 4096 bytes, there are 32 sectors total
-// therefore the bank size is 65536 bytes, so we have two banks in total
+/* The MX29L010 is 131072 bytes in size and has 16 sectors per bank
+   each sector is 4096 bytes, there are 32 sectors total
+   therefore the bank size is 65536 bytes, so we have two banks in total */
 void switchBank_GBA(byte bankNum) 
 {
   // Output a HIGH signal on CS_ROM(PH3) WE_FLASH(PH5) and OE_FLASH(PH6)
@@ -1484,7 +1483,7 @@ void writeFLASH_GBA (boolean browseFile, unsigned long flashSize, uint32_t pos)
     // Set CS_FLASH(PH0) high
     gpio_bit_set(CTRLGBA,CS_SRAM);
 
-    // Close the file:
+    // Close the file
     f_close(&tf);
     OledShowString(0,3,"Done!",8);     
 
@@ -2470,7 +2469,7 @@ boolean verifyFlashrom_GBA()
     }
 
     showPersent(1,1,82,6);
-    // Close the file:
+    // Close the file
     f_close(&tf);
     if (writeErrors == 0)
 	{
@@ -2525,7 +2524,7 @@ boolean verifyFlashrom_GBA_new()
     }
 
     showPersent(1,1,82,5);
-    // Close the file:
+    // Close the file
     f_close(&tf);
     if (writeErrors == 0)
 	{
@@ -2768,7 +2767,7 @@ void flashRepro_GBA()
         }
       }
 
-      // Close the file:
+      // Close the file
       f_close(&tf);
 
       // Verify
@@ -2806,20 +2805,12 @@ void flashRepro_GBA()
 
       if (verifyFlashrom_GBA_new() == 1) 
       {
-        //OledShowString(74,6,"OK!",8);
       }
       else 
       {
         OledClear();
         print_Error("verify ERROR!", true);
       }
-      /* Skipped blankcheck
-        }
-        else
-		{
-        print_Error(F("failed"), true);
-        }
-      */
 
 
       use_tick = (getSystick() - use_tick)/1055;
@@ -2886,8 +2877,6 @@ void writeTEST_GBA(uint32_t testSize)
 
         // Read the status register
         word statusReg = readWord_GAB(currSector + currSdBuffer + 30);
-       // int i= 0;
-
 
         while ((statusReg | 0xFF7F) != (tw | 0xFF7F)) 
         {

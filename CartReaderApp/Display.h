@@ -15,23 +15,23 @@ void SSD1306_WriteCmd(uint8_t var);
 void SSD1306_WriteData(uint8_t var);
 
 
-//坐标设置：也就是在哪里显示
+// 坐标设置：也就是在哪里显示
 void OledSetPos(uint8_t x, uint8_t y);
-//开启Oled显示
+// 开启Oled显示
 void OledDisplayOn(void);
-//关闭Oled显示   
+// 关闭Oled显示   
 void OledDisplayOff(void);
-//清屏函数,清完屏,整个屏幕是黑色的!和没点亮一样  
+// 清屏函数,清完屏,整个屏幕是黑色的!和没点亮一样  
 void OledClear(void);
-//在指定位置显示一个字符,包括部分字符
-//x:0~127，y:0~7
-//Char_Size:选择字体 16/12 
+// 在指定位置显示一个字符,包括部分字符
+// x:0~127，y:0~7
+// Char_Size:选择字体 16/12 
 void OledShowChar(uint8_t x,uint8_t y,uint8_t chr,uint8_t Char_Size);
-//显示一个字符串
+// 显示一个字符串
 uint8_t OledShowString(uint8_t x,uint8_t y,char *str,uint8_t Char_Size);
-//显示一个位图
+// 显示一个位图
 void OledShowPicData(uint8_t x,uint8_t y,uint8_t wdt,uint8_t hgt,uint8_t *pPicData);
-//初始化
+// 初始化
 void OledInit(void);
 
 
@@ -41,7 +41,7 @@ void draw_progressbar(uint32_t processed, uint32_t total, uint8_t line);
 void showPersent(uint32_t processed, uint32_t total, uint8_t x, uint8_t line);
 
 
-//Leds
+// Leds
 void LEDSInit();
 void LED_ON(uint8_t LedNum);
 void LED_OFF(uint8_t LedNum);

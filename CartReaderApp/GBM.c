@@ -141,7 +141,7 @@ void readROM_GBM(word numBanks)
       }
     }
 
-    // Close the file:
+    // Close the file
     f_close(&tf);
 
     // Signal end of process
@@ -159,43 +159,43 @@ void send_GBM(byte myCommand)
   switch (myCommand)
   {
     case 0x01:
-      //CMD_01h -> ???
+      // CMD_01h -> ???
       writeByte_GBM(0x0120, 0x01);
       writeByte_GBM(0x013F, 0xA5);
       break;
 
     case 0x02:
-      //CMD_02h -> Write enable Step 2
+      // CMD_02h -> Write enable Step 2
       writeByte_GBM(0x0120, 0x02);
       writeByte_GBM(0x013F, 0xA5);
       break;
 
     case 0x03:
-      //CMD_03h -> Undo write Step 2
+      // CMD_03h -> Undo write Step 2
       writeByte_GBM(0x0120, 0x03);
       writeByte_GBM(0x013F, 0xA5);
       break;
 
     case 0x04:
-      //CMD_04h -> Map entire flashrom (MBC4 mode)
+      // CMD_04h -> Map entire flashrom (MBC4 mode)
       writeByte_GBM(0x0120, 0x04);
       writeByte_GBM(0x013F, 0xA5);
       break;
 
     case 0x05:
-      //CMD_05h -> Map menu (MBC5 mode)
+      // CMD_05h -> Map menu (MBC5 mode)
       writeByte_GBM(0x0120, 0x05);
       writeByte_GBM(0x013F, 0xA5);
       break;
 
     case 0x08:
-      //CMD_08h -> disable writes/reads to/from special Nintendo Power registers (those at 0120h..013Fh)
+      // CMD_08h -> disable writes/reads to/from special Nintendo Power registers (those at 0120h..013Fh)
       writeByte_GBM(0x0120, 0x08);
       writeByte_GBM(0x013F, 0xA5);
       break;
 
     case 0x09:
-      //CMD_09h Wakeup -> re-enable access to ports 0120h..013Fh
+      // CMD_09h Wakeup -> re-enable access to ports 0120h..013Fh
       writeByte_GBM(0x0120, 0x09);
       writeByte_GBM(0x0121, 0xAA);
       writeByte_GBM(0x0122, 0x55);
@@ -203,7 +203,7 @@ void send_GBM(byte myCommand)
       break;
 
     case 0x0A:
-      //CMD_0Ah -> Write enable Step 1
+      // CMD_0Ah -> Write enable Step 1
       writeByte_GBM(0x0120, 0x0A);
       writeByte_GBM(0x0125, 0x62);
       writeByte_GBM(0x0126, 0x04);
@@ -211,13 +211,13 @@ void send_GBM(byte myCommand)
       break;
 
     case 0x10:
-      //CMD_10h -> disable writes to normal MBC registers (such like 2100h)
+      // CMD_10h -> disable writes to normal MBC registers (such like 2100h)
       writeByte_GBM(0x0120, 0x10);
       writeByte_GBM(0x013F, 0xA5);
       break;
 
     case 0x11:
-      //CMD_11h -> re-enable access to MBC registers like 0x2100
+      // CMD_11h -> re-enable access to MBC registers like 0x2100
       writeByte_GBM(0x0120, 0x11);
       writeByte_GBM(0x013F, 0xA5);
       break;
@@ -255,7 +255,7 @@ void switchGame_GBM(byte myData)
   // Enable ports 0x0120 (F2)
   send_GBM(0x09);
 
-  //CMD_C0h -> map selected game without reset
+  // CMD_C0h -> map selected game without reset
   writeByte_GBM(0x0120, 0xC0 & myData);
   writeByte_GBM(0x013F, 0xA5);
 }
@@ -305,7 +305,7 @@ void eraseFlash_GBM()
   OledShowString(0,0,"Erasing...",8);
    
 
-  //enable access to ports 0120h
+  // enable access to ports 0120h
   send_GBM(0x09);
   // Enable write
   send_GBM(0x0A);
@@ -346,12 +346,12 @@ boolean blankcheckFlash_GBM()
   OledShowString(0,0,"Blankcheck...",8);
    
 
-  //enable access to ports 0120h (F2)
+  // enable access to ports 0120h (F2)
   send_GBM(0x09);
 
   // Map entire flashrom
   send_GBM(0x04);
-  // Disable ports 0x0120...
+  // Disable ports 0x0120
   send_GBM(0x08);
 
   // Read rom
@@ -426,7 +426,7 @@ void writeFlash_GBM()
 	{
 	}
 
-    // first bank: 0x0000-0x7FFF,
+    // first bank: 0x0000-0x7FFF
     word currAddress = 0x0;
 
     // Write 63 banks
@@ -497,7 +497,7 @@ void writeFlash_GBM()
     }
 
     showPersent(1,1,60,0);
-    // Close the file:
+    // Close the file
     f_close(&tf);
   }
   else 
@@ -555,7 +555,7 @@ void readMapping_GBM()
     UINT wdt;
     f_write(&tf, sdBuffer, 128, &wdt);
 
-    // Close the file:
+    // Close the file
     f_close(&tf);
 
     // Signal end of process
@@ -575,7 +575,7 @@ void eraseMapping_GBM()
 {
   OledShowString(0,0,"Erasing...",8);   
 
-  //enable access to ports 0120h
+  // enable access to ports 0120h
   send_GBM(0x09);
   // Enable write
   send_GBM(0x0A);
@@ -632,7 +632,7 @@ boolean blankcheckMapping_GBM()
   send_GBM1(0x0F, 0x2AAA, 0x55);
   send_GBM1(0x0F, 0x5555, 0x77);
 
-  // Disable ports 0x0120...
+  // Disable ports 0x0120
   send_GBM(0x08);
 
   // Read rom
@@ -737,7 +737,7 @@ void writeMapping_GBM()
     // Execute write
     writeByte_GBM(127, 0xFF);
 
-    // Close the file:
+    // Close the file
     f_close(&tf);
     OledShowString(20,1,"Done",8);
   }
@@ -810,6 +810,7 @@ uint8_t gbmMenu()
 {
   // create menu with title and 7 options to choose from
   uint8_t bret = 0;
+  LED_RED_OFF; // Make sure red led is off after blinking
   unsigned char gbmMenu = questionBox_OLED("GB Memory Menu -", menuOptionsGBM, 7, 1, 1, 1);
 
   // wait for user choice to come back from the question box menu
@@ -835,7 +836,7 @@ uint8_t gbmMenu()
       send_GBM(0x09);
       // Map entire flashrom
       send_GBM(0x04);
-      // Disable ports 0x0120...
+      // Disable ports 0x0120
       send_GBM(0x08);
       // Read 1MB rom
       readROM_GBM(64);
