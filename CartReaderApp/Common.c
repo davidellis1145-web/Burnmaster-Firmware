@@ -1,7 +1,7 @@
 #include "Common.h"
 
 
-//SD Card
+// SD Card
 FIL myDir;
 FIL myFile;
 // Array that holds the data
@@ -9,7 +9,7 @@ FATFS fs;
 byte sdBuffer[512];
 
 
-//remember folder number to create a new folder for every save
+// remember folder number to create a new folder for every save
 int foldern;
 char folder[36];
 

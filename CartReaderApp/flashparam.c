@@ -20,7 +20,7 @@ void save_dword_at(uint32_t address, uint32_t data)
 {
   fmc_unlock();
   fmc_word_program(address, data);
-  //lock the main FMC after the program operation
+  // lock the main FMC after the program operation
   fmc_lock();
 }
 

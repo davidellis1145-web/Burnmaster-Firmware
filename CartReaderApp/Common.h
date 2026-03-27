@@ -51,7 +51,7 @@ extern word numBanks;
 extern char checksumStr[5];
 
 
-//SD Card
+// SD Card
 extern byte sdBuffer[512];
 
 

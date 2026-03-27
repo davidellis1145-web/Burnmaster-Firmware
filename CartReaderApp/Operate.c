@@ -12,7 +12,7 @@
 **********************/
 void KeyBrdInit()
 {
-  gpio_init(GPIOE, GPIO_MODE_IPU, GPIO_OSPEED_2MHZ, 0x3F/*GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5*/);
+  gpio_init(GPIOE, GPIO_MODE_IPU, GPIO_OSPEED_2MHZ, 0x3F);
   gpio_init(GPIOB, GPIO_MODE_IN_FLOATING, GPIO_OSPEED_2MHZ, GPIO_PIN_1);//低电量获取
 }
 
@@ -49,7 +49,6 @@ void WaitOKBtn()
 {
   while(checkButton() != BTNOK)
   {
-    //delay(88);    
   }
 }
 
@@ -57,7 +56,7 @@ void WaitOKBtn()
 // Display a question box with selectable answers. Make sure default choice is in (0, num_answers]
 unsigned char questionBox_OLED(char * question, const char* const answers[7], int num_answers, int default_choice, uint8_t rollselect, uint8_t clrSrc) 
 {
-  //clear the screen
+  // clear the screen
   if(clrSrc > 0)OledClear();
 
   // print menu
@@ -76,7 +75,6 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
   // draw selection bullet
   OledShowChar(0,choice,'*',8);
 
-  //unsigned long idleTime = millis();
   uint8_t currentColor = 0;
   uint32_t scroll_tick = 0;
   uint8_t scroll_start = 0;
@@ -164,11 +162,10 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
     }
     else if (b == BTNOK)
 	{
-      //idleTime = millis();
       break;
     }
   
-    //show menu selected
+    // show menu selected
     if(choice != choice_ori)
     {
       OledShowChar(0,choice_ori,' ',8);
@@ -183,74 +180,6 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 }
 
 
-/*
----BEGIN ORIGIN---
-uint8_t my_mkdir(char * dir)
-{
-  uint8_t bret = false;
-  bool opendir_err = 0;
-  char SonPath[10][30]; //最多10层，每层最多30字符
-  char RootPath[128];   //最低已存在路径
-  memset(SonPath, '\0', sizeof(SonPath)); //初始化
-  strcpy(RootPath, dir);
-  uint8_t num = 0;           // 剔除的次数
-  DIR W_Ddir;
-
-  do                      //遍历寻找文件夹
-  {
-    char *dot = strrchr(RootPath, '\\');   //剔除一层
-    if(dot == NULL)dot = strrchr(RootPath, '/');
-    if(dot == NULL)
-    {
-      if(RootPath[0])
-	  {
-		dot = RootPath;
-	  }
-      else break;
-    }
-
-    strcpy(SonPath[num], dot);
-    FRESULT W_Dresult = f_opendir(&W_Ddir, RootPath); //检测文件夹
-    if(W_Dresult == FR_OK)
-    {
-            printf("Exist[%s]\r\n",RootPath);
-            f_closedir(&W_Ddir);
-            break;
-    }
-    else
-    {
-            printf("Err - %d[%s]\r\n",W_Dresult, RootPath);
-            if(W_Dresult == FR_NO_PATH)
-            {
-                    opendir_err = 1;
-                    num ++;
-                    SonPath[num][0] = 0;
-                    dot[0] = 0x00;
-            }
-            else return bret;
-    }
-  }
-  while(1);
-
-  if(opendir_err == 1)
-  {
-    //遍历创建文件夹
-    opendir_err = 0;
-    for(int i=0;i<num;i++)
-    {
-            strcat(RootPath, SonPath[num-i-1]);
-            FRESULT W_Dresult = f_mkdir(RootPath);
-            if(W_Dresult == FR_OK) { printf(">> Mk dir OK[%s]\r\n", RootPath); bret = true;}
-            else printf(">> Err - %d [%s]\r\n",W_Dresult, RootPath);
-    }
-  }
-  else bret = true;
-  return  bret;
-}
----END ORIGIN---
-*/
-
-// ---Start of edited---
 uint8_t my_mkdir(char * dir)
 {
 	uint8_t bret = false;
@@ -320,7 +249,6 @@ uint8_t my_mkdir(char * dir)
 	else bret = true;
 	return  bret;
 }
-//---End of edited---
 
 
 /**********************
