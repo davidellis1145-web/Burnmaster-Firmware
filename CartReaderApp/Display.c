@@ -783,7 +783,7 @@ void print_Error(char *errorMessage, uint8_t forceReset)
 
 /**********************
   Progressbar
-*********************
+**********************/
 void draw_progressbar(uint32_t processed, uint32_t total, uint8_t line)
 {
   uint8_t current, i;
@@ -843,7 +843,7 @@ void showPersent(uint32_t processed, uint32_t total, uint8_t x, uint8_t line)
 
 /**********************
   LEDS
-*********************
+**********************/
 void LEDSInit()
 {
   gpio_init(GPIOA,GPIO_MODE_OUT_PP,GPIO_OSPEED_2MHZ,BITS(0,3));
