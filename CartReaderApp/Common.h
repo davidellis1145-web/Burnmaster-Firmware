@@ -64,5 +64,9 @@ void SysClockFree();
 
 void delayMicroseconds(uint16_t us);
 int findHighestFolder(const char* basePath);
+uint8_t gbTestsMenu();
+uint8_t gbaTestsMenu();
+void gbTestsScreen();
+void gbaTestsScreen();
 
 #endif
