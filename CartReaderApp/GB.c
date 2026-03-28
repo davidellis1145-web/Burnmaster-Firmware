@@ -269,7 +269,7 @@ void getCartInfo_GB()
 void showCartInfo_GB() 
 {
   OledClear();
-  if (strcmp((const char *)checksumStr, "00") != 0)
+  if (strcmp((const char *)checksumStr, "0000") != 0) // testing error on checksum 0000
   {
     OledShowString(0,0,"GB Cart Info:",8);
     OledShowString(2,1,"Name: ",8);
@@ -366,7 +366,13 @@ void showCartInfo_GB()
   }
   else 
   {
-    OledShowString(0,2,"GAMEPAK ERROR",8);
+    OledShowString(0,2,"GAMEPAK ERROR",8);		// testing error on checksum 0000
+	OledShowString(0,4,"Checksum = 0000",8);
+
+    // Wait for user input and reset
+	OledShowString(0,7,"Press OK Button...",8);
+	WaitOKBtn();
+	ResetSystem();
   }
 }
 
@@ -2142,8 +2148,7 @@ uint8_t gbMenu()
   // wait for user choice to come back from the question box menu
   switch (gbMenu)
   {
-    case 0:
-      // cancel btn clicked
+    case 0: // cancel btn clicked
       bret = 1;
       break;
     case 1:

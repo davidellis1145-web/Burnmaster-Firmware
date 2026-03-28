@@ -42,7 +42,7 @@ uint8_t GetGBType()
 
 
 // Icons data
-uint8_t Icon_data_GBC[] = 
+uint8_t Icon_data_GBC[] =
 {
 0xFC, 0x02, 0x02, 0xF2, 0x12, 0x12, 0x12, 0xD2, 0xD2, 0xD2, 0xD2, 0xD2, 0xD2, 0xD2, 0xD2, 0xD2, 0xD2, 0xD2, 0xD2, 0xD2, 0xD2, 0xD2, 0x12, 0x12, 0x12, 0xE2, 0x02, 0x06, 0xFC,
 0xFF, 0x00, 0x00, 0xFF, 0x18, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00, 0xFF, 0x00, 0x00, 0xFF,
@@ -52,7 +52,7 @@ uint8_t Icon_data_GBC[] =
 0x3F, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x42, 0x41, 0x40, 0x40, 0x42, 0x41, 0x40, 0x40, 0x40, 0x40, 0x44, 0x48, 0x51, 0x42, 0x44, 0x60, 0x31, 0x18, 0x0F
 };
 
-uint8_t Icon_data_GBA[] = 
+uint8_t Icon_data_GBA[] =
 {
 0x00, 0xC0, 0xF8, 0x48, 0x6C, 0x34, 0x16, 0x1A, 0x0A, 0x0A, 0x06, 0x06, 0x02, 0x01, 0xE1, 0xE1, 0x31, 0x31, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39,
 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x39, 0x31, 0x31, 0xE1, 0xE1, 0x01, 0x02, 0x86, 0x86, 0x0A, 0x0A, 0x1A, 0x16, 0x34, 0x6C, 0x48, 0xF8, 0xC0, 0x00,
@@ -72,64 +72,62 @@ uint8_t Icon_data_GBA[] =
 // GBx start menu
 static const char gbxMenuItem1[] = "Game Boy (Color)";
 static const char gbxMenuItem2[] = "Game Boy Advance";
-static const char gbxMenuTestAll[] = "Test Cart";
+static const char gbxMenuTests[] = "Cart Tests";
+static const char gbxMenuTestAll[] = "Full Test";
 static const char gbxMenuTestFast[] = "Quick Test";
 static const char gbxAbout[] = "About...";
 static const char gbxReset[] = "Reset";
 
-static const char* const menuOptionsGBC[] = {gbxMenuItem1,gbxMenuTestFast,gbxMenuTestAll,gbxAbout};
-static const char* const menuOptionsGBA[] = {gbxMenuItem2,gbxMenuTestFast,gbxMenuTestAll,gbxAbout};
-static const char* const menuOptionsGBx[] = {gbxMenuItem1, gbxMenuItem2};
+static const char* const menuOptionsGBC[] = {gbxMenuItem1,gbxMenuTests,gbxAbout};
+static const char* const menuOptionsGBA[] = {gbxMenuItem2,gbxMenuTests,gbxAbout};
+static const char* const menuOptionsGBx[] = {gbxMenuItem1,gbxMenuItem2};
+static const char* const menuOptionsGBT[] = {gbxMenuTestFast,gbxMenuTestAll,gbxReset};
 
 
 void aboutScreen()
 {
   OledClear();
-  OledShowString(0,0,(char *)("Game Boy"),16);
+  OledShowString(0,0,(char *)("Game Boy"),16); // font size 16 takes 2 lines
   OledShowString(5,2,(char *)("Flash Master"),16);
   // Contains custom integration for Spansion S29GL128N | S29GL256N | S29GL512N
   // Based on Funnyplaying v1.10 release.
-  OledShowString(20,4,(char *)("Ver:1.01"),8);
-  OledShowString(20,5,(char *)("Mar. 2026"),8);
+  OledShowString(20,4,(char *)("Ver:1.01"),8); //todo update ver. number?
+  OledShowString(20,5,(char *)("Mar. 27, 2026"),8);
   OledShowString(3,6,(char *)("Dave's Game Emporium"),8);
   OledShowString(0,7,(char *)("Press OK Button..."),8);
-
   WaitOKBtn();
 }
 
 
-// Start menu for both GB and GBA
+// Start menu for both GB and GBA (main menu)
 uint8_t gbxMenu() 
 {
   uint8_t bret = 0;
   uint8_t gbxtype = GetGBType();
   unsigned char gbType;
 
-  // create menu with title and 4 options to choose from  
-  // wait for user choice to come back from the question box menu
-
   if(gbxtype == TYPE_GBA)
   {
-    LED_GREEN_OFF; // make sure GB mode led is off
+    LED_GREEN_OFF; // make sure GB mode led is off LED_CLEAR() not working...
     LED_BLUE_ON;   // make sure GBA mode led is on
     OledClear();
     OledShowPicData(64,4,56,4,Icon_data_GBA); // draws GBA icon
-    gbType = questionBox_OLED("Game Boy Flash Master", menuOptionsGBA, 4, 1, 1, 0);    
+	
+	// create menu with title and 3 options to choose from  
+    // wait for user choice to come back from the question box menu
+    gbType = questionBox_OLED("Game Boy Flash Master", menuOptionsGBA, 3, 1, 1, 0);    
     switch (gbType)
     {
       case 0:  // cancel btn clicked
-        ResetSystem();
+        gbxScreen();
         break;
       case 1:
         gbaScreen();
         break;
       case 2:
-        TestMemGBA(true);
+        gbaTestsScreen(); //testing test screen for gba
         break;
       case 3:
-        TestMemGBA(false);
-        break;
-      case 4:
         aboutScreen();
         break;
     }
@@ -140,22 +138,22 @@ uint8_t gbxMenu()
     LED_GREEN_ON;  // make sure GB mode led is on
     OledClear();
     OledShowPicData(86,2,29,6,Icon_data_GBC);  // draws GB icon
-    gbType = questionBox_OLED("Game Boy Flash Master", menuOptionsGBC, 4, 1, 1, 0);    
+
+	// create menu with title and 3 options to choose from  
+    // wait for user choice to come back from the question box menu
+    gbType = questionBox_OLED("Game Boy Flash Master", menuOptionsGBC, 3, 1, 1, 0);    
     switch (gbType)
     {
       case 0:  // cancel btn clicked
-        ResetSystem();
+        gbxScreen();
         break;
       case 1:
         gbScreen();
         break;
       case 2:
-        TestMemGB(true);
+        gbTestsScreen(); //testing test screen for gb
         break;
       case 3:
-        TestMemGB(false);
-        break;
-      case 4:
         aboutScreen();
         break;
     }
@@ -167,7 +165,7 @@ uint8_t gbxMenu()
     switch (gbType)
     {
       case 0:  // cancel btn clicked
-        ResetSystem();
+        gbxScreen();
         break;
       case 1:
         gbScreen();
@@ -180,10 +178,73 @@ uint8_t gbxMenu()
   return  bret;
 }
 
+
+uint8_t gbTestsMenu() // gb tests menu testing
+{
+  // Show warning
+  OledShowString(0,0,(char *)("The following tests"),8);
+  OledShowString(0,1,(char *)("will erase the cart!"),8);
+  WaitOKBtn();
+
+  // create menu with title and 3 options to choose from
+  unsigned char gbCTest;
+  gbCTest = questionBox_OLED("GB(C) Cart Tests", menuOptionsGBT, 3, 1, 1, 0);
+
+  // wait for user choice to come back from the question box menu
+  switch (gbCTest)
+  {
+    case 0: // cancel btn pressed
+      gbxScreen();
+      break;
+    case 1:
+      TestMemGB(true);
+      break;
+	case 2:
+	  TestMemGB(false);
+	  break;
+    case 3:
+      ResetSystem();
+      break;
+  }
+  return 0;
+}
+
+
+uint8_t gbaTestsMenu() //gba tests menu testing
+{
+  // Show warning
+  OledShowString(0,0,(char *)("The following tests"),8);
+  OledShowString(0,1,(char *)("will erase the cart!"),8);
+  WaitOKBtn();
+
+  // create menu with title and 3 options to choose from
+  unsigned char gbaCTest;
+  gbaCTest = questionBox_OLED("GBA Cart Tests", menuOptionsGBT, 3, 1, 1, 0);
+
+  // wait for user choice to come back from the question box menu
+  switch (gbaCTest)
+  {
+    case 0: // cancel btn pressed
+      gbxScreen();
+      break;
+    case 1:
+      TestMemGBA(true);
+      break;
+	case 2:
+	  TestMemGBA(false);
+	  break;
+    case 3:
+      ResetSystem();
+      break;
+  }
+  return 0;
+}
+
+
 /**********************
   Menu to display
 **********************/
-void gbxScreen()
+void gbxScreen() //Main menu
 {
   while(1)
   {
@@ -194,36 +255,24 @@ void gbxScreen()
 }
 
 
-// Main menu
-static const char modeItem1[] = "Game Boy";
-static const char modeItem2[] = "About";
-static const char modeItem3[] = "Reset";
-static const char* const modeOptions[] = {modeItem1, modeItem2};
-
-
-// All included slots
-void mainMenu()
+void gbTestsScreen() // testing for gb testsmenu
 {
-  // create menu with title and 6 options to choose from
-  unsigned char modeMenu;
-  // Copy menuOptions out of progmem
-  LED_CLEAR();
-  modeMenu = questionBox_OLED("Game Boy Flash Master", modeOptions, 2, 1, 1, 1);
-
-  // wait for user choice to come back from the question box menu
-  switch (modeMenu)
+  while(1)
   {
-#ifdef enable_GBX
-    case 1:
-      gbxScreen();
-      break;
-#endif
-    case 2:
-      aboutScreen();
-      break;
-    case 3:
-      ResetSystem();
-      break;
+    uint8_t b = gbTestsMenu();
+    
+    if(b>0)break;
+  }
+}
+
+
+void gbaTestsScreen() // testing for gba testsmenu
+{
+  while(1)
+  {
+    uint8_t b = gbaTestsMenu();
+    
+    if(b>0)break;
   }
 }
 
@@ -426,20 +475,6 @@ void SDCardInit()
 
 }
 
-
-void test()
-{
-  byte b1 = 0xff;
-  printf("%08x",(b1 << 8));
-
-  // Config led gpio
-  rcu_periph_clock_enable(RCU_GPIOC);
-  gpio_init(GPIOC,GPIO_MODE_OUT_PP,GPIO_OSPEED_2MHZ,GPIO_PIN_13);
-
-  while(1)
-  {
-  }
-}
 
 void PriInit()
 {

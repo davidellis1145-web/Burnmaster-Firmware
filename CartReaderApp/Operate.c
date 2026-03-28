@@ -246,8 +246,9 @@ uint8_t my_mkdir(char * dir)
 				printf(">> Err - %d [%s]\r\n",W_Dresult, RootPath);
 		}
 	}
-	else bret = true;
-	return  bret;
+	else
+		bret = true;
+		return  bret;
 }
 
 
@@ -325,7 +326,8 @@ next_page:
         break;
       }
     }
-    else break;
+    else
+		break;
   }
 
   default_select = 1;

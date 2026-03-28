@@ -2174,7 +2174,8 @@ void writeMSP55LV128_GBA(FIL * ptf)
                 goto _reProgram;
               }
             }
-            else break;
+            else
+				break;
           }
           else
           {
@@ -2274,7 +2275,8 @@ void writeMX29GL128E_GBA(FIL * ptf)
                 goto _reProgram;
               }
             }
-            else break;
+            else
+				break;
           }
           else
           {
@@ -2417,7 +2419,8 @@ void writeSpansion_GBA(FIL * ptf)
                 goto _reProgram;
               }
             }
-            else break;
+            else
+				break;
           }
           else
           {
@@ -2902,8 +2905,7 @@ void writeTEST_GBA(uint32_t testSize)
                 LED_GREEN_BLINK;
                 goto _reProgram;
               }
-              else
-              if(statusReg&0x2)
+              else if(statusReg&0x2)
               {
                 //write buffer abort reset
                 writeWord_GAB(0xAAA, 0xAA);
@@ -2919,7 +2921,8 @@ void writeTEST_GBA(uint32_t testSize)
                 goto _reProgram;
               }
             }
-            else break;
+            else
+				break;
           }
           else
           {
