@@ -182,9 +182,13 @@ uint8_t gbxMenu()
 uint8_t gbTestsMenu() // gb tests menu testing
 {
   // Show warning
-  OledShowString(0,0,(char *)("The following tests"),8);
-  OledShowString(0,1,(char *)("will erase the cart!"),8);
+  OledClear();
+  OledShowString(35,1,(char *)("**WARNING**"),8);
+  OledShowString(3,2,(char *)("The following tests"),8);
+  OledShowString(2,3,(char *)("will erase the cart!"),8);
+  OledShowString(0,7,(char *)("Press OK Button..."),8);
   WaitOKBtn();
+  OledClear();
 
   // create menu with title and 3 options to choose from
   unsigned char gbCTest;
@@ -213,9 +217,13 @@ uint8_t gbTestsMenu() // gb tests menu testing
 uint8_t gbaTestsMenu() //gba tests menu testing
 {
   // Show warning
-  OledShowString(0,0,(char *)("The following tests"),8);
-  OledShowString(0,1,(char *)("will erase the cart!"),8);
+  OledClear();
+  OledShowString(35,1,(char *)("**WARNING**"),8);
+  OledShowString(3,2,(char *)("The following tests"),8);
+  OledShowString(2,3,(char *)("will erase the cart!"),8);
+  OledShowString(0,7,(char *)("Press OK Button..."),8);
   WaitOKBtn();
+  OledClear();
 
   // create menu with title and 3 options to choose from
   unsigned char gbaCTest;

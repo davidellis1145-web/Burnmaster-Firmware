@@ -269,7 +269,7 @@ void getCartInfo_GB()
 void showCartInfo_GB() 
 {
   OledClear();
-  if (strcmp((const char *)checksumStr, "0000") != 0) // testing error on checksum 0000
+  if (strcmp((const char *)checksumStr, "0000") != 0 || strcmp((const char *)checksumStr, "FFFF") != 0) // testing error on checksum 0000 & FFFF(no cart)
   {
     OledShowString(0,0,"GB Cart Info:",8);
     OledShowString(2,1,"Name: ",8);
@@ -366,13 +366,23 @@ void showCartInfo_GB()
   }
   else 
   {
-    OledShowString(0,2,"GAMEPAK ERROR",8);		// testing error on checksum 0000
-	OledShowString(0,4,"Checksum = 0000",8);
-
-    // Wait for user input and reset
-	OledShowString(0,7,"Press OK Button...",8);
-	WaitOKBtn();
-	ResetSystem();
+    if (checksumStr == "FFFF")
+	{
+	  OledShowString(0,2,"GAMEPAK ERROR",8);
+	  OledShowString(0,4,"Checksum = FFFF",8);
+	  OledShowString(10,5,"No Cart?",8);
+	  OledShowString(0,7,"Press OK Button...",8);
+	  WaitOKBtn();
+	  ResetSystem();
+	}
+	else
+	{
+	  OledShowString(0,2,"GAMEPAK ERROR",8);		 // testing error on checksum 0000
+	  OledShowString(0,4,"Checksum = 0000",8);
+	  OledShowString(0,7,"Press OK Button...",8);	 // Wait for user input and reset
+	  WaitOKBtn();
+	  ResetSystem();
+	}
   }
 }
 
