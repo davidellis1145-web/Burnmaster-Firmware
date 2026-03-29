@@ -164,11 +164,7 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 	{
       break;
     }
-	else if ((b == BTNLEFT) && (b == BTNCANCEL))  // testing to reset if cancel btn AND left are pressed.
-	{
-	  ResetSystem();
-	  break;
-	}
+    
     // show menu selected
     if(choice != choice_ori)
     {

@@ -269,7 +269,7 @@ void getCartInfo_GB()
 void showCartInfo_GB() 
 {
   OledClear();
-  if (strcmp((const char *)checksumStr, "0000") != 0 || strcmp((const char *)checksumStr, "FFFF") != 0) // testing error on checksum 0000 & FFFF(no cart)
+  if (strcmp((const char *)checksumStr, "0000") != 0) || (strcmp((const char *)checksumStr, "FFFF") != 0) // testing error on checksum 0000 & FFFF(no cart)
   {
     OledShowString(0,0,"GB Cart Info:",8);
     OledShowString(2,1,"Name: ",8);

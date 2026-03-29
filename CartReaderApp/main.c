@@ -91,8 +91,8 @@ void aboutScreen()
   OledShowString(5,2,(char *)("Flash Master"),16);
   // Contains custom integration for Spansion S29GL128N | S29GL256N | S29GL512N
   // Based on Funnyplaying v1.10 release.
-  OledShowString(20,4,(char *)("Ver:1.01"),8); //todo update ver. number?
-  OledShowString(20,5,(char *)("Mar. 27, 2026"),8);
+  OledShowString(20,4,(char *)("Ver:1.02"),8);
+  OledShowString(20,5,(char *)("Mar. 28, 2026"),8);
   OledShowString(3,6,(char *)("Dave's Game Emporium"),8);
   OledShowString(0,7,(char *)("Press OK Button..."),8);
   WaitOKBtn();
@@ -252,7 +252,7 @@ uint8_t gbaTestsMenu() //gba tests menu testing
 /**********************
   Menu to display
 **********************/
-void gbxScreen() //Main menu
+void gbxScreen() // Main menu
 {
   while(1)
   {
@@ -263,7 +263,7 @@ void gbxScreen() //Main menu
 }
 
 
-void gbTestsScreen() // testing for gb testsmenu
+void gbTestsScreen() // Cart tests for GB(C)
 {
   while(1)
   {
@@ -274,7 +274,7 @@ void gbTestsScreen() // testing for gb testsmenu
 }
 
 
-void gbaTestsScreen() // testing for gba testsmenu
+void gbaTestsScreen() // Cart tests for GBA
 {
   while(1)
   {
