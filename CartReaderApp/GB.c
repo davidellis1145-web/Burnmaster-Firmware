@@ -366,7 +366,7 @@ void showCartInfo_GB()
   }
   else 
   {
-    if (checksumStr == "FFFF")
+    if (strcmp((const char *)checksumStr, "FFFF") == 0 )
 	{
 	  OledShowString(0,2,"GAMEPAK ERROR",8);
 	  OledShowString(0,4,"Checksum = FFFF",8);
