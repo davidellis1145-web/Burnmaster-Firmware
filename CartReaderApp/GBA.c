@@ -2266,7 +2266,7 @@ void writeMX29GL128E_GBA(FIL * ptf)
 			}
 		}
 	}
-	showPersent(1,1,68,3)
+	showPersent(1,1,68,3);
 }
 
 
