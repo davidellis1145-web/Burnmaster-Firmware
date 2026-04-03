@@ -12,7 +12,6 @@
 #define RD         GPIO_PIN_14
 #define CS         GPIO_PIN_15
 
-
 extern int sramBanks;
 extern int romBanks;
 extern word lastByte;

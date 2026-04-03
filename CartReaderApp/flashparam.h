@@ -1,13 +1,13 @@
 #ifndef __FLASH_PARAM_H__
 #define __FLASH_PARAM_H__
- 
+
 #include <stdint.h>
- 
+
 #ifdef __cplusplus
 extern "C"{
 #endif /* __cplusplus */
- 
- 
+
+
 #define FMC_PAGE_SIZE           ((uint16_t)0x400U)
 #define FMC_WRITE_START_ADDR    ((uint32_t)0x0803FC00U)
 #define FMC_WRITE_END_ADDR	((uint32_t)0x0803FFFFU)
@@ -20,15 +20,13 @@ extern "C"{
 #define FMC_GBA_SAVE_COUNTER_ADDR  ((uint32_t)0x0803FC0CU)  // Game Boy Advance save counter
 #define FMC_GBM_SAVE_COUNTER_ADDR  ((uint32_t)0x0803FC10U)  // Game Boy Memory save counter
 
-
 void save_dword(uint32_t data);
 uint32_t load_dword();
 void save_dword_at(uint32_t address, uint32_t data);
 uint32_t load_dword_at(uint32_t address);
 
-  
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
- 
+
 #endif

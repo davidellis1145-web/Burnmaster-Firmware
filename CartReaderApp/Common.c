@@ -1,13 +1,11 @@
 #include "Common.h"
 
-
 // SD Card
 FIL myDir;
 FIL myFile;
 // Array that holds the data
 FATFS fs;
 byte sdBuffer[512];
-
 
 // remember folder number to create a new folder for every save
 int foldern;
@@ -20,7 +18,6 @@ byte currPage;
 byte lastPage;
 byte numPages;
 boolean root = 0;
-
 
 // Common
 char romName[64];
@@ -46,51 +43,52 @@ unsigned long writeErrors;
  ********************************************************************************/
 int findHighestFolder(const char* basePath)
 {
-  DIR dir;
-  FILINFO finfo;
-  int maxFolder = -1;
-  
-  // Try to open the directory
-  if (f_opendir(&dir, basePath) != FR_OK)
-  {
-    return -1;  // Directory doesn't exist yet
-  }
-  
-  // Read all entries in the directory
-  while (f_readdir(&dir, &finfo) == FR_OK && finfo.fname[0])
-  {
-    // Check if this is a directory
-    if (finfo.fattrib & AM_DIR)
+	DIR dir;
+	FILINFO finfo;
+	int maxFolder = -1;
+
+	// Try to open the directory
+	if (f_opendir(&dir, basePath) != FR_OK)
 	{
-      // Try to convert the folder name to a number
-      int folderNum = 0;
-      int validNumber = 1;
-      
-      // Parse folder name as a number
-      for (int i = 0; finfo.fname[i] != '\0'; i++)
-	  {
-        if (finfo.fname[i] >= '0' && finfo.fname[i] <= '9')
+		return -1;  // Directory doesn't exist yet
+	}
+
+	// Read all entries in the directory
+	while (f_readdir(&dir, &finfo) == FR_OK && finfo.fname[0])
+	{
+		// Check if this is a directory
+		if (finfo.fattrib & AM_DIR)
 		{
-          folderNum = folderNum * 10 + (finfo.fname[i] - '0');
-        }
-		else
-		{
-          validNumber = 0;
-          break;
-        }
-      }
-      
-      // If it's a valid number and higher than current max, update max
-      if (validNumber && folderNum > maxFolder)
-	  {
-        maxFolder = folderNum;
-      }
-    }
-  }
-  
-  f_closedir(&dir);
-  return maxFolder;
+			// Try to convert the folder name to a number
+			int folderNum = 0;
+			int validNumber = 1;
+
+			// Parse folder name as a number
+			for (int i = 0; finfo.fname[i] != '\0'; i++)
+			{
+				if (finfo.fname[i] >= '0' && finfo.fname[i] <= '9')
+				{
+					folderNum = folderNum * 10 + (finfo.fname[i] - '0');
+				}
+				else
+				{
+					validNumber = 0;
+					break;
+				}
+			}
+
+			// If it's a valid number and higher than current max, update max
+			if (validNumber && folderNum > maxFolder)
+			{
+				maxFolder = folderNum;
+			}
+		}
+	}
+
+	f_closedir(&dir);
+	return maxFolder;
 }
+
 
 /**********************
   System base parts
@@ -100,62 +98,67 @@ static volatile int ticks = 0;
 
 void SysClockInit()
 {
-  // Enable SysTick timer interrupt
-  SysTick->LOAD = (SystemCoreClock / 1000) - 1;
-  SysTick->VAL = 0;
-  SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_TICKINT_Msk | SysTick_CTRL_ENABLE_Msk;
+	// Enable SysTick timer interrupt
+	SysTick->LOAD = (SystemCoreClock / 1000) - 1;
+	SysTick->VAL = 0;
+	SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_TICKINT_Msk | SysTick_CTRL_ENABLE_Msk;
 }
 
-void SysTick_Handler(void) 
+
+void SysTick_Handler(void)
 {
-  ticks++;
+	ticks++;
 }
+
 
 int getSystick()
 {
-  return ticks;
+	return ticks;
 }
+
 
 void delay(int n)
 {
-  unsigned endTicks = ticks + n;
-  while (ticks < endTicks);
+	unsigned endTicks = ticks + n;
+	while (ticks < endTicks);
 }
+
 
 void ResetSystem()
 {
-  __set_FAULTMASK(1);//关闭总中断
-  NVIC_SystemReset();//请求单片机重启
+	__set_FAULTMASK(1);//关闭总中断
+	NVIC_SystemReset();//请求单片机重启
 }
+
 
 void SysClockFree()
 {
-  // Disable SysTick interrupt
-  SysTick->CTRL &= ~SysTick_CTRL_ENABLE_Msk;
+	// Disable SysTick interrupt
+	SysTick->CTRL &= ~SysTick_CTRL_ENABLE_Msk;
 }
 
 
 void delayMicroseconds(uint16_t us)
 {
-  for(int i = 0;i<us;i++)
-  {    
-    __asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-    __asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-    __asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-    __asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-    __asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-    __asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-    __asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-    __asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-    __asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-    __asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-    __asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-    __asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-    __asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-    __asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-    __asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-    __asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-    __asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-    __asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-  }
+	for(int i = 0;i<us;i++)
+	{
+		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
+		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
+		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
+		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
+		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
+		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
+		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
+		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
+		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
+		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
+		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
+		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
+		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
+		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
+		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
+		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
+		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
+		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
+	}
 }

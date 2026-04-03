@@ -8,7 +8,6 @@
 #include "Operate.h"
 #include "fatfs/ff.h"
 
-
 #define byte uint8_t
 #define word uint16_t
 #define boolean uint8_t
@@ -16,11 +15,9 @@
 #define true (1)
 #define false (0)
 
-
 #define FILENAME_LENGTH 64
 #define FILEPATH_LENGTH 128
 #define FILEOPTS_LENGTH 20
-
 
 extern int foldern;
 extern char folder[36];
@@ -41,7 +38,6 @@ extern int manufacturerid;
 // Variable to count errors
 extern unsigned long writeErrors;
 
-
 extern char romName[64];
 extern unsigned long sramSize;
 extern int romType;
@@ -50,10 +46,8 @@ extern word romSize;
 extern word numBanks;
 extern char checksumStr[5];
 
-
 // SD Card
 extern byte sdBuffer[512];
-
 
 int getSystick();
 void SysClockInit();
@@ -64,6 +58,8 @@ void SysClockFree();
 
 void delayMicroseconds(uint16_t us);
 int findHighestFolder(const char* basePath);
+
+// Added to enable warning screen for cart tests
 uint8_t gbTestsMenu();
 uint8_t gbaTestsMenu();
 void gbTestsScreen();
