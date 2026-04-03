@@ -65,4 +65,7 @@ uint8_t gbaTestsMenu();
 void gbTestsScreen();
 void gbaTestsScreen();
 
+// trying to fix flash rom/sram
+extern char savePath[FILEPATH_LENGTH];
+
 #endif

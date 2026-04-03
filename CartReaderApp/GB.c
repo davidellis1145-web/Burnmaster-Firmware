@@ -2050,6 +2050,7 @@ uint8_t gbFlashMenu()
 							sprintf(tmsg,"Save number %d found.",i);
 							OledShowString(0,1,tmsg,8);
 							saveFound = true;*/
+							char tmsg[64] = {0}; //new
 
 							writeSRAM_GB();
 
@@ -2066,8 +2067,8 @@ uint8_t gbFlashMenu()
 							}
 							break;
 						}
-					}
-				}
+					//} new
+				//} new
 
 				/*if (!saveFound)	//revert if needed
 				{
