@@ -2011,7 +2011,10 @@ uint8_t gbFlashMenu()
 			if (lastByte > 0)
 			{
 				OledClear();
-				OledShowString(0,0,"Save SRAM Data:",8);
+				// Change working dir to root\gb\save			//begin new
+				sprintf(savePath, "/GB/SAVE/%s/", fileName);	
+				fileBrowser(savePath,"Select sav file");		//end new
+				/*OledShowString(0,0,"Save SRAM Data:",8);
 				// Get the save file name
 				char * cpos = strrchr(filePath,'/');
 				if(cpos)
@@ -2037,7 +2040,7 @@ uint8_t gbFlashMenu()
 				FILINFO tfinfo;
 				if (f_stat(filePath,&tfinfo) == FR_OK)
 				{
-					foldern = load_dword();
+					foldern = load_dword(); //here
 					for (int i = foldern; i >= 0; i--)
 					{
 						sprintf(filePath, "/GB/SAVE/%s/%d/%s.sav", fileName, i, fileName);
@@ -2046,7 +2049,7 @@ uint8_t gbFlashMenu()
 							char tmsg[64] = {0};
 							sprintf(tmsg,"Save number %d found.",i);
 							OledShowString(0,1,tmsg,8);
-							saveFound = true;
+							saveFound = true;*/
 
 							writeSRAM_GB();
 
@@ -2066,11 +2069,11 @@ uint8_t gbFlashMenu()
 					}
 				}
 
-				if (!saveFound)
+				/*if (!saveFound)	//revert if needed
 				{
 					OledShowString(0,1,"Error: No save found.",8);
 					OledShowString(0,3,filePath,8); //debug
-				}
+				}*/
 			}
 			else
 			{
