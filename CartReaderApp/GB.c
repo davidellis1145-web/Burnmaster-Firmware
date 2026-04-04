@@ -271,7 +271,9 @@ void getCartInfo_GB()
 void showCartInfo_GB()
 {
 	OledClear();
-	if ((strcmp((const char *)checksumStr, "0000") != 0) && (strcmp((const char *)checksumStr, "FFFF") != 0))
+	if ((strcmp((const char *)checksumStr, "0000") != 0) &&
+		(strcmp((const char *)checksumStr, "FFFF") != 0) &&
+		(strcmp((const char *)romName, "456789") != 0))
 	{
 		OledShowString(0,0,"GB Cart Info:",8);
 		OledShowString(2,1,"Name: ",8);
@@ -375,6 +377,21 @@ void showCartInfo_GB()
 	}
 	else
 	{
+		if ((strcmp((const char *)romName, "456789") == 0) &&
+			(strcmp((const char *)checksumStr, "4E4F") == 0))
+		{
+			OledShowString(0,1,"GAMEPAK ERROR",8);
+			OledShowString(0,3,"Try reflashing ROM.",8);
+			OledShowString(0,4,"Rom Name: ",8);
+			OledShowString(63,4,romName,8);
+			OledShowString(0,5,"Checksum: ",8);
+			OledShowString(63,5,checksumStr,8);
+			OledShowString(0,7,"Press OK Button...",8);
+			WaitOKBtn();
+			ResetSystem();
+		}
+		else
+		{
 		OledShowString(0,2,"GAMEPAK ERROR",8);
 		OledShowString(0,4,"Checksum: ",8);
 		OledShowString(63,4,checksumStr,8);
@@ -382,6 +399,7 @@ void showCartInfo_GB()
 		OledShowString(0,7,"Press OK Button...",8);
 		WaitOKBtn();
 		ResetSystem();
+		}
 	}
 }
 
@@ -1964,18 +1982,17 @@ void TestMemGB(boolean bFast)
 
 // GB Flash items
 static const char GBFlashItem1[] = "Flash ROM";
-static const char GBFlashItem2[] = "Flash ROM and SRAM";
-static const char GBFlashItem3[] = "29F Cart (MBC3)";
-static const char GBFlashItem4[] = "29F Cart (MBC5)";
-static const char GBFlashItem5[] = "29F Cart (CAM)";
-static const char GBFlashItem7[] = "Reset";
-static const char* const menuOptionsGBFlash[] = {GBFlashItem1, GBFlashItem2, GBFlashItem3, GBFlashItem4, GBFlashItem5, GBFlashItem7};
+static const char GBFlashItem2[] = "29F Cart (MBC3)";
+static const char GBFlashItem3[] = "29F Cart (MBC5)";
+static const char GBFlashItem4[] = "29F Cart (CAM)";
+static const char GBFlashItem5[] = "Reset";
+static const char* const menuOptionsGBFlash[] = {GBFlashItem1, GBFlashItem2, GBFlashItem3, GBFlashItem4, GBFlashItem5};
 
 uint8_t gbFlashMenu()
 {
 	uint8_t bret = 0;
 
-	unsigned char gbFlash = questionBox_OLED("Select type:", menuOptionsGBFlash, 6, 1, 1, 1);
+	unsigned char gbFlash = questionBox_OLED("Select type:", menuOptionsGBFlash, 5, 1, 1, 1);
 	OledClear();
 	LED_BLUE_OFF; // Make sure blue led is off after blinking
 	// wait for user choice to come back from the question box menu
@@ -1997,100 +2014,16 @@ uint8_t gbFlashMenu()
 				OledShowString(0,0,"Flashing failed\nTime out!",8);
 			}
 			break;
-		case 2:									//<---check here to fix 'save not found'
-			// Flash ROM and SRAM
-			fileBrowser("/","Select file:");
-			OledClear();
-			identifyCFI_GB();
-			if (!writeCFI_GB())
-			{
-				print_Error("Flashing failed!\n Time out!",true);
-			}
-			getCartInfo_GB();
-			// Does cartridge have SRAM
-			if (lastByte > 0)
-			{
-				OledClear();
-				// Change working dir to root\gb\save			//begin new
-				sprintf(savePath, "/GB/SAVE/%s/", fileName);	
-				fileBrowser(savePath,"Select sav file");		//end new
-				/*OledShowString(0,0,"Save SRAM Data:",8);
-				// Get the save file name
-				char * cpos = strrchr(filePath,'/');
-				if(cpos)
-				{
-					cpos++;
-					strcpy(fileName,cpos);
-				}
-				else
-					strcpy(fileName,filePath);
-				// Remove file ext name
-				int pos = -1;
-				while (fileName[++pos] != '\0')
-				{
-					if (fileName[pos] == '.')
-					{
-						fileName[pos] = '\0';
-						break;
-					}
-				}
-
-				sprintf(filePath, "/GB/SAVE/%s/", fileName);
-				bool saveFound = false;
-				FILINFO tfinfo;
-				if (f_stat(filePath,&tfinfo) == FR_OK)
-				{
-					foldern = load_dword(); //here
-					for (int i = foldern; i >= 0; i--)
-					{
-						sprintf(filePath, "/GB/SAVE/%s/%d/%s.sav", fileName, i, fileName);
-						if (f_stat(filePath,&tfinfo) == FR_OK)
-						{
-							char tmsg[64] = {0};
-							sprintf(tmsg,"Save number %d found.",i);
-							OledShowString(0,1,tmsg,8);
-							saveFound = true;*/
-							char tmsg[64] = {0}; //new
-
-							writeSRAM_GB();
-
-							unsigned long wrErrors = verifySRAM_GB();
-							if (wrErrors == 0)
-							{
-								OledShowString(0,2,"Verified OK",8);
-							}
-							else
-							{
-								sprintf(tmsg,"Error: %d bytes.",wrErrors);
-								OledShowString(0,2,tmsg,8);
-								print_Error("Verify failed...", false);
-							}
-							break;
-						}
-					//} new
-				//} new
-
-				/*if (!saveFound)	//revert if needed
-				{
-					OledShowString(0,1,"Error: No save found.",8);
-					OledShowString(0,3,filePath,8); //debug
-				}*/
-			}
-			else
-			{
-				print_Error("Cart has no SRAM", false);
-			}
-			break;
-		case 3:
+		case 2:
 			// Flash MBC3
 			writeFlash29F_GB(3, 1);
 			// Reset
 			break;
-		case 4:
+		case 3:
 			// Flash MBC5
 			writeFlash29F_GB(5, 1);
 			break;
-		case 5:
+		case 4:
 			// Flash GB Camera
 			// MBC3
 			writeFlash29F_GB(3, 1);
@@ -2110,7 +2043,7 @@ uint8_t gbFlashMenu()
 			// MBC3
 			writeFlash29F_GB(3, 0);
 			break;
-		case 6:
+		case 5:
 			ResetSystem();
 			break;
 	}

@@ -85,12 +85,10 @@ static const char* const menuOptionsGBT[] = {gbxMenuTestFast,gbxMenuTestAll,gbxR
 void aboutScreen()
 {
 	OledClear();
-	OledShowString(0,0,(char *)("Game Boy"),16); // font size 16 takes 2 lines
+	OledShowString(0,0,(char *)("Game Boy"),16);
 	OledShowString(5,2,(char *)("Flash Master"),16);
-	// Contains custom integration for Spansion S29GL128N | S29GL256N | S29GL512N
-	// Based on Funnyplaying v1.10 release.
-	OledShowString(20,4,(char *)("Ver:1.02"),8);
-	OledShowString(20,5,(char *)("Mar. 28, 2026"),8);
+	OledShowString(20,4,(char *)("Ver:1.03"),8); // Based on Funnyplaying v1.10 release.
+	OledShowString(20,5,(char *)("Apr. 03, 2026"),8);
 	OledShowString(3,6,(char *)("Dave's Game Emporium"),8);
 	OledShowString(0,7,(char *)("Press OK Button..."),8);
 	WaitOKBtn();
@@ -100,7 +98,6 @@ void aboutScreen()
 // Start menu for both GB and GBA (main menu)
 uint8_t gbxMenu()
 {
-	uint8_t bret = 0;
 	uint8_t gbxtype = GetGBType();
 	unsigned char gbType;
 
@@ -172,7 +169,7 @@ uint8_t gbxMenu()
 				break;
 		}
 	}
-	return  bret;
+	return 0;
 }
 
 
@@ -181,8 +178,8 @@ uint8_t gbTestsMenu()
 	// Show warning
 	OledClear();
 	OledShowString(30,1,(char *)("**WARNING**"),8);
-	OledShowString(3,2,(char *)("The following tests"),8);
-	OledShowString(2,3,(char *)("will erase the cart!"),8);
+	OledShowString(3,3,(char *)("The following tests"),8);
+	OledShowString(2,4,(char *)("will erase the cart!"),8);
 	OledShowString(0,7,(char *)("Press OK Button..."),8);
 	WaitOKBtn();
 	OledClear();
@@ -214,9 +211,9 @@ uint8_t gbaTestsMenu()
 {
 	// Show warning
 	OledClear();
-	OledShowString(35,1,(char *)("**WARNING**"),8);
-	OledShowString(3,2,(char *)("The following tests"),8);
-	OledShowString(2,3,(char *)("will erase the cart!"),8);
+	OledShowString(30,1,(char *)("**WARNING**"),8);
+	OledShowString(3,3,(char *)("The following tests"),8);
+	OledShowString(2,4,(char *)("will erase the cart!"),8);
 	OledShowString(0,7,(char *)("Press OK Button..."),8);
 	WaitOKBtn();
 	OledClear();
@@ -492,7 +489,7 @@ void PriInit()
 	gpio_init(GPIOE,GPIO_MODE_IN_FLOATING,GPIO_OSPEED_2MHZ,GPIO_PIN_ALL);
 
 	rcu_periph_clock_enable(RCU_AF);
-	foldern = load_dword();
+	foldern = 0;
 }
 
 

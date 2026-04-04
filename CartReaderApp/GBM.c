@@ -895,7 +895,7 @@ uint8_t gbmMenu()
 			// Clear filepath
 			filePath[0] = '\0';
 			// Launch file browser
-			fileBrowser("/","Select MAP file");		
+			fileBrowser("/","Select MAP file");
 			// Clear screen
 			OledClear();
 			// Erase mapping

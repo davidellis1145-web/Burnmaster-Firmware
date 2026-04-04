@@ -1296,7 +1296,7 @@ boolean blankcheckFLASH_GBA (unsigned long flashSize)
 }
 
 
-/* The MX29L010 is 131072 bytes in size and has 16 sectors per bank  <---HERE!
+/* The MX29L010 is 131072 bytes in size and has 16 sectors per bank
    each sector is 4096 bytes, there are 32 sectors total
    therefore the bank size is 65536 bytes, so we have two banks in total */
 void switchBank_GBA(byte bankNum)
