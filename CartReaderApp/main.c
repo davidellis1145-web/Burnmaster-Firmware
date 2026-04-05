@@ -2,9 +2,13 @@
 *                    SEGGER Microcontroller GmbH                     *
 *                        The Embedded Experts                        *
 **********************************************************************
-
 -------------------------- END-OF-HEADER -----------------------------
-*/
+
+**********************************************************************
+* Special thanks to: #todo:add contributer names					 *
+*																	 *
+*********************************************************************/
+
 #include <gd32f10x.h>
 #include "fatfs/ff.h"
 #include <stdio.h>
@@ -88,7 +92,7 @@ void aboutScreen()
 	OledShowString(0,0,(char *)("Game Boy"),16);
 	OledShowString(5,2,(char *)("Flash Master"),16);
 	OledShowString(20,4,(char *)("Ver:1.03"),8); // Based on Funnyplaying v1.10 release.
-	OledShowString(20,5,(char *)("Apr. 03, 2026"),8);
+	OledShowString(20,5,(char *)("Apr. 04, 2026"),8);
 	OledShowString(3,6,(char *)("Dave's Game Emporium"),8);
 	OledShowString(0,7,(char *)("Press OK Button..."),8);
 	WaitOKBtn();

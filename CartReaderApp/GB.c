@@ -779,7 +779,7 @@ void writeSRAM_GB()
 
 			// Close the file
 			f_close(&tfile);
-			OledClear();
+			OledClear();		// here?
 			OledShowString(0,2,"SRAM writing finished",8);
 		}
 		else
@@ -2107,7 +2107,7 @@ void gbFlashScreen()
 
 
 // GB menu items
-static const char GBMenuItem1[] = "Flash ROM";
+static const char GBMenuItem1[] = "Flash...";
 static const char GBMenuItem2[] = "Read ROM";
 static const char GBMenuItem3[] = "Read SRAM";
 static const char GBMenuItem4[] = "Write SRAM";
@@ -2161,12 +2161,12 @@ uint8_t gbMenu()
 				filePath[0] = '\0';
 				fileBrowser("/","Select sav file");
 				writeSRAM_GB();
-				OledClear();
+				//OledClear(); //here i think
 				unsigned long wrErrors;
 				wrErrors = verifySRAM_GB();
 				if (wrErrors == 0)
 				{
-					OledShowString(0,2,"Verified OK",8);
+					OledShowString(0,4,"Verified OK.",8);
 				}
 				else
 				{
