@@ -120,8 +120,8 @@ uint8_t gbxMenu()
 				gbaScreen();
 				break;
 			case 2:
-			gbaTestsScreen();
-			break;
+				gbaTestsScreen();
+				break;
 			case 3:
 				aboutScreen();
 				break;

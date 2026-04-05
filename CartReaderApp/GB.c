@@ -271,9 +271,9 @@ void getCartInfo_GB()
 void showCartInfo_GB()
 {
 	OledClear();
-	if ((strcmp((const char *)checksumStr, "0000") != 0) &&
-		(strcmp((const char *)checksumStr, "FFFF") != 0) &&
-		(strcmp((const char *)romName, "456789") != 0))
+	if ((strcmp(checksumStr, "0000") != 0) &&
+		(strcmp(checksumStr, "FFFF") != 0) &&		//trying without (const char *)
+		(strcmp(romName, "456789") != 0))
 	{
 		OledShowString(0,0,"GB Cart Info:",8);
 		OledShowString(2,1,"Name: ",8);
@@ -304,9 +304,16 @@ void showCartInfo_GB()
 		if (romType == 252)
 			tinfo = "Camera";
 
+		if (tinfo == NULL)			// testing blank mapper fix (ie jayro's testcart)
+		{
+			OledShowString(50,2,"unknown",8);
+		}
+		else
+		{
 			OledShowString(50,2,tinfo,8);
+		}
 
-			OledShowString(2,3,"Rom Size: ",8);
+		OledShowString(2,3,"Rom Size: ",8);
 		switch (romSize)
 		{
 			case 0:
@@ -377,8 +384,8 @@ void showCartInfo_GB()
 	}
 	else
 	{
-		if ((strcmp((const char *)romName, "456789") == 0) &&
-			(strcmp((const char *)checksumStr, "4E4F") == 0))
+		if ((strcmp(romName, "456789") == 0) &&	//trying without (const char *)
+			(strcmp(checksumStr, "4E4F") == 0))
 		{
 			OledShowString(0,1,"GAMEPAK ERROR",8);
 			OledShowString(0,3,"Try reflashing ROM.",8);
@@ -388,17 +395,16 @@ void showCartInfo_GB()
 			OledShowString(63,5,checksumStr,8);
 			OledShowString(0,7,"Press OK Button...",8);
 			WaitOKBtn();
-			ResetSystem();
 		}
 		else
 		{
-		OledShowString(0,2,"GAMEPAK ERROR",8);
-		OledShowString(0,4,"Checksum: ",8);
-		OledShowString(63,4,checksumStr,8);
-		OledShowString(10,5,"No Cart?",8);
-		OledShowString(0,7,"Press OK Button...",8);
-		WaitOKBtn();
-		ResetSystem();
+			OledShowString(0,2,"GAMEPAK ERROR",8);
+			OledShowString(0,4,"Checksum: ",8);
+			OledShowString(63,4,checksumStr,8);
+			OledShowString(10,5,"No Cart?",8);
+			OledShowString(0,7,"Press OK Button...",8);
+			WaitOKBtn();
+			ResetSystem();
 		}
 	}
 }
@@ -448,89 +454,104 @@ void setup_GB()
 // Read ROM
 void readROM_GB()
 {
-	// Get name, add extension and convert to char array for sd lib
-	strcpy(fileName, romName);
-	strcat(fileName, ".gb");
-
-	// Find the highest existing folder number and use next one
-	char basePath[64];
-	sprintf(basePath, "GB/ROM/%s", romName);
-	int highestFolder = findHighestFolder(basePath);
-	foldern = highestFolder + 1;  // Use next folder number
-
-	f_chdir("/");
-	sprintf(folder, "GB/ROM/%s/%d", romName, foldern);
-
-	FRESULT rst;
-	FIL tfile;
-
-	rst = my_mkdir(folder);
-	rst = f_chdir(folder);
-
-	OledClear();
-	OledShowString(0,0,"Saving to: ",8);
-	OledShowString(4,1,folder,8);
-
-	//open file on sd card
-	rst = f_open(&tfile,fileName, FA_CREATE_ALWAYS|FA_WRITE);
-	if (rst != FR_OK)
+	if (strcmp(romName, "456789") == 0)
 	{
-		print_Error("Can't create file", 1);
+		OledShowString(0,1,"GAMEPAK ERROR",8);
+		OledShowString(0,3,"Try reflashing ROM.",8);
+		OledShowString(0,4,"Rom Name: ",8);
+		OledShowString(63,4,romName,8);
+		OledShowString(0,5,"Checksum: ",8);
+		OledShowString(63,5,checksumStr,8);
+		OledShowString(0,7,"Press OK Button...",8);
+		WaitOKBtn();
+		ResetSystem();
 	}
-
-	word romAddress = 0;
-
-	//Initialize progress bar
-	uint32_t processedProgressBar = 0;
-	uint32_t totalProgressBar = (uint32_t)(romBanks) * 16384;
-	draw_progressbar(0, totalProgressBar,3);
-
-	for (word currBank = 1; currBank < romBanks; currBank++)
+	else
 	{
-		// Switch data pins to output
-		dataOut_GB();
+		// Get name, add extension and convert to char array for sd lib
+		strcpy(fileName, romName);
+		strcat(fileName, ".gb");
 
-		LED_BLUE_BLINK;
+		// Find the highest existing folder number and use next one
+		char basePath[64];
+		sprintf(basePath, "GB/ROM/%s", romName);
+		int highestFolder = findHighestFolder(basePath);
+		foldern = highestFolder + 1;  // Use next folder number
 
-		// Set ROM bank for MBC2/3/4/5
-		if (romType >= 5)
+		f_chdir("/");
+		sprintf(folder, "GB/ROM/%s/%d", romName, foldern);
+
+		FRESULT rst;
+		FIL tfile;
+
+		rst = my_mkdir(folder);
+		rst = f_chdir(folder);
+
+		OledClear();
+		OledShowString(0,0,"Saving to: ",8);
+		OledShowString(4,1,folder,8);
+
+		//open file on sd card
+		rst = f_open(&tfile,fileName, FA_CREATE_ALWAYS|FA_WRITE);
+		if (rst != FR_OK)
 		{
-			writeByte_GB(0x2100, currBank);
+			print_Error("Can't create file", 1);
 		}
-		// Set ROM bank for MBC1
-		else
-		{
-			writeByte_GB(0x6000, 0);
-			writeByte_GB(0x4000, currBank >> 5);
-			writeByte_GB(0x2000, currBank & 0x1F);
-		}
 
-		// Switch data pins to intput
-		dataIn_GB();
+		word romAddress = 0;
 
-		// Second bank starts at 0x4000
-		if (currBank > 1)
-		{
-			romAddress = 0x4000;
-		}
+		//Initialize progress bar
+		uint32_t processedProgressBar = 0;
+		uint32_t totalProgressBar = (uint32_t)(romBanks) * 16384;
+		draw_progressbar(0, totalProgressBar,3);
 
-		// Read banks and save to SD
-		while (romAddress <= 0x7FFF)
+		for (word currBank = 1; currBank < romBanks; currBank++)
 		{
-			for (int i = 0; i < 512; i++)
+			// Switch data pins to output
+				dataOut_GB();
+
+			LED_BLUE_BLINK;
+
+			// Set ROM bank for MBC2/3/4/5
+			if (romType >= 5)
 			{
-				sdBuffer[i] = readByte_GB(romAddress + i);
+				writeByte_GB(0x2100, currBank);
 			}
-			UINT dwt = 0;
-			rst = f_write(&tfile,sdBuffer, 512,&dwt);
-			romAddress += 512;
-			processedProgressBar += 512;
-			draw_progressbar(processedProgressBar, totalProgressBar,3);
-		}
-	}
+			// Set ROM bank for MBC1
+			else
+			{
+				writeByte_GB(0x6000, 0);
+				writeByte_GB(0x4000, currBank >> 5);
+				writeByte_GB(0x2000, currBank & 0x1F);
+			}
 
-	// Close the file
-	f_close(&tfile);
+			// Switch data pins to intput
+			dataIn_GB();
+
+			// Second bank starts at 0x4000
+			if (currBank > 1)
+			{
+				romAddress = 0x4000;
+			}
+
+			// Read banks and save to SD
+			while (romAddress <= 0x7FFF)
+			{
+				for (int i = 0; i < 512; i++)
+				{
+					sdBuffer[i] = readByte_GB(romAddress + i);
+				}
+				UINT dwt = 0;
+				rst = f_write(&tfile,sdBuffer, 512,&dwt);
+				romAddress += 512;
+				processedProgressBar += 512;
+				draw_progressbar(processedProgressBar, totalProgressBar,3);
+			}
+		}
+
+		// Close the file
+		f_close(&tfile);
+	}
 }
 
 
@@ -618,78 +639,93 @@ boolean compare_checksum_GB()
 // Read RAM
 void readSRAM_GB()
 {
-	// Does cartridge have RAM
-	if (lastByte > 0)
+	if (strcmp(romName, "456789") == 0)
 	{
-		// Get name, add extension and convert to char array for sd lib
-		strcpy(fileName, romName);
-		strcat(fileName, ".sav");
-
-		// Find the highest existing folder number and use next one
-		char basePath[64];
-		sprintf(basePath, "GB/SAVE/%s", romName);
-		int highestFolder = findHighestFolder(basePath);
-		foldern = highestFolder + 1;  // Use next folder number
-
-		sprintf(folder, "GB/SAVE/%s/%d", romName, foldern);
-		my_mkdir(folder);
-		f_chdir(folder);
-
-		//open file on sd card
-		FIL tfile;
-		if (f_open(&tfile, fileName, FA_CREATE_ALWAYS|FA_WRITE) != FR_OK)
-		{
-			print_Error("SD Error", true);
-		}
-
-		dataIn_GB();
-
-		// MBC2 Fix
-		readByte_GB(0x0134);
-
-		dataOut_GB();
-		if (romType <= 4)
-		{
-			writeByte_GB(0x6000, 1);
-		}
-
-		// Initialise MBC
-		writeByte_GB(0x0000, 0x0A);
-
-		// Switch SRAM banks
-		for (byte currBank = 0; currBank < sramBanks; currBank++)
-		{
-			dataOut_GB();
-			writeByte_GB(0x4000, currBank);
-
-			// Read SRAM
-			dataIn_GB();
-			for (word sramAddress = 0xA000; sramAddress <= lastByte; sramAddress += 64)
-			{
-				for (byte i = 0; i < 64; i++)
-				{
-					sdBuffer[i] = readByteSRAM_GB(sramAddress + i);
-				}
-				UINT wrt;
-				f_write(&tfile, sdBuffer, 64, &wrt);
-			}
-		}
-
-		// Disable SRAM
-		dataOut_GB();
-		writeByte_GB(0x0000, 0x00);
-		dataIn_GB();
-
-		// Close the file
-		f_close(&tfile);
-
-		// Signal end of process
-		OledShowString(0,0,"Saved to: ",8);
-		OledShowString(4,1,folder,8);
+		OledShowString(0,1,"GAMEPAK ERROR",8);
+		OledShowString(0,3,"Try reflashing ROM.",8);
+		OledShowString(0,4,"Rom Name: ",8);
+		OledShowString(63,4,romName,8);
+		OledShowString(0,5,"Checksum: ",8);
+		OledShowString(63,5,checksumStr,8);
+		OledShowString(0,7,"Press OK Button...",8);
+		WaitOKBtn();
+		ResetSystem();
 	}
 	else
 	{
-		print_Error("Cart has no SRAM", false);
+		// Does cartridge have RAM
+		if (lastByte > 0)
+		{
+			// Get name, add extension and convert to char array for sd lib
+			strcpy(fileName, romName);
+			strcat(fileName, ".sav");
+
+			// Find the highest existing folder number and use next one
+			char basePath[64];
+			sprintf(basePath, "GB/SAVE/%s", romName);
+			int highestFolder = findHighestFolder(basePath);
+			foldern = highestFolder + 1;  // Use next folder number
+
+			sprintf(folder, "GB/SAVE/%s/%d", romName, foldern);
+			my_mkdir(folder);
+			f_chdir(folder);
+
+			//open file on sd card
+			FIL tfile;
+			if (f_open(&tfile, fileName, FA_CREATE_ALWAYS|FA_WRITE) != FR_OK)
+			{
+				print_Error("SD Error", true);
+			}
+
+			dataIn_GB();
+
+			// MBC2 Fix
+			readByte_GB(0x0134);
+
+			dataOut_GB();
+			if (romType <= 4)
+			{
+				writeByte_GB(0x6000, 1);
+			}
+
+			// Initialise MBC
+			writeByte_GB(0x0000, 0x0A);
+
+			// Switch SRAM banks
+			for (byte currBank = 0; currBank < sramBanks; currBank++)
+			{
+				dataOut_GB();
+				writeByte_GB(0x4000, currBank);
+
+				// Read SRAM
+				dataIn_GB();
+				for (word sramAddress = 0xA000; sramAddress <= lastByte; sramAddress += 64)
+				{
+					for (byte i = 0; i < 64; i++)
+					{
+						sdBuffer[i] = readByteSRAM_GB(sramAddress + i);
+					}
+					UINT wrt;
+					f_write(&tfile, sdBuffer, 64, &wrt);
+				}
+			}
+
+			// Disable SRAM
+			dataOut_GB();
+			writeByte_GB(0x0000, 0x00);
+			dataIn_GB();
+
+			// Close the file
+			f_close(&tfile);
+
+			// Signal end of process
+			OledShowString(0,0,"Saved to: ",8);
+			OledShowString(4,1,folder,8);
+		}
+		else
+		{
+			print_Error("Cart has no SRAM", false);
+		}
 	}
 }
 
