@@ -5,8 +5,11 @@
 -------------------------- END-OF-HEADER -----------------------------
 
 **********************************************************************
-* Special thanks to: #todo:add contributer names					 *
-*																	 *
+* Special thanks to;												 *
+*					 Martin Refseth (HDR)							 *
+*					 Slade1972										 *
+*					 Dart-Alex										 *
+*					 BennyFischer				...And FunnyPlaying	 *
 *********************************************************************/
 
 #include <gd32f10x.h>
