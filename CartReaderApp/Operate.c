@@ -269,11 +269,6 @@ char* tanswers[7] = {answer1,answer2,answer3,answer4,answer5,answer6,answer7};
 
 void fileBrowser(char * start_dir , const char * browserTitle)
 {
-	int btn = checkButton();					//added for reset
-	if ((btn == BTNCANCEL) && (btn == BTNLEFT))	//...
-	{											//...
-		ResetSystem();							//...
-	}											//end
 	int currFile = 0;
 	int menucnt = 0;
 	// Init Dir
