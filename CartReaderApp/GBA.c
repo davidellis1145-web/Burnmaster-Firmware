@@ -735,6 +735,7 @@ void TestSRAM_GBA(unsigned long sramSize)
 	char msgbuf[64] = {0};
 	if(wErrors > 0)
 	{
+		//OledClear();
 		sprintf(msgbuf,"Error %d bytes...",wErrors);
 	}
 	else
@@ -742,6 +743,7 @@ void TestSRAM_GBA(unsigned long sramSize)
 		strcpy(msgbuf,"RAM Test ok!");
 	}
 	OledShowString(0,2,msgbuf,8);
+	WaitOKBtn();
 }
 
 
@@ -1684,6 +1686,7 @@ void idFlashrom_GBA()
 			}
 			char tmsg[64] = {0};
 			sprintf(tmsg,"Error!\nUnknown Flash!\nFlash ID: %s",flashid);
+			OledClear();
 			OledShowString(0,0,tmsg,8);
 			print_Error("Check voltage?", true);
 		}
@@ -2952,7 +2955,14 @@ void setup_GBA()
 	OledShowString(0,0,"Name: ",8);
 	OledShowString(35,0,romName,8);
 	OledShowString(0,1,"Cart ID: ",8);
-	OledShowString(60,1,cartID,8);
+	if (cartID == NULL)
+	{
+		OledShowString(60,1,"Unknown",8);
+	}
+	else
+	{
+		OledShowString(60,1,cartID,8);
+	}
 	OledShowString(0,2,"Rom Size: ",8);
 	if (cartSize == 0)
 		OledShowString(60,2,"Unknown",8);
@@ -2996,8 +3006,16 @@ void setup_GBA()
 			break;
 	}
 	OledShowString(0,3,tmsg,8);
-	sprintf(tmsg,"Checksum: %s\nVersion:  1.%d",checksumStr,romVersion);
-	OledShowString(0,4,tmsg,8);
+	if (checksumStr == NULL)
+	{
+		sprintf(tmsg,"Checksum: Unknown\nVersion:  1.%d",romVersion);
+		OledShowString(0,4,tmsg,8);
+	}
+	else
+	{
+		sprintf(tmsg,"Checksum: %s\nVersion:  1.%d",checksumStr,romVersion);
+		OledShowString(0,4,tmsg,8);
+	}
 
 	// Wait for user input
 	OledShowString(0,7,"Press OK Button...",8);
