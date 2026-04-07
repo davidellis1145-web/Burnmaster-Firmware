@@ -735,15 +735,15 @@ void TestSRAM_GBA(unsigned long sramSize)
 	char msgbuf[64] = {0};
 	if(wErrors > 0)
 	{
-		//OledClear();
 		sprintf(msgbuf,"Error %d bytes...",wErrors);
+		OledShowString(0,7,"Press OK Button...",8);
+		WaitOKBtn();
 	}
 	else
 	{
 		strcpy(msgbuf,"RAM Test ok!");
 	}
 	OledShowString(0,2,msgbuf,8);
-	WaitOKBtn();
 }
 
 
