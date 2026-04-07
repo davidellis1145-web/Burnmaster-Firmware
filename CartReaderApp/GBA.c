@@ -2955,7 +2955,7 @@ void setup_GBA()
 	OledShowString(0,0,"Name: ",8);
 	OledShowString(35,0,romName,8);
 	OledShowString(0,1,"Cart ID: ",8);
-	if (cartID == NULL)
+	if (strcmp(checksumStr, "") == 0)
 	{
 		OledShowString(60,1,"Unknown",8);
 	}
@@ -3006,7 +3006,7 @@ void setup_GBA()
 			break;
 	}
 	OledShowString(0,3,tmsg,8);
-	if (checksumStr == NULL)
+	if (strcmp(checksumStr, "") == 0)
 	{
 		sprintf(tmsg,"Checksum: Unknown\nVersion:  1.%d",romVersion);
 		OledShowString(0,4,tmsg,8);
