@@ -7,7 +7,7 @@ FIL myFile;
 FATFS fs;
 byte sdBuffer[512];
 
-// remember folder number to create a new folder for every save
+// Remember folder number to create a new folder for every save
 int foldern;
 char folder[36];
 
@@ -50,7 +50,7 @@ int findHighestFolder(const char* basePath)
 	// Try to open the directory
 	if (f_opendir(&dir, basePath) != FR_OK)
 	{
-		return -1;  // Directory doesn't exist yet
+		return -1;	// Directory doesn't exist yet
 	}
 
 	// Read all entries in the directory
@@ -126,8 +126,8 @@ void delay(int n)
 
 void ResetSystem()
 {
-	__set_FAULTMASK(1);//关闭总中断
-	NVIC_SystemReset();//请求单片机重启
+	__set_FAULTMASK(1); // 关闭总中断
+	NVIC_SystemReset(); // 请求单片机重启
 }
 
 

@@ -103,7 +103,7 @@ void readROM_GBM(word numBanks)
 	char basePath[32];
 	sprintf(basePath, "/NP");
 	int highestFolder = findHighestFolder(basePath);
-	foldern = highestFolder + 1;  // Use next folder number
+	foldern = highestFolder + 1;	// Use next folder number
 
 	sprintf(fileName, "GBM%d", foldern);
 	strcat(fileName, ".bin");
@@ -311,7 +311,7 @@ void eraseFlash_GBM()
 {
 	OledShowString(0,0,"Erasing...",8);
 
-	// enable access to ports 0120h
+	// Enable access to ports 0120h
 	send_GBM(0x09);
 	// Enable write
 	send_GBM(0x0A);
@@ -352,7 +352,7 @@ boolean blankcheckFlash_GBM()
 {
 	OledShowString(0,0,"Blankcheck...",8);
 
-	// enable access to ports 0120h (F2)
+	// Enable access to ports 0120h (F2)
 	send_GBM(0x09);
 
 	// Map entire flashrom
@@ -431,7 +431,7 @@ void writeFlash_GBM()
 		{
 		}
 
-		// first bank: 0x0000-0x7FFF
+		// First bank: 0x0000-0x7FFF
 		word currAddress = 0x0;
 
 		// Write 63 banks
@@ -441,7 +441,7 @@ void writeFlash_GBM()
 			LED_RED_BLINK;
 			showPersent(currBank - 1,fileSize,60,0);
 
-			// all following banks: 0x4000-0x7FFF
+			// All following banks: 0x4000-0x7FFF
 			if (currBank > 1)
 			{
 				currAddress = 0x4000;
@@ -537,7 +537,7 @@ void readMapping_GBM()
 	char basePath[32];
 	sprintf(basePath, "/NP");
 	int highestFolder = findHighestFolder(basePath);
-	foldern = highestFolder + 1;  // Use next folder number
+	foldern = highestFolder + 1;	// Use next folder number
 
 	sprintf(fileName, "GBM%d", foldern);
 	strcat(fileName, ".map");
@@ -580,7 +580,7 @@ void eraseMapping_GBM()
 {
 	OledShowString(0,0,"Erasing...",8);
 
-	// enable access to ports 0120h
+	// Enable access to ports 0120h
 	send_GBM(0x09);
 	// Enable write
 	send_GBM(0x0A);
@@ -814,12 +814,12 @@ static const char* const menuOptionsGBM[] = {gbmMenuItem1, gbmMenuItem2, gbmMenu
 
 uint8_t gbmMenu()
 {
-	// create menu with title and 7 options to choose from
+	// Create menu with title and 7 options to choose from
 	uint8_t bret = 0;
 	LED_RED_OFF; // Make sure red led is off after blinking
 	unsigned char gbmMenu = questionBox_OLED("GB Memory Menu -", menuOptionsGBM, 7, 1, 1, 1);
 
-	// wait for user choice to come back from the question box menu
+	// Wait for user choice to come back from the question box menu
 	switch (gbmMenu)
 	{
 		case MENU_CANCEL:

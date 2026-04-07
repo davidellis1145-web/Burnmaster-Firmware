@@ -1,6 +1,6 @@
 /*********************************************************************
-*                    SEGGER Microcontroller GmbH                     *
-*                        The Embedded Experts                        *
+*					 SEGGER Microcontroller GmbH					 *
+*						 The Embedded Experts						 *
 **********************************************************************
 -------------------------- END-OF-HEADER -----------------------------
 
@@ -26,7 +26,7 @@
 #include "gd32f10x_sdio.h"
 #include "flashparam.h"
 
-//PC5是卡带3V3电压档位，低电平有效，PB0是卡带5V电压档位，低电平有效
+// PC5是卡带3V3电压档位，低电平有效，PB0是卡带5V电压档位，低电平有效
 
 #define TYPE_GBC (0)
 #define TYPE_GBA (1)
@@ -43,7 +43,7 @@ uint8_t GetGBType()
 	if(s5v == RESET)ret = TYPE_GBC;
 	if((s3v3 | s5v) == RESET)ret = TYPE_ALL;
 
-	return  ret;
+	return ret;
 }
 
 
@@ -53,8 +53,8 @@ uint8_t Icon_data_GBC[] =
 	0xFC, 0x02, 0x02, 0xF2, 0x12, 0x12, 0x12, 0xD2, 0xD2, 0xD2, 0xD2, 0xD2, 0xD2, 0xD2, 0xD2, 0xD2, 0xD2, 0xD2, 0xD2, 0xD2, 0xD2, 0xD2, 0x12, 0x12, 0x12, 0xE2, 0x02, 0x06, 0xFC,
 	0xFF, 0x00, 0x00, 0xFF, 0x18, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00, 0xFF, 0x00, 0x00, 0xFF,
 	0xFF, 0x00, 0x00, 0x7F, 0x80, 0x80, 0x80, 0xBF, 0xB0, 0xB0, 0xB0, 0xB0, 0xB0, 0xB0, 0xB0, 0xB0, 0xB0, 0xB0, 0xB0, 0xB0, 0xB0, 0xBF, 0x80, 0x80, 0x40, 0x3F, 0x00, 0x00, 0xFF,
-	0xFF, 0x00, 0x00, 0x80, 0x80, 0xE0, 0x20, 0xE0, 0x80, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xC0, 0x40, 0xC0, 0x00, 0x00, 0xFF,
-	0xFF, 0x00, 0x00, 0x03, 0x02, 0x0E, 0x08, 0x0E, 0x02, 0x03, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x80, 0x00, 0x07, 0x05, 0x07, 0x00, 0x00, 0x01, 0x41, 0x81, 0x00, 0x00, 0xFF,
+	0xFF, 0x00, 0x00, 0x80, 0x80, 0xE0, 0x20, 0xE0, 0x80, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xC0, 0xC0, 0xC0, 0x00, 0x00, 0xFF,
+	0xFF, 0x00, 0x00, 0x03, 0x02, 0x0E, 0x08, 0x0E, 0x02, 0x03, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x80, 0x00, 0x07, 0x07, 0x07, 0x00, 0x00, 0x01, 0x41, 0x81, 0x00, 0x00, 0xFF,
 	0x3F, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x40, 0x42, 0x41, 0x40, 0x40, 0x42, 0x41, 0x40, 0x40, 0x40, 0x40, 0x44, 0x48, 0x51, 0x42, 0x44, 0x60, 0x31, 0x18, 0x0F
 };
 
@@ -110,17 +110,17 @@ uint8_t gbxMenu()
 
 	if(gbxtype == TYPE_GBA)
 	{
-		LED_GREEN_OFF; // make sure GB mode led is off
-		LED_BLUE_ON;   // make sure GBA mode led is on
+		LED_GREEN_OFF;	// Make sure GB mode led is off
+		LED_BLUE_ON;	// Make sure GBA mode led is on
 		OledClear();
-		OledShowPicData(64,4,56,4,Icon_data_GBA); // draws GBA icon
+		OledShowPicData(64,4,56,4,Icon_data_GBA); // Draws GBA icon
 
-		// create menu with title and 3 options to choose from
-		// wait for user choice to come back from the question box menu
+		// Create menu with title and 3 options to choose from
+		// Wait for user choice to come back from the question box menu
 		gbType = questionBox_OLED("Game Boy Flash Master", menuOptionsGBA, 3, 1, 1, 0);
 		switch (gbType)
 		{
-			case 0:  // cancel btn clicked
+			case 0:	// Cancel btn clicked
 				gbxScreen();
 				break;
 			case 1:
@@ -136,17 +136,17 @@ uint8_t gbxMenu()
 	}
 	else if(gbxtype == TYPE_GBC)
 	{
-		LED_BLUE_OFF;  // make sure GBA mode led is off
-		LED_GREEN_ON;  // make sure GB mode led is on
+		LED_BLUE_OFF;	// Make sure GBA mode led is off
+		LED_GREEN_ON;	// Make sure GB mode led is on
 		OledClear();
-		OledShowPicData(86,2,29,6,Icon_data_GBC);  // draws GB icon
+		OledShowPicData(86,2,29,6,Icon_data_GBC);	// Draws GB icon
 
-		// create menu with title and 3 options to choose from
-		// wait for user choice to come back from the question box menu
+		// Create menu with title and 3 options to choose from
+		// Wait for user choice to come back from the question box menu
 		gbType = questionBox_OLED("Game Boy Flash Master", menuOptionsGBC, 3, 1, 1, 0);
 		switch (gbType)
 		{
-			case 0:  // cancel btn clicked
+			case 0:	// Cancel btn clicked
 				gbxScreen();
 				break;
 			case 1:
@@ -165,7 +165,7 @@ uint8_t gbxMenu()
 		gbType = questionBox_OLED("Game Boy Flash Master", menuOptionsGBx, 2, 1, 1, 1);
 		switch (gbType)
 		{
-			case 0:  // cancel btn clicked
+			case 0:	// Cancel btn clicked
 				gbxScreen();
 				break;
 			case 1:
@@ -191,13 +191,13 @@ uint8_t gbTestsMenu()
 	WaitOKBtn();
 	OledClear();
 
-	// create menu with title and 3 options to choose from
+	// Create menu with title and 3 options to choose from
 	unsigned char gbCTest;
 	gbCTest = questionBox_OLED("GB(C) Cart Tests", menuOptionsGBT, 3, 1, 1, 0);
-	// wait for user choice to come back from the question box menu
+	// Wait for user choice to come back from the question box menu
 	switch (gbCTest)
 	{
-		case 0: // cancel btn pressed
+		case 0: // Cancel btn pressed
 			gbxScreen();
 			break;
 		case 1:
@@ -225,14 +225,14 @@ uint8_t gbaTestsMenu()
 	WaitOKBtn();
 	OledClear();
 
-	// create menu with title and 3 options to choose from
+	// Create menu with title and 3 options to choose from
 	unsigned char gbaCTest;
 	gbaCTest = questionBox_OLED("GBA Cart Tests", menuOptionsGBT, 3, 1, 1, 0);
 
-	// wait for user choice to come back from the question box men
+	// Wait for user choice to come back from the question box men
 	switch (gbaCTest)
 	{
-		case 0: // cancel btn pressed
+		case 0: // Cancel btn pressed
 			gbxScreen();
 			break;
 		case 1:
@@ -287,10 +287,10 @@ void gbaTestsScreen() // Cart tests for GBA
 **************************/
 
 /*!
-    \brief      initialize the card, get the card information, set the bus mode and transfer mode
-    \param[in]  none
-    \param[out] none
-    \retval     sd_error_enum
+	\brief		initialize the card, get the card information, set the bus mode and transfer mode
+	\param[in]	none
+	\param[out] none
+	\retval		sd_error_enum
 */
 sd_error_enum sd_io_init(void)
 {
@@ -318,7 +318,7 @@ sd_error_enum sd_io_init(void)
 	}
 	if (SD_OK == status)
 	{
-		// set data transfer mode
+		// Set data transfer mode
 		status = sd_transfer_mode_config( SD_POLLING_MODE );
 		printf("Set SD to Polling Mode.\r\n");
 	}
@@ -327,10 +327,10 @@ sd_error_enum sd_io_init(void)
 
 
 /*!
-    \brief      get the card information and print it out by USRAT
-    \param[in]  none
-    \param[out] none
-    \retval     none
+	\brief		get the card information and print it out by USRAT
+	\param[in]	none
+	\param[out] none
+	\retval		none
 */
 void card_info_get(void)
 {
@@ -434,7 +434,7 @@ void SDCardInit()
 	FRESULT res_sd;
 	sd_error_enum sd_error;
 	uint16_t i = 5;
-	// initialize the card
+	// Initialize the card
 	do
 	{
 		sd_error = sd_io_init();
@@ -452,10 +452,10 @@ void SDCardInit()
 		print_Error("No SD Card detected!",true);
 	}
 
-	// get the information of the card and print it out by USART
+	// Get the information of the card and print it out by USART
 	card_info_get();
 
-	//在外部SPI Flash挂载文件系统，文件系统挂载时会对SPI设备初始化
+	// 在外部SPI Flash挂载文件系统，文件系统挂载时会对SPI设备初始化
 	res_sd = f_mount(&fs,"",1);
 
 	/*----------------------- 格式化测试 ---------------------------

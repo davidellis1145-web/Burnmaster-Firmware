@@ -53,9 +53,9 @@ word readWord_GBA(unsigned long Address)
 	unsigned long myAddress = Address >> 1;
 
 	// Set address/data ports to output
-	GPIO_CTL1(ADDR_1) = 0x33333333;//A0-A7
-	GPIO_CTL0(ADDR_1) = (GPIO_CTL0(ADDR_1)&0xFFFF) + 0x33330000;//A12-A15
-	GPIO_CTL1(ADDR_2) = (GPIO_CTL1(ADDR_2)&0xFFFF0000) + 0x3333;//A8-A11
+	GPIO_CTL1(ADDR_1) = 0x33333333; // A0-A7
+	GPIO_CTL0(ADDR_1) = (GPIO_CTL0(ADDR_1)&0xFFFF) + 0x33330000; // A12-A15
+	GPIO_CTL1(ADDR_2) = (GPIO_CTL1(ADDR_2)&0xFFFF0000) + 0x3333; // A8-A11
 	GPIO_CTL1(ADDR_3) = 0x33333333;
 
 	// Output address to address pins
@@ -72,9 +72,9 @@ word readWord_GBA(unsigned long Address)
 	// Set address/data ports to input
 	GPIO_OCTL(ADDR_1) = (GPIO_OCTL(ADDR_1)&0xFFFF000F);
 	GPIO_OCTL(ADDR_2) = (GPIO_OCTL(ADDR_2)&0xFFFFF0FF);
-	GPIO_CTL1(ADDR_1) = 0x44444444;//A0-A7
-	GPIO_CTL0(ADDR_1) = (GPIO_CTL0(ADDR_1)&0xFFFF) + 0x44440000;//A12-A15
-	GPIO_CTL1(ADDR_2) = (GPIO_CTL1(ADDR_2)&0xFFFF0000) + 0x4444;//A8-A11
+	GPIO_CTL1(ADDR_1) = 0x44444444; // A0-A7
+	GPIO_CTL0(ADDR_1) = (GPIO_CTL0(ADDR_1)&0xFFFF) + 0x44440000; // A12-A15
+	GPIO_CTL1(ADDR_2) = (GPIO_CTL1(ADDR_2)&0xFFFF0000) + 0x4444; // A8-A11
 
 	// Pull RD(PH6) to LOW
 	gpio_bit_reset(CTRLGBA,GBA_RD);
@@ -101,9 +101,9 @@ word readWord_buf_GBA(unsigned long Address, uint16_t *outBuf, uint16_t cnt)
 	unsigned long myAddress = Address >> 1;
 
 	// Set address/data ports to output
-	GPIO_CTL1(ADDR_1) = 0x33333333;//A0-A7
-	GPIO_CTL0(ADDR_1) = (GPIO_CTL0(ADDR_1)&0xFFFF) + 0x33330000;//A12-A15
-	GPIO_CTL1(ADDR_2) = (GPIO_CTL1(ADDR_2)&0xFFFF0000) + 0x3333;//A8-A11
+	GPIO_CTL1(ADDR_1) = 0x33333333; // A0-A7
+	GPIO_CTL0(ADDR_1) = (GPIO_CTL0(ADDR_1)&0xFFFF) + 0x33330000; // A12-A15
+	GPIO_CTL1(ADDR_2) = (GPIO_CTL1(ADDR_2)&0xFFFF0000) + 0x3333; // A8-A11
 	GPIO_CTL1(ADDR_3) = 0x33333333;
 
 	// Output address to address pins
@@ -120,9 +120,9 @@ word readWord_buf_GBA(unsigned long Address, uint16_t *outBuf, uint16_t cnt)
 	// Set address/data ports to input
 	GPIO_OCTL(ADDR_1) = (GPIO_OCTL(ADDR_1)&0xFFFF000F);
 	GPIO_OCTL(ADDR_2) = (GPIO_OCTL(ADDR_2)&0xFFFFF0FF);
-	GPIO_CTL1(ADDR_1) = 0x44444444;//A0-A7
-	GPIO_CTL0(ADDR_1) = (GPIO_CTL0(ADDR_1)&0xFFFF) + 0x44440000;//A12-A15
-	GPIO_CTL1(ADDR_2) = (GPIO_CTL1(ADDR_2)&0xFFFF0000) + 0x4444;//A8-A11
+	GPIO_CTL1(ADDR_1) = 0x44444444; // A0-A7
+	GPIO_CTL0(ADDR_1) = (GPIO_CTL0(ADDR_1)&0xFFFF) + 0x44440000; // A12-A15
+	GPIO_CTL1(ADDR_2) = (GPIO_CTL1(ADDR_2)&0xFFFF0000) + 0x4444; // A8-A11
 
 	for(WORD i = 0;i<cnt;i++)
 	{
@@ -152,9 +152,9 @@ void writeWord_GBA(unsigned long Address, word myWord)
 	unsigned long myAddress = Address >> 1;
 
 	// Set address/data ports to output
-	GPIO_CTL1(ADDR_1) = 0x33333333;//A0-A7
-	GPIO_CTL0(ADDR_1) = (GPIO_CTL0(ADDR_1)&0xFFFF) + 0x33330000;//A12-A15
-	GPIO_CTL1(ADDR_2) = (GPIO_CTL1(ADDR_2)&0xFFFF0000) + 0x3333;//A8-A11
+	GPIO_CTL1(ADDR_1) = 0x33333333; // A0-A7
+	GPIO_CTL0(ADDR_1) = (GPIO_CTL0(ADDR_1)&0xFFFF) + 0x33330000; // A12-A15
+	GPIO_CTL1(ADDR_2) = (GPIO_CTL1(ADDR_2)&0xFFFF0000) + 0x3333; // A8-A11
 	GPIO_CTL1(ADDR_3) = 0x33333333;
 
 	// Output address to address pins
@@ -192,10 +192,10 @@ void writeWord_GBA(unsigned long Address, word myWord)
 word swapBits(word n, word p1, word p2)
 {
 	// Move p1'th to rightmost side
-	word bit1 =  (n >> p1) & 1;
+	word bit1 = (n >> p1) & 1;
 
 	// Move p2'th to rightmost side
-	word bit2 =  (n >> p2) & 1;
+	word bit2 = (n >> p2) & 1;
 
 	// XOR the two bits
 	word x = (bit1 ^ bit2);
@@ -226,9 +226,9 @@ void writeWord_GAB(unsigned long myAddress, word myWord)
 
 void setAddrOutMode()
 {
-	GPIO_CTL1(ADDR_1) = 0x33333333;//A0-A7
-	GPIO_CTL0(ADDR_1) = (GPIO_CTL0(ADDR_1)&0xFFFF) + 0x33330000;//A12-A15
-	GPIO_CTL1(ADDR_2) = (GPIO_CTL1(ADDR_2)&0xFFFF0000) + 0x3333;//A8-A11
+	GPIO_CTL1(ADDR_1) = 0x33333333; // A0-A7
+	GPIO_CTL0(ADDR_1) = (GPIO_CTL0(ADDR_1)&0xFFFF) + 0x33330000; // A12-A15
+	GPIO_CTL1(ADDR_2) = (GPIO_CTL1(ADDR_2)&0xFFFF0000) + 0x3333; // A8-A11
 }
 
 
@@ -330,7 +330,7 @@ void getCartInfo_GBA()
 		FIL tf;
 		UINT rdt;
 
-		// cart not in list
+		// Cart not in list
 		cartSize = 0;
 		saveType = 0;
 
@@ -446,23 +446,23 @@ void readROM_GBA()
 	strcpy(fileName, romName);
 	strcat(fileName, ".gba");
 
-	// create a new folder for the rom file
+	// Create a new folder for the rom file
 	char basePath[64];
 	sprintf(basePath, "GBA/ROM/%s", romName);
 	int highestFolder = findHighestFolder(basePath);
-	foldern = highestFolder + 1;  // Use next folder number
+	foldern = highestFolder + 1;	// Use next folder number
 
 	sprintf(folder, "/GBA/ROM/%s/%d", romName, foldern);
 	my_mkdir(folder);
 	f_chdir(folder);
 
-	// clear the screen
+	// Clear the screen
 	OledClear();
 	OledShowString(0,0,"Saving to:",8);
 	OledShowString(0,1,folder,8);
 
 	FIL tf;
-	// open file on sd card
+	// Open file on sd card
 	if (f_open(&tf,fileName, FA_CREATE_ALWAYS|FA_WRITE) != FR_OK)
 	{
 		print_Error("Can't create file!", true);
@@ -502,7 +502,7 @@ boolean compare_checksum_GBA ()
 	strcpy(fileName, romName);
 	strcat(fileName, ".gba");
 
-	// last used rom folder
+	// Last used rom folder
 	char basePath[64];
 	sprintf(basePath, "/GBA/ROM/%s", romName);
 	int highestFolder = findHighestFolder(basePath);
@@ -562,11 +562,11 @@ void readSRAM_GBA(boolean browseFile, unsigned long sramSize, uint32_t pos)
 		strcpy(fileName, romName);
 		strcat(fileName, ".srm");
 
-		// create a new folder for the save file
+		// Create a new folder for the save file
 		char basePath[64];
 		sprintf(basePath, "GBA/SAVE/%s", romName);
 		int highestFolder = findHighestFolder(basePath);
-		foldern = highestFolder + 1;  // Use next folder number
+		foldern = highestFolder + 1;	// Use next folder number
 
 		sprintf(folder, "GBA/SAVE/%s/%d", romName, foldern);
 		my_mkdir(folder);
@@ -577,7 +577,7 @@ void readSRAM_GBA(boolean browseFile, unsigned long sramSize, uint32_t pos)
 		OledShowString(0,1,folder,8);
 	}
 
-	// open file on sd card
+	// Open file on sd card
 	FIL tf;
 	if (f_open(&tf, fileName, FA_CREATE_ALWAYS|FA_WRITE) != FR_OK)
 	{
@@ -620,7 +620,7 @@ void writeSRAM_GBA(boolean browseFile, unsigned long sramSize, uint32_t pos)
 		OledClear();
 	}
 
-	// open file on sd card
+	// Open file on sd card
 	FIL tf;
 	if (f_open(&tf, filePath, FA_READ) == FR_OK)
 	{
@@ -634,7 +634,7 @@ void writeSRAM_GBA(boolean browseFile, unsigned long sramSize, uint32_t pos)
 
 		for (unsigned long currAddress = 0; currAddress < sramSize; currAddress += 512)
 		{
-			// fill sdBuffer
+			// Fill sdBuffer
 			UINT rdt;
 			f_read(&tf, sdBuffer, 512, &rdt);
 
@@ -660,7 +660,7 @@ void writeSRAM_GBA(boolean browseFile, unsigned long sramSize, uint32_t pos)
 
 unsigned long verifySRAM_GBA(unsigned long sramSize, uint32_t pos)
 {
-	// open file on sd card
+	// Open file on sd card
 	FIL tf;
 	if (f_open(&tf, filePath, FA_READ) == FR_OK)
 	{
@@ -674,7 +674,7 @@ unsigned long verifySRAM_GBA(unsigned long sramSize, uint32_t pos)
 		setAddrOutMode();
 		for (unsigned long currAddress = 0; currAddress < sramSize; currAddress += 512)
 		{
-			// fill sdBuffer
+			// Fill sdBuffer
 			UINT rdt;
 			f_read(&tf, sdBuffer, 512, &rdt);
 
@@ -709,7 +709,7 @@ void TestSRAM_GBA(unsigned long sramSize)
 	setAddrOutMode();
 	for (unsigned long currAddress = 0; currAddress < sramSize; currAddress++)
 	{
-		// fill sdBuffer
+		// Fill sdBuffer
 		byte wb = currAddress & 0xFF;
 		// Write byte
 		writeByte_GBA(currAddress, wb);
@@ -844,9 +844,9 @@ void writeBlock_EEP(word startAddr, word eepSize)
 
 		do
 		{
-			// Set  CS_ROM(PH3) RD(PH6) to LOW
+			// Set CS_ROM(PH3) RD(PH6) to LOW
 			gpio_bit_reset(CTRLGBA,CS_ROM);
-			// Set  CS_ROM(PH3) RD(PH6) to High
+			// Set CS_ROM(PH3) RD(PH6) to High
 			gpio_bit_set(CTRLGBA,CS_ROM);
 		}
 		while (((GPIO_ISTAT(ADDR_1) >> 8) & 0x1) == 0);
@@ -965,7 +965,7 @@ unsigned long verifyEEP_GBA(word eepSize)
 {
 	unsigned long wrError = 0;
 
-	//open file on sd card
+	// Open file on sd card
 	FIL tf;
 	if (f_open(&tf, filePath, FA_READ) != FR_OK)
 	{
@@ -1007,7 +1007,7 @@ void writeEeprom_GBA(word eepSize)
 	OledShowString(0,0,"Writing EEPROM...",8);
 
 	FIL tf;
-	//open file on sd card
+	// Open file on sd card
 	if (f_open(&tf, filePath, FA_READ) == FR_OK)
 	{
 		for (word i = 0; i < eepSize * 16; i += 64)
@@ -1022,7 +1022,7 @@ void writeEeprom_GBA(word eepSize)
 			__enable_irq();
 
 			// Wait
-			delayMicroseconds(200);//???
+			delayMicroseconds(200); // ???
 		}
 
 		// Close the file
@@ -1045,11 +1045,11 @@ void readEeprom_GBA(word eepSize)
 	strcpy(fileName, romName);
 	strcat(fileName, ".eep");
 
-	// create a new folder for the save file
+	// Create a new folder for the save file
 	char basePath[64];
 	sprintf(basePath, "GBA/SAVE/%s", romName);
 	int highestFolder = findHighestFolder(basePath);
-	foldern = highestFolder + 1;  // Use next folder number
+	foldern = highestFolder + 1;	// Use next folder number
 
 	sprintf(folder, "GBA/SAVE/%s/%d", romName, foldern);
 	my_mkdir(folder);
@@ -1060,7 +1060,7 @@ void readEeprom_GBA(word eepSize)
 	OledShowString(0,1,folder,8);
 	FIL tf;
 
-	//open file on sd card
+	// Open file on sd card
 	if (f_open(&tf, fileName, FA_CREATE_ALWAYS | FA_WRITE) != FR_OK)
 	{
 		print_Error("SD Card Error!", true);
@@ -1145,9 +1145,9 @@ void eraseFLASH_GBA()
 
 	// Set address ports to output
 	// Set data pins to output
-	GPIO_CTL1(ADDR_1) = 0x33333333;//A0-A7
-	GPIO_CTL0(ADDR_1) = (GPIO_CTL0(ADDR_1)&0xFFFF) + 0x33330000;//A12-A15
-	GPIO_CTL1(ADDR_2) = (GPIO_CTL1(ADDR_2)&0xFFFF0000) + 0x3333;//A8-A11
+	GPIO_CTL1(ADDR_1) = 0x33333333; // A0-A7
+	GPIO_CTL0(ADDR_1) = (GPIO_CTL0(ADDR_1)&0xFFFF) + 0x33330000; // A12-A15
+	GPIO_CTL1(ADDR_2) = (GPIO_CTL1(ADDR_2)&0xFFFF0000) + 0x3333; // A8-A11
 	GPIO_CTL1(ADDR_3) = 0x33333333;
 
 	// Output a LOW signal on CE_FLASH(PH0)
@@ -1176,9 +1176,9 @@ void idFlash_GBA()
 
 	// Set address ports to output
 	// Set data pins to output
-	GPIO_CTL1(ADDR_1) = 0x33333333;//A0-A7
-	GPIO_CTL0(ADDR_1) = (GPIO_CTL0(ADDR_1)&0xFFFF) + 0x33330000;//A12-A15
-	GPIO_CTL1(ADDR_2) = (GPIO_CTL1(ADDR_2)&0xFFFF0000) + 0x3333;//A8-A11
+	GPIO_CTL1(ADDR_1) = 0x33333333; // A0-A7
+	GPIO_CTL0(ADDR_1) = (GPIO_CTL0(ADDR_1)&0xFFFF) + 0x33330000; // A12-A15
+	GPIO_CTL1(ADDR_2) = (GPIO_CTL1(ADDR_2)&0xFFFF0000) + 0x3333; // A8-A11
 	GPIO_CTL1(ADDR_3) = 0x33333333;
 
 	// Output a LOW signal on CE_FLASH(PH0)
@@ -1221,9 +1221,9 @@ void resetFLASH_GBA()
 
 	// Set address ports to output
 	// Set data pins to output
-	GPIO_CTL1(ADDR_1) = 0x33333333;//A0-A7
-	GPIO_CTL0(ADDR_1) = (GPIO_CTL0(ADDR_1)&0xFFFF) + 0x33330000;//A12-A15
-	GPIO_CTL1(ADDR_2) = (GPIO_CTL1(ADDR_2)&0xFFFF0000) + 0x3333;//A8-A11
+	GPIO_CTL1(ADDR_1) = 0x33333333; // A0-A7
+	GPIO_CTL0(ADDR_1) = (GPIO_CTL0(ADDR_1)&0xFFFF) + 0x33330000; // A12-A15
+	GPIO_CTL1(ADDR_2) = (GPIO_CTL1(ADDR_2)&0xFFFF0000) + 0x3333; // A8-A11
 	GPIO_CTL1(ADDR_3) = 0x33333333;
 
 	// Output a LOW signal on CE_FLASH(PH0)
@@ -1249,9 +1249,9 @@ boolean blankcheckFLASH_GBA (unsigned long flashSize)
 	gpio_bit_set(CTRLGBA,GBA_WR|CS_ROM);
 
 	// Set address ports to output
-	GPIO_CTL1(ADDR_1) = 0x33333333;//A0-A7
-	GPIO_CTL0(ADDR_1) = (GPIO_CTL0(ADDR_1)&0xFFFF) + 0x33330000;//A12-A15
-	GPIO_CTL1(ADDR_2) = (GPIO_CTL1(ADDR_2)&0xFFFF0000) + 0x3333;//A8-A11
+	GPIO_CTL1(ADDR_1) = 0x33333333; // A0-A7
+	GPIO_CTL0(ADDR_1) = (GPIO_CTL0(ADDR_1)&0xFFFF) + 0x33330000; // A12-A15
+	GPIO_CTL1(ADDR_2) = (GPIO_CTL1(ADDR_2)&0xFFFF0000) + 0x3333; // A8-A11
 	// Set address to 0
 	GPIO_OCTL(ADDR_1) = (GPIO_OCTL(ADDR_1)&0xFFFF000F);
 	GPIO_OCTL(ADDR_2) = (GPIO_OCTL(ADDR_2)&0xFFFFF0FF);
@@ -1262,7 +1262,7 @@ boolean blankcheckFLASH_GBA (unsigned long flashSize)
 
 	boolean blank = 1;
 
-	// Output a LOW signal on  CE_FLASH(PH0)
+	// Output a LOW signal on CE_FLASH(PH0)
 	gpio_bit_reset(CTRLGBA,CS_SRAM);
 
 	// Output a LOW signal on OE_FLASH(PH6)
@@ -1296,9 +1296,9 @@ boolean blankcheckFLASH_GBA (unsigned long flashSize)
 }
 
 
-/* The MX29L010 is 131072 bytes in size and has 16 sectors per bank
-   each sector is 4096 bytes, there are 32 sectors total
-   therefore the bank size is 65536 bytes, so we have two banks in total */
+/*	The MX29L010 is 131072 bytes in size and has 16 sectors per bank
+	each sector is 4096 bytes, there are 32 sectors total
+	therefore the bank size is 65536 bytes, so we have two banks in total */
 void switchBank_GBA(byte bankNum)
 {
 	// Output a HIGH signal on CS_ROM(PH3) WE_FLASH(PH5) and OE_FLASH(PH6)
@@ -1306,9 +1306,9 @@ void switchBank_GBA(byte bankNum)
 
 	// Set address ports to output
 	// Set data pins to output
-	GPIO_CTL1(ADDR_1) = 0x33333333;//A0-A7
-	GPIO_CTL0(ADDR_1) = (GPIO_CTL0(ADDR_1)&0xFFFF) + 0x33330000;//A12-A15
-	GPIO_CTL1(ADDR_2) = (GPIO_CTL1(ADDR_2)&0xFFFF0000) + 0x3333;//A8-A11
+	GPIO_CTL1(ADDR_1) = 0x33333333; // A0-A7
+	GPIO_CTL0(ADDR_1) = (GPIO_CTL0(ADDR_1)&0xFFFF) + 0x33330000; // A12-A15
+	GPIO_CTL1(ADDR_2) = (GPIO_CTL1(ADDR_2)&0xFFFF0000) + 0x3333; // A8-A11
 	GPIO_CTL1(ADDR_3) = 0x33333333;
 
 	// Output a LOW signal on CE_FLASH(PH0)
@@ -1331,9 +1331,9 @@ void readFLASH_GBA (boolean browseFile, unsigned long flashSize, uint32_t pos)
 	gpio_bit_set(CTRLGBA,GBA_WR|CS_ROM);
 
 	// Set address ports to output
-	GPIO_CTL1(ADDR_1) = 0x33333333;//A0-A7
-	GPIO_CTL0(ADDR_1) = (GPIO_CTL0(ADDR_1)&0xFFFF) + 0x33330000;//A12-A15
-	GPIO_CTL1(ADDR_2) = (GPIO_CTL1(ADDR_2)&0xFFFF0000) + 0x3333;//A8-A11
+	GPIO_CTL1(ADDR_1) = 0x33333333; // A0-A7
+	GPIO_CTL0(ADDR_1) = (GPIO_CTL0(ADDR_1)&0xFFFF) + 0x33330000; // A12-A15
+	GPIO_CTL1(ADDR_2) = (GPIO_CTL1(ADDR_2)&0xFFFF0000) + 0x3333; // A8-A11
 	// Set address to 0
 	GPIO_OCTL(ADDR_1) = (GPIO_OCTL(ADDR_1)&0xFFFF000F);
 	GPIO_OCTL(ADDR_2) = (GPIO_OCTL(ADDR_2)&0xFFFFF0FF);
@@ -1347,11 +1347,11 @@ void readFLASH_GBA (boolean browseFile, unsigned long flashSize, uint32_t pos)
 		strcpy(fileName, romName);
 		strcat(fileName, ".fla");
 
-		// create a new folder for the save file
+		// Create a new folder for the save file
 		char basePath[64];
 		sprintf(basePath, "GBA/SAVE/%s", romName);
 		int highestFolder = findHighestFolder(basePath);
-		foldern = highestFolder + 1;  // Use next folder number
+		foldern = highestFolder + 1;	// Use next folder number
 
 		sprintf(folder, "GBA/SAVE/%s/%d", romName, foldern);
 		my_mkdir(folder);
@@ -1363,7 +1363,7 @@ void readFLASH_GBA (boolean browseFile, unsigned long flashSize, uint32_t pos)
 	}
 
 	FIL tf;
-	//open file on sd card
+	// Open file on sd card
 	if (f_open(&tf, fileName,FA_CREATE_ALWAYS | FA_WRITE) != FR_OK)
 	{
 		print_Error("SD Card Error", true);
@@ -1428,9 +1428,9 @@ void writeFLASH_GBA (boolean browseFile, unsigned long flashSize, uint32_t pos)
 
 	// Set address ports to output
 	// Set data port to output
-	GPIO_CTL1(ADDR_1) = 0x33333333;//A0-A7
-	GPIO_CTL0(ADDR_1) = (GPIO_CTL0(ADDR_1)&0xFFFF) + 0x33330000;//A12-A15
-	GPIO_CTL1(ADDR_2) = (GPIO_CTL1(ADDR_2)&0xFFFF0000) + 0x3333;//A8-A11
+	GPIO_CTL1(ADDR_1) = 0x33333333; // A0-A7
+	GPIO_CTL0(ADDR_1) = (GPIO_CTL0(ADDR_1)&0xFFFF) + 0x33330000; // A12-A15
+	GPIO_CTL1(ADDR_2) = (GPIO_CTL1(ADDR_2)&0xFFFF0000) + 0x3333; // A8-A11
 	GPIO_CTL1(ADDR_3) = 0x33333333;
 
 	if (browseFile)
@@ -1445,7 +1445,7 @@ void writeFLASH_GBA (boolean browseFile, unsigned long flashSize, uint32_t pos)
 	OledShowString(0,0,"Writing flash...",8);
 
 	FIL tf;
-	//open file on sd card
+	// Open file on sd card
 	if (f_open(&tf, filePath, FA_READ) == FR_OK)
 	{
 		// Seek to a new position in the file
@@ -1457,7 +1457,7 @@ void writeFLASH_GBA (boolean browseFile, unsigned long flashSize, uint32_t pos)
 
 		for (unsigned long currAddress = 0; currAddress < flashSize; currAddress += 512)
 		{
-			//fill sdBuffer
+			// Fill sdBuffer
 			UINT rdt;
 			f_read(&tf, sdBuffer, 512, &rdt);
 
@@ -1496,14 +1496,14 @@ void verifyFLASH_GBA(unsigned long flashSize, uint32_t pos)
 	gpio_bit_set(CTRLGBA,GBA_WR|CS_ROM);
 
 	// Set address ports to output
-	GPIO_CTL1(ADDR_1) = 0x33333333;//A0-A7
-	GPIO_CTL0(ADDR_1) = (GPIO_CTL0(ADDR_1)&0xFFFF) + 0x33330000;//A12-A15
-	GPIO_CTL1(ADDR_2) = (GPIO_CTL1(ADDR_2)&0xFFFF0000) + 0x3333;//A8-A11
+	GPIO_CTL1(ADDR_1) = 0x33333333; // A0-A7
+	GPIO_CTL0(ADDR_1) = (GPIO_CTL0(ADDR_1)&0xFFFF) + 0x33330000; // A12-A15
+	GPIO_CTL1(ADDR_2) = (GPIO_CTL1(ADDR_2)&0xFFFF0000) + 0x3333; // A8-A11
 
 	// Set data pins to input
 	GPIO_CTL1(ADDR_3) = 0x44444444;
 
-	// Output a LOW signal on CE_FLASH(PH0) and  OE_FLASH(PH6)
+	// Output a LOW signal on CE_FLASH(PH0) and OE_FLASH(PH6)
 	gpio_bit_reset(CTRLGBA,CS_SRAM|GBA_RD);
 
 	// Signal beginning of process
@@ -1512,7 +1512,7 @@ void verifyFLASH_GBA(unsigned long flashSize, uint32_t pos)
 	unsigned long wrError = 0;
 	FIL tf;
 
-	//open file on sd card
+	// Open file on sd card
 	if (f_open(&tf, filePath, FA_READ) != FR_OK)
 	{
 		print_Error("SD Card Error!", true);
@@ -2132,7 +2132,7 @@ void writeMSP55LV128_GBA(FIL * ptf)
 						{
 							if(statusReg&0x20)
 							{
-								//write buffer abort reset
+								// Write buffer abort reset
 								writeWord_GAB(0xAAA, 0xAA);
 								delayMicroseconds(deley_us_lv128);
 								writeWord_GAB(0x555, 0x55);
@@ -2145,7 +2145,7 @@ void writeMSP55LV128_GBA(FIL * ptf)
 							}
 							else if(statusReg&0x2)
 							{
-								//write buffer abort reset
+								// Write buffer abort reset
 								writeWord_GAB(0xAAA, 0xAA);
 								delayMicroseconds(deley_us_lv128);
 								writeWord_GAB(0x555, 0x55);
@@ -2229,7 +2229,7 @@ void writeMX29GL128E_GBA(FIL * ptf)
 					{
 						if(statusReg&0x20)
 						{
-							//write buffer abort reset
+							// Write buffer abort reset
 							writeWord_GAB(0xAAA, 0xAA);
 							delayMicroseconds(deley_us_lv128);
 							writeWord_GAB(0x555, 0x55);
@@ -2242,7 +2242,7 @@ void writeMX29GL128E_GBA(FIL * ptf)
 						}
 						else if(statusReg&0x2)
 						{
-							//write buffer abort reset
+							// Write buffer abort reset
 							writeWord_GAB(0xAAA, 0xAA);
 							delayMicroseconds(deley_us_lv128);
 							writeWord_GAB(0x555, 0x55);
@@ -2312,13 +2312,13 @@ void writeMX29GL128E_GBA_1(FIL * ptf)
 
 void writeSpansion_GBA(FIL * ptf)
 {
-	for (unsigned long currSector = 0; currSector < fileSize; currSector += 0x20000) // was 0x20000
+	for (unsigned long currSector = 0; currSector < fileSize; currSector += 0x20000) // Was 0x20000
 	{
 		// Blink led
 		LED_GREEN_BLINK;
 		showPersent(currSector,fileSize,68,3);
 		// Write to flashrom
-		for (unsigned long currSdBuffer = 0; currSdBuffer < 0x20000; currSdBuffer += 512) // was 0x20000
+		for (unsigned long currSdBuffer = 0; currSdBuffer < 0x20000; currSdBuffer += 512) // Was 0x20000
 		{
 			// Fill SD buffer
 			UINT rdt;
@@ -2370,7 +2370,7 @@ void writeSpansion_GBA(FIL * ptf)
 					{
 						if(statusReg&0x20)
 						{
-							//write buffer abort reset
+							// Write buffer abort reset
 							writeWord_GBA(0xAAA, 0xAA);
 							delayMicroseconds(deley_us_lv128);
 							writeWord_GBA(0x555, 0x55);
@@ -2383,7 +2383,7 @@ void writeSpansion_GBA(FIL * ptf)
 						}
 						else if(statusReg&0x2)
 						{
-							//write buffer abort reset
+							// Write buffer abort reset
 							writeWord_GBA(0xAAA, 0xAA);
 							delayMicroseconds(deley_us_lv128);
 							writeWord_GBA(0x555, 0x55);
@@ -2433,7 +2433,7 @@ boolean verifyFlashrom_GBA()
 				for (int currByte = 0; currByte < (512>>1); currByte ++)
 				{
 					// Join two bytes into one word
-					word currWord =  ((word *)sdBuffer)[currByte];
+					word currWord = ((word *)sdBuffer)[currByte];
 					delayMicroseconds(1);
 
 					// Compare both
@@ -2491,7 +2491,7 @@ boolean verifyFlashrom_GBA_new()
 				for (int i = 0; i < (512>>1); i++)
 				{
 					// Join two bytes into one word
-					word currWord =  ((word *)sdBuffer)[i];
+					word currWord = ((word *)sdBuffer)[i];
 					if (tbuf[i] != currWord)
 					{
 						writeErrors++;
@@ -2683,8 +2683,8 @@ void flashRepro_GBA()
 				{
 					if ((romType == 0xC2) || (romType == 0x89))
 					{
-						//MX29GL128E
-						//PC28F256M29 (0x89)
+						// MX29GL128E
+						// PC28F256M29 (0x89)
 						sectorEraseMX29GL128E_GBA(fileSize - 1);
 					}
 					else if (romType == 0x20)
@@ -2698,7 +2698,7 @@ void flashRepro_GBA()
 				}
 			}
 
-			//Write flashrom
+			// Write flashrom
 			OledShowString(10,3,"Writing...",8);
 			OledShowString(0,4,filePath,8);
 
@@ -2723,8 +2723,8 @@ void flashRepro_GBA()
 				{
 					if ((romType == 0xC2) || (romType == 0x89))
 					{
-						//MX29GL128E (0xC2)
-						//PC28F256M29 (0x89)
+						// MX29GL128E (0xC2)
+						// PC28F256M29 (0x89)
 						OledShowString(0,1,"29 GL",8);
 						writeMX29GL128E_GBA(&tf);
 					}
@@ -2735,7 +2735,7 @@ void flashRepro_GBA()
 					}
 					else if ((romType == 0x1) || (romType == 0x4))
 					{
-						//MSP55LV128(N)
+						// MSP55LV128(N)
 						OledShowString(0,1,"MSP55LV",8);
 						writeMSP55LV128_GBA(&tf);
 					}
@@ -2871,7 +2871,7 @@ void writeTEST_GBA(uint32_t testSize)
 						}
 						else if(statusReg&0x2)
 						{
-							//write buffer abort reset
+							// Write buffer abort reset
 							writeWord_GAB(0xAAA, 0xAA);
 							delayMicroseconds(deley_us_lv128);
 							writeWord_GAB(0x555, 0x55);
@@ -2911,7 +2911,7 @@ void flashTest_GBA(uint32_t testSize)
 		OledShowString(0,4,"Erasing ROM...",8);
 		sectorEraseTest_GBA(testSize - 1);
 
-		//Write flashrom
+		// Write flashrom
 		OledShowString(0,5,"Writing ROM...",8);
 		writeTEST_GBA(testSize);
 
@@ -2962,8 +2962,8 @@ void setup_GBA()
 		OledShowString(60,2,tmsg,8);
 	}
 
-	//deal with the save type, some roms' flag maybe one type, but the PHY Cart is not.
-	//this works by Patches to the rom file...
+	// Deal with the save type, some roms' flag maybe one type, but the PHY Cart is not.
+	// This works by Patches to the rom file...
 	strcpy(tmsg,"Save: ");
 	if(forceSaveType != 0)
 	{
@@ -3056,13 +3056,13 @@ static const char* const saveOptionsGBA[] = {GBASaveItem1, GBASaveItem2, GBASave
 
 uint8_t gbaMenu()
 {
-	// create menu with title and 4 options to choose from
+	// Create menu with title and 4 options to choose from
 	uint8_t bret = 0;
 	LED_GREEN_OFF; // Make sure green led is off after blinking
 	unsigned char retMenu = questionBox_OLED("GBA Main Menu", menuOptionsGBA, 6, 1, 1, 1);
 	char tmsg[32] = {0};
 
-	// wait for user choice to come back from the question box menu
+	// Wait for user choice to come back from the question box menu
 	switch (retMenu)
 	{
 		case MENU_CANCEL:
@@ -3081,10 +3081,10 @@ uint8_t gbaMenu()
 			switch (cartSize)
 			{
 				case 0:
-					// create submenu with title and 4 options to choose from
+					// Create submenu with title and 4 options to choose from
 					{
 						unsigned char GBARomMenu = questionBox_OLED("Select ROM size", romOptionsGBA, 6, 1, 1, 1);
-						// wait for user choice to come back from the question box menu
+						// Wait for user choice to come back from the question box menu
 						switch (GBARomMenu)
 						{
 							case 1:
@@ -3146,9 +3146,9 @@ uint8_t gbaMenu()
 			// Read save
 			if (saveType == 0)
 			{
-				// create submenu with title and 6 options to choose from
+				// Create submenu with title and 6 options to choose from
 				unsigned char GBASaveMenu = questionBox_OLED("Select save type:", saveOptionsGBA, 6, 1, 1, 1);
-				// wait for user choice to come back from the question box menu
+				// Wait for user choice to come back from the question box menu
 				switch (GBASaveMenu)
 				{
 					case 1:
@@ -3223,9 +3223,9 @@ uint8_t gbaMenu()
 			// Write save
 			if (saveType == 0)
 			{
-				// create submenu with title and 6 options to choose from
+				// Create submenu with title and 6 options to choose from
 				unsigned char GBASavesMenu = questionBox_OLED("Select save type:", saveOptionsGBA, 6, 1, 1, 1);
-				// wait for user choice to come back from the question box menu
+				// Wait for user choice to come back from the question box menu
 				switch (GBASavesMenu)
 				{
 					case 1:
@@ -3386,10 +3386,10 @@ uint8_t gbaMenu()
 
 	case MENU_5:
 		{
-			// create submenu with title and 7 options to choose from
+			// Create submenu with title and 7 options to choose from
 			unsigned char GBASaveMenu = questionBox_OLED("Select save type:", saveOptionsGBA, 6, 1, 1, 1);
 
-			// wait for user choice to come back from the question box menu
+			// Wait for user choice to come back from the question box menu
 			switch (GBASaveMenu)
 			{
 				case 1:
@@ -3423,7 +3423,7 @@ uint8_t gbaMenu()
 		ResetSystem();
 		break;
 	}
-	return  bret;
+	return bret;
 }
 
 

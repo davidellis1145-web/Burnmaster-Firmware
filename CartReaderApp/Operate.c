@@ -12,7 +12,7 @@
 void KeyBrdInit()
 {
 	gpio_init(GPIOE, GPIO_MODE_IPU, GPIO_OSPEED_2MHZ, 0x3F);
-	gpio_init(GPIOB, GPIO_MODE_IN_FLOATING, GPIO_OSPEED_2MHZ, GPIO_PIN_1);//低电量获取
+	gpio_init(GPIOB, GPIO_MODE_IN_FLOATING, GPIO_OSPEED_2MHZ, GPIO_PIN_1); // 低电量获取
 }
 
 
@@ -58,10 +58,10 @@ void WaitOKBtn()
 // Display a question box with selectable answers. Make sure default choice is in (0, num_answers]
 unsigned char questionBox_OLED(char * question, const char* const answers[7], int num_answers, int default_choice, uint8_t rollselect, uint8_t clrSrc)
 {
-	// clear the screen
+	// Clear the screen
 	if(clrSrc > 0)OledClear();
 
-	// print menu
+	// Print menu
 	OledShowString(0,0,question,8);
 	char tanswer[21] = {0};
 	for (unsigned char i = 0; i < num_answers; i++)
@@ -70,17 +70,17 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 		OledShowString(6,i+1,tanswer,8);
 	}
 
-	// start with the default choice
+	// Start with the default choice
 	unsigned char choice = default_choice;
 	unsigned char choice_ori = default_choice;
 
-	// draw selection bullet
+	// Draw selection bullet
 	OledShowChar(0,choice,'*',8);
 	uint8_t currentColor = 0;
 	uint32_t scroll_tick = 0;
 	uint8_t scroll_start = 0;
 
-	// wait until user makes their choice
+	// Wait until user makes their choice
 	while (1)
 	{
 		int b = checkButton();
@@ -166,7 +166,7 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 			break;
 		}
 
-		// show menu selected
+		// Show menu selected
 		if(choice != choice_ori)
 		{
 			OledShowChar(0,choice_ori,' ',8);
@@ -176,7 +176,7 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 		}
 	}
 
-	// pass on user choice
+	// Pass on user choice
 	return choice;
 }
 
@@ -185,16 +185,16 @@ uint8_t my_mkdir(char * dir)
 {
 	uint8_t bret = false;
 	bool opendir_err = 0;
-	char SonPath[10][30]; //最多10层，每层最多30字符
-	char RootPath[128];   //最低已存在路径
-	memset(SonPath, '\0', sizeof(SonPath)); //初始化
+	char SonPath[10][30];	// 最多10层，每层最多30字符
+	char RootPath[128];		// 最低已存在路径
+	memset(SonPath, '\0', sizeof(SonPath)); // 初始化
 	strcpy(RootPath, dir);
-	uint8_t num = 0;           // 剔除的次数
+	uint8_t num = 0;		// 剔除的次数
 	DIR W_Ddir;
 
-	do                      //遍历寻找文件夹
+	do						// 遍历寻找文件夹
 	{
-		char *dot = strrchr(RootPath, '\\');   //剔除一层
+		char *dot = strrchr(RootPath, '\\');	// 剔除一层
 		if(dot == NULL)
 			dot = strrchr(RootPath, '/');
 		if(dot == NULL)
@@ -208,7 +208,7 @@ uint8_t my_mkdir(char * dir)
 		}
 
 		strcpy(SonPath[num], dot);
-		FRESULT W_Dresult = f_opendir(&W_Ddir, RootPath); //检测文件夹
+		FRESULT W_Dresult = f_opendir(&W_Ddir, RootPath); // 检测文件夹
 		if(W_Dresult == FR_OK)
 		{
 			printf("Exist[%s]\r\n",RootPath);
@@ -233,7 +233,7 @@ uint8_t my_mkdir(char * dir)
 
 	if(opendir_err == 1)
 	{
-		//遍历创建文件夹
+		// 遍历创建文件夹
 		opendir_err = 0;
 		for(int i=0;i<num;i++)
 		{
@@ -250,7 +250,7 @@ uint8_t my_mkdir(char * dir)
 	}
 	else
 		bret = true;
-		return  bret;
+		return bret;
 }
 
 
@@ -310,7 +310,7 @@ next_page:
 		fret = f_readdir(&tdir,&finfo);
 		if(fret == FR_OK)
 		{
-			//到底了或者菜单填满了
+			// 到底了或者菜单填满了
 			if(finfo.fname[0] == 0x00)
 			{
 				bnomore = true;

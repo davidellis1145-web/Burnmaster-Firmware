@@ -1,13 +1,13 @@
 #pragma onece
 
-#define I2C1_SLAVE_ADDRESS7    0x78
-#define SSD1306_ADDR 0x3c
-#define MAX_COLUMN 128
+#define I2C1_SLAVE_ADDRESS7		0x78
+#define SSD1306_ADDR			0x3c
+#define MAX_COLUMN				128
 
-#define LED1 (1)
-#define LED_B (2)
-#define LED_G (4)
-#define LED_R (8)
+#define LED1	(1)
+#define LED_B	(2)
+#define LED_G	(4)
+#define LED_R	(8)
 
 void I2cInit(void);
 void SSD1306_WriteCmd(uint8_t var);

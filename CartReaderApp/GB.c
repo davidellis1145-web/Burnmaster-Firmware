@@ -154,7 +154,7 @@ void writeByteSRAM_GB(int myAddress, byte myData)
 		gpio_bit_set(CTRL,WR);
 		// Pull CS(PH3) HIGH
 		gpio_bit_set(CTRL,CS);
-		// Pull  CLK(PH1) LOW (for GB CAM)
+		// Pull CLK(PH1) LOW (for GB CAM)
 		gpio_bit_reset(CTRL,CLK);
 	}
 	else
@@ -207,7 +207,7 @@ void getCartInfo_GB()
 			case 0x07:
 				romBanks = 256;
 				break;
-				default:
+			default:
 				romBanks = 2;
 		}
 
@@ -272,7 +272,7 @@ void showCartInfo_GB()
 {
 	OledClear();
 	if ((strcmp(checksumStr, "0000") != 0) &&
-		(strcmp(checksumStr, "FFFF") != 0) &&		//trying without (const char *)
+		(strcmp(checksumStr, "FFFF") != 0) &&
 		(strcmp(romName, "456789") != 0))
 	{
 		OledShowString(0,0,"GB Cart Info:",8);
@@ -304,9 +304,9 @@ void showCartInfo_GB()
 		if (romType == 252)
 			tinfo = "Camera";
 
-		if (tinfo == NULL)			// testing blank mapper fix (ie jayro's testcart)
+		if (tinfo == NULL)
 		{
-			OledShowString(50,2,"unknown",8);
+			OledShowString(50,2,"Unknown",8);
 		}
 		else
 		{
@@ -384,7 +384,7 @@ void showCartInfo_GB()
 	}
 	else
 	{
-		if ((strcmp(romName, "456789") == 0) &&	//trying without (const char *)
+		if ((strcmp(romName, "456789") == 0) &&
 			(strcmp(checksumStr, "4E4F") == 0))
 		{
 			OledShowString(0,1,"GAMEPAK ERROR",8);
@@ -417,11 +417,11 @@ void setup_GB()
 {
 	// Set Address Pins to Output
 
-	//A0-A7(D8-D15),A12-A15(D4-D7)
+	// A0-A7(D8-D15),A12-A15(D4-D7)
 	gpio_init(ADDRLOW,GPIO_MODE_OUT_PP,GPIO_OSPEED_50MHZ,BITS(4,15));
 	gpio_port_write(ADDRLOW,0xFFFF);
 
-	//A8-A11
+	// A8-A11
 	gpio_init(ADDRHIGH,GPIO_MODE_OUT_PP,GPIO_OSPEED_50MHZ,GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_10|GPIO_PIN_11);
 	gpio_bit_set(ADDRHIGH,BITS(8,11));
 
@@ -476,7 +476,7 @@ void readROM_GB()
 		char basePath[64];
 		sprintf(basePath, "GB/ROM/%s", romName);
 		int highestFolder = findHighestFolder(basePath);
-		foldern = highestFolder + 1;  // Use next folder number
+		foldern = highestFolder + 1;	// Use next folder number
 
 		f_chdir("/");
 		sprintf(folder, "GB/ROM/%s/%d", romName, foldern);
@@ -491,7 +491,7 @@ void readROM_GB()
 		OledShowString(0,0,"Saving to: ",8);
 		OledShowString(4,1,folder,8);
 
-		//open file on sd card
+		// Open file on sd card
 		rst = f_open(&tfile,fileName, FA_CREATE_ALWAYS|FA_WRITE);
 		if (rst != FR_OK)
 		{
@@ -500,7 +500,7 @@ void readROM_GB()
 
 		word romAddress = 0;
 
-		//Initialize progress bar
+		// Initialize progress bar
 		uint32_t processedProgressBar = 0;
 		uint32_t totalProgressBar = (uint32_t)(romBanks) * 16384;
 		draw_progressbar(0, totalProgressBar,3);
@@ -664,13 +664,13 @@ void readSRAM_GB()
 			char basePath[64];
 			sprintf(basePath, "GB/SAVE/%s", romName);
 			int highestFolder = findHighestFolder(basePath);
-			foldern = highestFolder + 1;  // Use next folder number
+			foldern = highestFolder + 1;	// Use next folder number
 
 			sprintf(folder, "GB/SAVE/%s/%d", romName, foldern);
 			my_mkdir(folder);
 			f_chdir(folder);
 
-			//open file on sd card
+			// Open file on sd card
 			FIL tfile;
 			if (f_open(&tfile, fileName, FA_CREATE_ALWAYS|FA_WRITE) != FR_OK)
 			{
@@ -736,7 +736,7 @@ void writeSRAM_GB()
 	// Does cartridge have SRAM
 	if (lastByte > 0)
 	{
-		//open file on sd card
+		// Open file on sd card
 		FIL tfile;
 		if (f_open(&tfile, filePath, FA_READ) == FR_OK)
 		{
@@ -779,7 +779,7 @@ void writeSRAM_GB()
 
 			// Close the file
 			f_close(&tfile);
-			OledClear();		// here?
+			OledClear();
 			OledShowString(0,2,"SRAM writing finished",8);
 		}
 		else
@@ -797,7 +797,7 @@ void writeSRAM_GB()
 // Check if the SRAM was written without any error
 unsigned long verifySRAM_GB()
 {
-	//open file on sd card
+	// Open file on sd card
 	FIL tfile;
 	if (f_open(&tfile,filePath, FA_READ) == FR_OK)
 	{
@@ -830,7 +830,7 @@ unsigned long verifySRAM_GB()
 				dataIn_GB();
 				for (word sramAddress = 0xA000; sramAddress <= lastByte; sramAddress += 64)
 				{
-					//fill sdBuffer
+					// Fill sdBuffer
 					UINT rdt;
 					f_read(&tfile, sdBuffer, 64, &rdt);
 					for (int c = 0; c < 64; c++)
@@ -859,7 +859,7 @@ unsigned long verifySRAM_GB()
 }
 
 
-//检测sram
+// 检测sram
 void TestSramGB(byte bankCnt , word wTestSize)
 {
 	OledClear();
@@ -1119,7 +1119,7 @@ void writeFlash29F_GB(byte MBC, boolean flashErase)
 			word currAddr = 0;
 			word endAddr = 0x3FFF;
 
-			//Initialize progress bar
+			// Initialize progress bar
 			uint32_t processedProgressBar = 0;
 			uint32_t totalProgressBar = (uint32_t)(romBanks) * 16384;
 			draw_progressbar(0, totalProgressBar,6);
@@ -1182,7 +1182,7 @@ void writeFlash29F_GB(byte MBC, boolean flashErase)
 			// Write flash
 			dataOut_GB();
 
-			//Initialize progress bar
+			// Initialize progress bar
 			uint32_t processedProgressBar = 0;
 			uint32_t totalProgressBar = (uint32_t)(romBanks) * 16384;
 			draw_progressbar(0, totalProgressBar, 6);
@@ -1360,19 +1360,19 @@ void startCFIMode(boolean x16Mode)
 {
 	if (x16Mode)
 	{
-		writeByte_GB(0x555, 0xf0); //x16 mode reset command
+		writeByte_GB(0x555, 0xf0);	// x16 mode reset command
 		delay(500);
-		writeByte_GB(0x555, 0xf0); //Double reset to get out of possible Autoselect + CFI mode
+		writeByte_GB(0x555, 0xf0);	// Double reset to get out of possible Autoselect + CFI mode
 		delay(500);
-		writeByte_GB(0x55, 0x98);  //x16 CFI Query command
+		writeByte_GB(0x55, 0x98);	// x16 CFI Query command
 	}
 	else
 	{
-		writeByte_GB(0xAAA, 0xf0); //x8  mode reset command
+		writeByte_GB(0xAAA, 0xf0);	// x8 mode reset command
 		delay(100);
-		writeByte_GB(0xAAA, 0xf0); //Double reset to get out of possible Autoselect + CFI mode
+		writeByte_GB(0xAAA, 0xf0);	// Double reset to get out of possible Autoselect + CFI mode
 		delay(100);
-		writeByte_GB(0xAA, 0x98);  //x8 CFI Query command
+		writeByte_GB(0xAA, 0x98);	// x8 CFI Query command
 	}
 }
 
@@ -1396,7 +1396,7 @@ void identifyCFI_GB()
 	char cfiQRYx8[7];
 	char cfiQRYx16[7];
 	sprintf(cfiQRYx8, "%02X%02X%02X", readByte_GB(0x20), readByte_GB(0x22), readByte_GB(0x24));
-	sprintf(cfiQRYx16, "%02X%02X%02X", readByte_GB(0x10), readByte_GB(0x11), readByte_GB(0x12)); // some devices use x8-style CFI Query command even though they are in x16 command mode
+	sprintf(cfiQRYx16, "%02X%02X%02X", readByte_GB(0x10), readByte_GB(0x11), readByte_GB(0x12)); // Some devices use x8-style CFI Query command even though they are in x16 command mode
 	if (strcmp(cfiQRYx8, "515259") == 0) // QRY in x8 mode
 	{
 		printf("Normal CFI x8 Mode");
@@ -1445,7 +1445,7 @@ void identifyCFI_GB()
 		}
 	}
 	dataIn_GB();
-	flashBanks = 1 << (readByteCompensated(0x4E) - 14); // - flashX16Mode);
+	flashBanks = 1 << (readByteCompensated(0x4E) - 14); // - FlashX16Mode
 	dataOut_GB();
 
 	// Reset flash
@@ -1624,7 +1624,7 @@ bool writeCFI_GB()
 
 			// Set ROM bank
 			writeByte_GB(0x2100, currBank);
-			writeByte_GB(0x3000, 0x0); //bank addr high byte, maybe recovered by normal write, need to reset to zero here.
+			writeByte_GB(0x3000, 0x0); // Bank addr high byte, maybe recovered by normal write, need to reset to zero here.
 
 			if (currBank > 0)
 			{
@@ -1864,7 +1864,7 @@ void testCFI_GB(uint16_t testBanks)
 
 		// Set ROM bank
 		writeByte_GB(0x2100, currBank);
-		writeByte_GB(0x3000, 0x0);//bank addr high byte, maybe recovered by normal write, need to reset to zero here.
+		writeByte_GB(0x3000, 0x0); // Bank addr high byte, maybe recovered by normal write, need to reset to zero here.
 
 		if (currBank > 0)
 		{
@@ -2031,11 +2031,11 @@ uint8_t gbFlashMenu()
 	unsigned char gbFlash = questionBox_OLED("Select type:", menuOptionsGBFlash, 5, 1, 1, 1);
 	OledClear();
 	LED_BLUE_OFF; // Make sure blue led is off after blinking
-	// wait for user choice to come back from the question box menu
+	// Wait for user choice to come back from the question box menu
 	switch (gbFlash)
 	{
 		case 0:
-			// cancel btn clicked
+			// Cancel btn clicked
 			bret = 1;
 			break;
 		case 1:
@@ -2120,13 +2120,13 @@ uint8_t gbMenu()
 	uint8_t bret = 0;
 	LED_BLUE_OFF; // Make sure blue led is off after blinkng (posibly redundant)
 
-	// create menu with title and 3 options to choose from
+	// Create menu with title and 3 options to choose from
 	unsigned char gbMenu = questionBox_OLED("GB(C) Main Menu", menuOptionsGB, 6, 1, 1, 1);
 
-	// wait for user choice to come back from the question box menu
+	// Wait for user choice to come back from the question box menu
 	switch (gbMenu)
 	{
-		case 0: // cancel btn clicked
+		case 0: // Cancel btn clicked
 			bret = 1;
 			break;
 		case 1:
@@ -2161,7 +2161,6 @@ uint8_t gbMenu()
 				filePath[0] = '\0';
 				fileBrowser("/","Select sav file");
 				writeSRAM_GB();
-				//OledClear(); //here i think
 				unsigned long wrErrors;
 				wrErrors = verifySRAM_GB();
 				if (wrErrors == 0)

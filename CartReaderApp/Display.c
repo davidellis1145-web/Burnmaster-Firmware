@@ -414,69 +414,69 @@ void I2cInit(void)
 	i2c_clock_config(I2C1, 400000, I2C_DTCY_2);
 	// I2C address configure
 	i2c_mode_addr_config(I2C1, I2C_I2CMODE_ENABLE, I2C_ADDFORMAT_7BITS, I2C1_SLAVE_ADDRESS7);
-	// enable I2C0
+	// Enable I2C0
 	i2c_enable(I2C1);
-	// enable acknowledge
+	// Enable acknowledge
 	i2c_ack_config(I2C1, I2C_ACK_ENABLE);
 }
 
 
 void SSD1306_WriteCmd(uint8_t var)
 {
-	// wait until I2C bus is idle
+	// Wait until I2C bus is idle
 	while(i2c_flag_get(I2C1, I2C_FLAG_I2CBSY));
-	// send a start condition to I2C bus
+	// Send a start condition to I2C bus
 	i2c_start_on_bus(I2C1);
 	while(!i2c_flag_get(I2C1, I2C_FLAG_SBSEND));	// 等待起始位发送完成
 
-	// wait until the transmit data buffer is empty
+	// Wait until the transmit data buffer is empty
 	i2c_master_addressing(I2C1, SSD1306_ADDR << 1, I2C_TRANSMITTER); // 发送器件地址,写数据 */
 	while(!i2c_flag_get(I2C1, I2C_FLAG_ADDSEND));
 	i2c_flag_clear(I2C1, I2C_FLAG_ADDSEND);
 	while(!i2c_flag_get(I2C1, I2C_FLAG_TBE));
 
-	// data transmission
+	// Data transmission
 	i2c_data_transmit(I2C1, 0x00);
-	// wait until the TI bit is set
+	// Wait until the TI bit is set
 	while(!i2c_flag_get(I2C1, I2C_FLAG_TBE));
 
 	i2c_data_transmit(I2C1, var);
-	// wait until the TI bit is set
+	// Wait until the TI bit is set
 	while(!i2c_flag_get(I2C1, I2C_FLAG_TBE));
 
-	// wait for transfer complete flag
+	// Wait for transfer complete flag
 	while(!i2c_flag_get(I2C1, I2C_FLAG_BTC));
-	// send a stop condition to I2C bus
+	// Send a stop condition to I2C bus
 	i2c_stop_on_bus(I2C1);
 }
 
 
 void SSD1306_WriteData(uint8_t var)
 {
-	// wait until I2C bus is idle
+	// Wait until I2C bus is idle
 	while(i2c_flag_get(I2C1, I2C_FLAG_I2CBSY));
-	// send a start condition to I2C bus
+	// Send a start condition to I2C bus
 	i2c_start_on_bus(I2C1);
 	while(!i2c_flag_get(I2C1, I2C_FLAG_SBSEND));	// 等待起始位发送完成
 
-	// wait until the transmit data buffer is empty
-	i2c_master_addressing(I2C1, SSD1306_ADDR << 1, I2C_TRANSMITTER);// 发送器件地址,写数据 */
+	// Wait until the transmit data buffer is empty
+	i2c_master_addressing(I2C1, SSD1306_ADDR << 1, I2C_TRANSMITTER); // 发送器件地址,写数据 */
 	while(!i2c_flag_get(I2C1, I2C_FLAG_ADDSEND));
 	i2c_flag_clear(I2C1, I2C_FLAG_ADDSEND);
 	while(!i2c_flag_get(I2C1, I2C_FLAG_TBE));
 
-	// data transmission
+	// Data transmission
 	i2c_data_transmit(I2C1, 0x40);
-	// wait until the TI bit is set
+	// Wait until the TI bit is set
 	while(!i2c_flag_get(I2C1, I2C_FLAG_TBE));
 
 	i2c_data_transmit(I2C1, var);
-	// wait until the TI bit is set
+	// Wait until the TI bit is set
 	while(!i2c_flag_get(I2C1, I2C_FLAG_TBE));
 
-	// wait for transfer complete flag
+	// Wait for transfer complete flag
 	while(!i2c_flag_get(I2C1, I2C_FLAG_BTC));
-	// send a stop condition to I2C bus
+	// Send a stop condition to I2C bus
 	i2c_stop_on_bus(I2C1);
 }
 
@@ -485,27 +485,27 @@ void SSD1306_WriteData(uint8_t var)
 void OledSetPos(uint8_t x, uint8_t y)
 {
 	// 以下3个寄存器只在页寻址的模式下有效
-	SSD1306_WriteCmd(0xb0+y);             // 页地址设置     0xb0~0xb7
-	SSD1306_WriteCmd(((x&0xf0)>>4)|0x10); // 列高位地址设置
-	SSD1306_WriteCmd((x&0x0f));           // 列低位地址设置
+	SSD1306_WriteCmd(0xb0+y);				// 页地址设置     0xb0~0xb7
+	SSD1306_WriteCmd(((x&0xf0)>>4)|0x10);	// 列高位地址设置
+	SSD1306_WriteCmd((x&0x0f));				// 列低位地址设置
 }
 
 
 // 开启Oled显示
 void OledDisplayOn(void)
 {
-	SSD1306_WriteCmd(0X8D);  // SET DCDC命令
-	SSD1306_WriteCmd(0X14);  // DCDC ON
-	SSD1306_WriteCmd(0XAF);  // DISPLAY ON
+	SSD1306_WriteCmd(0X8D);	// SET DCDC命令
+	SSD1306_WriteCmd(0X14);	// DCDC ON
+	SSD1306_WriteCmd(0XAF);	// DISPLAY ON
 }
 
 
 // 关闭Oled显示
 void OledDisplayOff(void)
 {
-	SSD1306_WriteCmd(0X8D);  // SET DCDC命令
-	SSD1306_WriteCmd(0X10);  // DCDC OFF
-	SSD1306_WriteCmd(0XAE);  // DISPLAY OFF
+	SSD1306_WriteCmd(0X8D);	// SET DCDC命令
+	SSD1306_WriteCmd(0X10);	// DCDC OFF
+	SSD1306_WriteCmd(0XAE);	// DISPLAY OFF
 }
 
 
@@ -516,9 +516,9 @@ void OledClear(void)
 
 	for(i=0;i<8;i++)
 	{
-		SSD1306_WriteCmd (0xb0+i);    // 设置页地址（0~7）
-		SSD1306_WriteCmd (0x00);      // 设置显示位置—列低地址
-		SSD1306_WriteCmd (0x10);      // 设置显示位置—列高地址
+		SSD1306_WriteCmd (0xb0+i);		// 设置页地址（0~7）
+		SSD1306_WriteCmd (0x00);		// 设置显示位置—列低地址
+		SSD1306_WriteCmd (0x10);		// 设置显示位置—列高地址
 		for(n=0;n<128;n++)
 			SSD1306_WriteData(0);
 	} // 更新显示
@@ -532,7 +532,7 @@ void OledShowChar(uint8_t x,uint8_t y,uint8_t chr,uint8_t Char_Size)
 {
 	uint8_t c=0,i=0;
 
-	c=chr-' ';// 得到偏移后的值
+	c=chr-' '; // 得到偏移后的值
 	if(x>MAX_COLUMN-1)
 	{
 		x=0;
@@ -543,13 +543,13 @@ void OledShowChar(uint8_t x,uint8_t y,uint8_t chr,uint8_t Char_Size)
 		OledSetPos(x,y);
 		for(i=0;i<8;i++)
 		{
-			SSD1306_WriteData(F8X16[c*16+i]);// 先写上半部分
+			SSD1306_WriteData(F8X16[c*16+i]); // 先写上半部分
 		}
 
 		OledSetPos(x,y+1);
 		for(i=0;i<8;i++)
 		{
-			SSD1306_WriteData(F8X16[c*16+i+8]);// 后写下半部分
+			SSD1306_WriteData(F8X16[c*16+i+8]); // 后写下半部分
 		}
 	}
 	else
@@ -584,10 +584,10 @@ uint8_t OledShowString(uint8_t x,uint8_t y,char *str,uint8_t Char_Size)
 				return 1;
 			}
 		}
-		j++;// 移动一次就是一个page，取值0-7
+		j++; // 移动一次就是一个page，取值0-7
 	}
 	OledShowChar(x,y,' ',Char_Size);
-	return  0;
+	return 0;
 }
 
 
@@ -615,44 +615,44 @@ void OledInit(void)
 
 	// SSD1306复位之后，默认的是页寻址方式
 
-	SSD1306_WriteCmd(0xAE);// --display off
+	SSD1306_WriteCmd(0xAE); // Display off
 
-	SSD1306_WriteCmd(0x00);// --set low column address
-	SSD1306_WriteCmd(0x10);// --set high column address
-	SSD1306_WriteCmd(0x40);// --set start line address
+	SSD1306_WriteCmd(0x00); // Set low column address
+	SSD1306_WriteCmd(0x10); // Set high column address
+	SSD1306_WriteCmd(0x40); // Set start line address
 
-	SSD1306_WriteCmd(0xB0);// --set page address
+	SSD1306_WriteCmd(0xB0); // Set page address
 
-	SSD1306_WriteCmd(0x81);// contract control
-	SSD1306_WriteCmd(0xFF);// --128
-	SSD1306_WriteCmd(0xA1);// set segment re-map  0 to 127
-	SSD1306_WriteCmd(0xA6);// set normal  display
-	SSD1306_WriteCmd(0xA8);// set multiplex ratio(1 to 64)
-	SSD1306_WriteCmd(0x3F);// --1/32 duty
+	SSD1306_WriteCmd(0x81); // Contract control
+	SSD1306_WriteCmd(0xFF); // 128
+	SSD1306_WriteCmd(0xA1); // Set segment re-map 0 to 127
+	SSD1306_WriteCmd(0xA6); // Set normal display
+	SSD1306_WriteCmd(0xA8); // Set multiplex ratio(1 to 64)
+	SSD1306_WriteCmd(0x3F); // 1/32 duty
 
-	SSD1306_WriteCmd(0xC8);// Com scan direction
-	SSD1306_WriteCmd(0xD3);// set display offset
-	SSD1306_WriteCmd(0x00);// no offset
+	SSD1306_WriteCmd(0xC8); // Com scan direction
+	SSD1306_WriteCmd(0xD3); // Set display offset
+	SSD1306_WriteCmd(0x00); // No offset
 
-	SSD1306_WriteCmd(0xD5);// set display clock divide ratio/oscillator frequency
+	SSD1306_WriteCmd(0xD5); // Set display clock divide ratio/oscillator frequency
 	SSD1306_WriteCmd(0x80);
 
-	SSD1306_WriteCmd(0xD8);// set area color mode off
+	SSD1306_WriteCmd(0xD8); // Set area color mode off
 	SSD1306_WriteCmd(0x05);
 
-	SSD1306_WriteCmd(0xD9);// Set Pre-Charge Period
+	SSD1306_WriteCmd(0xD9); // Set Pre-Charge Period
 	SSD1306_WriteCmd(0xF1);
 
-	SSD1306_WriteCmd(0xDA);// set com pin  hardware configuartion
+	SSD1306_WriteCmd(0xDA); // Set com pin hardware configuartion
 	SSD1306_WriteCmd(0x12);
 
-	SSD1306_WriteCmd(0xDB);// set Vcomh
-	SSD1306_WriteCmd(0x30);// 0x20,0.77xVcc
+	SSD1306_WriteCmd(0xDB); // Set Vcomh
+	SSD1306_WriteCmd(0x30); // 0x20,0.77xVcc
 
-	SSD1306_WriteCmd(0x8D);// set charge pump enable
+	SSD1306_WriteCmd(0x8D); // Set charge pump enable
 	SSD1306_WriteCmd(0x14);
 
-	SSD1306_WriteCmd(0xAF);// --turn on Oled panel
+	SSD1306_WriteCmd(0xAF); // Turn on Oled panel
 }
 
 
@@ -713,7 +713,7 @@ void draw_progressbar(uint32_t processed, uint32_t total, uint8_t line)
 	{
 		for (i = previous + 1; i <= current; i++)
 		{
-			// steps are 20, so 20 - 1 = 19.
+			// Steps are 20, so 20 - 1 = 19.
 			if (i == (19))
 			{
 				// If end of progress bar, finish progress bar by drawing "]"
@@ -724,7 +724,7 @@ void draw_progressbar(uint32_t processed, uint32_t total, uint8_t line)
 				OledShowChar(i*6,line,'*',8);
 			}
 		}
-		// update previous "*" status
+		// Update previous "*" status
 		previous = current;
 	}
 }
@@ -749,7 +749,7 @@ void showPersent(uint32_t processed, uint32_t total, uint8_t x, uint8_t line)
 
 
 /**********************
-   LEDS
+  LEDS
 **********************/
 void LEDSInit()
 {
