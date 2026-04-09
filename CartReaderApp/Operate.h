@@ -8,7 +8,6 @@
 #define BTNCANCEL (16)
 #define BTNOK (32)
 
-
 #define MENU_CANCEL (0)
 #define MENU_1 (1)
 #define MENU_2 (2)
@@ -21,7 +20,6 @@
 #define MENU_DOWNDOWN (101)
 #define MENU_PGUP (102)
 #define MENU_PGDN (103)
-
 
 void KeyBrdInit();
 uint8_t keyState();
