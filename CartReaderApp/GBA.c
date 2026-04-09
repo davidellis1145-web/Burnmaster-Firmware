@@ -733,17 +733,16 @@ void TestSRAM_GBA(unsigned long sramSize)
 	}
 	showPersent(1,1,96,1);
 	char msgbuf[64] = {0};
-	if(wErrors > 0)
+	if(wErrors > 0)	// Testing new error msg handling
 	{
-		sprintf(msgbuf,"Error %d bytes...",wErrors);
-		OledShowString(0,7,"Press OK Button...",8);
+		sprintf(msgbuf,"Error %d bytes...\n\n\n\n\nPress OK Button...",wErrors);
+		OledShowString(0,2,msgbuf,8);
 		WaitOKBtn();
 	}
 	else
 	{
-		strcpy(msgbuf,"RAM Test ok!");
+		OledShowString(0,2,"RAM Test ok!",8);
 	}
-	OledShowString(0,2,msgbuf,8);
 }
 
 
