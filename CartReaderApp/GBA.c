@@ -733,7 +733,7 @@ void TestSRAM_GBA(unsigned long sramSize)
 	}
 	showPersent(1,1,96,1);
 	char msgbuf[64] = {0};
-	if(wErrors > 0)	// Testing new error msg handling
+	if(wErrors > 0)
 	{
 		sprintf(msgbuf,"Error %d bytes...\n\n\n\n\nPress OK Button...",wErrors);
 		OledShowString(0,2,msgbuf,8);
