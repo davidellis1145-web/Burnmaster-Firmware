@@ -8,399 +8,400 @@
   I2C Oled sdd1306 Display functions
 ***************************************/
 
-/* [字库]：[ASC8x16E字库] [数据排列]:从左到右从上到下 [取模方式]:纵向8点下高位 [正负反色]:否 [去掉重复后]共95个字符
-[总字符库]：" !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~" */
+/* Font library: ASC 8x16 font. Data arrangement: left-to-right, top-to-bottom. Extraction method: vertical 8-point (lsb first). No inversion. Total 95 characters.
+Complete character set: !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~ */
 
 uint8_t F8X16[] = {
 
-	// -- ID:0,字符:" ",ASCII编码:20,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:0, character:" ", ASCII code:20, dimensions: width x height = 8x16, 16 bytes total
 	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-	// -- ID:1,字符:"!",ASCII编码:21,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:1, character:"!", ASCII code:21, dimensions: width x height = 8x16, 16 bytes total
 	0x00,0x00,0x70,0xf8,0xf8,0x70,0x00,0x00,0x00,0x00,0x00,0x1b,0x1b,0x00,0x00,0x00,
-	// -- ID:2,字符:""",ASCII编码:22,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:2, character:""", ASCII code:22, dimensions: width x height = 8x16, 16 bytes total
 	0x00,0x1e,0x3e,0x00,0x00,0x3e,0x1e,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-	// -- ID:3,字符:"#",ASCII编码:23,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:3, character:"#", ASCII code:23, dimensions: width x height = 8x16, 16 bytes total
 	0x40,0xf0,0xf0,0x40,0xf0,0xf0,0x40,0x00,0x04,0x1f,0x1f,0x04,0x1f,0x1f,0x04,0x00,
-	// -- ID:4,字符:"$",ASCII编码:24,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
-	0x70,0xf8,0x88,0x8f,0x8f,0x98,0x30,0x00,0x06,0x0c,0x08,0x38,0x38,0x0f,0x07,0x00,
-	// -- ID:5,字符:"%",ASCII编码:25,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:4, character:"$", ASCII code:24, dimensions: width x height = 8x16, 16 bytes total
+	0x70,0xf8,0x88,0xff,0x88,0x98,0x30,0x00,0x06,0x0c,0x08,0x3f,0x08,0x0f,0x07,0x00,
+	// -- ID:5, character:"%", ASCII code:25, dimensions: width x height = 8x16, 16 bytes total
 	0x60,0x60,0x00,0x00,0x80,0xc0,0x60,0x00,0x18,0x0c,0x06,0x03,0x01,0x18,0x18,0x00,
-	// -- ID:6,字符:"&",ASCII编码:26,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:6, character:"&", ASCII code:26, dimensions: width x height = 8x16, 16 bytes total
 	0x00,0xb0,0xf8,0xc8,0x78,0xb0,0x80,0x00,0x0f,0x1f,0x10,0x11,0x0f,0x1f,0x10,0x00,
-	// -- ID:7,字符:"'",ASCII编码:27,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:7, character:"'", ASCII code:27, dimensions: width x height = 8x16, 16 bytes total
 	0x00,0x20,0x3e,0x1e,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-	// -- ID:8,字符:"(",ASCII编码:28,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:8, character:"(", ASCII code:28, dimensions: width x height = 8x16, 16 bytes total
 	0x00,0x00,0xe0,0xf0,0x18,0x08,0x00,0x00,0x00,0x00,0x07,0x0f,0x18,0x10,0x00,0x00,
-	// -- ID:9,字符:")",ASCII编码:29,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:9, character:")", ASCII code:29, dimensions: width x height = 8x16, 16 bytes total
 	0x00,0x00,0x08,0x18,0xf0,0xe0,0x00,0x00,0x00,0x00,0x10,0x18,0x0f,0x07,0x00,0x00,
-	// -- ID:10,字符:"*",ASCII编码:2A,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:10, character:"*", ASCII code:2A, dimensions: width x height = 8x16, 16 bytes total
 	0x00,0x40,0xc0,0x80,0x80,0xc0,0x40,0x00,0x01,0x05,0x07,0x03,0x03,0x07,0x05,0x01,
-	// -- ID:11,字符:"+",ASCII编码:2B,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:11, character:"+", ASCII code:2B, dimensions: width x height = 8x16, 16 bytes total
 	0x00,0x00,0x00,0xc0,0xc0,0x00,0x00,0x00,0x00,0x01,0x01,0x07,0x07,0x01,0x01,0x00,
-	// -- ID:12,字符:",",ASCII编码:2C,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:12, character:",", ASCII code:2C, dimensions: width x height = 8x16, 16 bytes total
 	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x20,0x3c,0x1c,0x00,0x00,0x00,
-	// -- ID:13,字符:"-",ASCII编码:2D,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:13, character:"-", ASCII code:2D, dimensions: width x height = 8x16, 16 bytes total
 	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x00,
-	// -- ID:14,字符:".",ASCII编码:2E,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:14, character:".", ASCII code:2E, dimensions: width x height = 8x16, 16 bytes total
 	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x18,0x18,0x00,0x00,0x00,
-	// -- ID:15,字符:"/",ASCII编码:2F,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:15, character:"/", ASCII code:2F, dimensions: width x height = 8x16, 16 bytes total
 	0x00,0x00,0x00,0x00,0x80,0xc0,0x60,0x00,0x18,0x0c,0x06,0x03,0x01,0x00,0x00,0x00,
-	// -- ID:16,字符:"0",ASCII编码:30,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:16, character:"0", ASCII code:30, dimensions: width x height = 8x16, 16 bytes total
 	0xf0,0xf8,0x08,0x88,0x48,0xf8,0xf0,0x00,0x0f,0x1f,0x12,0x11,0x10,0x1f,0x0f,0x00,
-	// -- ID:17,字符:"1",ASCII编码:31,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:17, character:"1", ASCII code:31, dimensions: width x height = 8x16, 16 bytes total
 	0x00,0x20,0x30,0xf8,0xf8,0x00,0x00,0x00,0x00,0x10,0x10,0x1f,0x1f,0x10,0x10,0x00,
-	// -- ID:18,字符:"2",ASCII编码:32,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:18, character:"2", ASCII code:32, dimensions: width x height = 8x16, 16 bytes total
 	0x10,0x18,0x08,0x88,0xc8,0x78,0x30,0x00,0x1c,0x1e,0x13,0x11,0x10,0x18,0x18,0x00,
-	// -- ID:19,字符:"3",ASCII编码:33,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:19, character:"3", ASCII code:33, dimensions: width x height = 8x16, 16 bytes total
 	0x10,0x18,0x88,0x88,0x88,0xf8,0x70,0x00,0x08,0x18,0x10,0x10,0x10,0x1f,0x0f,0x00,
-	// -- ID:20,字符:"4",ASCII编码:34,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:20, character:"4", ASCII code:34, dimensions: width x height = 8x16, 16 bytes total
 	0x80,0xc0,0x60,0x30,0xf8,0xf8,0x00,0x00,0x01,0x01,0x01,0x11,0x1f,0x1f,0x11,0x00,
-	// -- ID:21,字符:"5",ASCII编码:35,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:21, character:"5", ASCII code:35, dimensions: width x height = 8x16, 16 bytes total
 	0xf8,0xf8,0x88,0x88,0x88,0x88,0x08,0x00,0x08,0x18,0x10,0x10,0x11,0x1f,0x0f,0x00,
-	// -- ID:22,字符:"6",ASCII编码:36,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:22, character:"6", ASCII code:36, dimensions: width x height = 8x16, 16 bytes total
 	0xe0,0xf0,0x98,0x88,0x88,0x80,0x00,0x00,0x0f,0x1f,0x10,0x10,0x10,0x1f,0x0f,0x00,
-	// -- ID:23,字符:"7",ASCII编码:37,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:23, character:"7", ASCII code:37, dimensions: width x height = 8x16, 16 bytes total
 	0x18,0x18,0x08,0x08,0x88,0xf8,0x78,0x00,0x00,0x00,0x1e,0x1f,0x01,0x00,0x00,0x00,
-	// -- ID:24,字符:"8",ASCII编码:38,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:24, character:"8", ASCII code:38, dimensions: width x height = 8x16, 16 bytes total
 	0x70,0xf8,0x88,0x88,0x88,0xf8,0x70,0x00,0x0f,0x1f,0x10,0x10,0x10,0x1f,0x0f,0x00,
-	// -- ID:25,字符:"9",ASCII编码:39,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:25, character:"9", ASCII code:39, dimensions: width x height = 8x16, 16 bytes total
 	0x70,0xf8,0x88,0x88,0x88,0xf8,0xf0,0x00,0x00,0x10,0x10,0x10,0x18,0x0f,0x07,0x00,
-	// -- ID:26,字符:":",ASCII编码:3A,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:26, character:":", ASCII code:3A, dimensions: width x height = 8x16, 16 bytes total
 	0x00,0x00,0x00,0x60,0x60,0x00,0x00,0x00,0x00,0x00,0x00,0x0c,0x0c,0x00,0x00,0x00,
-	// -- ID:27,字符:";",ASCII编码:3B,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:27, character:";", ASCII code:3B, dimensions: width x height = 8x16, 16 bytes total
 	0x00,0x00,0x00,0x60,0x60,0x00,0x00,0x00,0x00,0x00,0x10,0x1c,0x0c,0x00,0x00,0x00,
-	// -- ID:28,字符:"<",ASCII编码:3C,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:28, character:"<", ASCII code:3C, dimensions: width x height = 8x16, 16 bytes total
 	0x00,0x00,0x80,0xc0,0x60,0x30,0x10,0x00,0x00,0x01,0x03,0x06,0x0c,0x18,0x10,0x00,
-	// -- ID:29,字符:"=",ASCII编码:3D,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:29, character:"=", ASCII code:3D, dimensions: width x height = 8x16, 16 bytes total
 	0x80,0x80,0x80,0x80,0x80,0x80,0x80,0x00,0x04,0x04,0x04,0x04,0x04,0x04,0x04,0x00,
-	// -- ID:30,字符:">",ASCII编码:3E,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:30, character:">", ASCII code:3E, dimensions: width x height = 8x16, 16 bytes total
 	0x00,0x10,0x30,0x60,0xc0,0x80,0x00,0x00,0x00,0x10,0x18,0x0c,0x06,0x03,0x01,0x00,
-	// -- ID:31,字符:"?",ASCII编码:3F,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:31, character:"?", ASCII code:3F, dimensions: width x height = 8x16, 16 bytes total
 	0x30,0x38,0x08,0x88,0xc8,0x78,0x30,0x00,0x00,0x00,0x00,0x1b,0x1b,0x00,0x00,0x00,
-	// -- ID:32,字符:"@",ASCII编码:40,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:32, character:"@", ASCII code:40, dimensions: width x height = 8x16, 16 bytes total
 	0xe0,0xf0,0x10,0x90,0x90,0xf0,0xe0,0x00,0x0f,0x1f,0x10,0x17,0x17,0x17,0x03,0x00,
-	// -- ID:33,字符:"A",ASCII编码:41,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:33, character:"A", ASCII code:41, dimensions: width x height = 8x16, 16 bytes total
 	0xc0,0xe0,0x30,0x18,0x30,0xe0,0xc0,0x00,0x1f,0x1f,0x01,0x01,0x01,0x1f,0x1f,0x00,
-	// -- ID:34,字符:"B",ASCII编码:42,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:34, character:"B", ASCII code:42, dimensions: width x height = 8x16, 16 bytes total
 	0x08,0xf8,0xf8,0x88,0x88,0xf8,0x70,0x00,0x10,0x1f,0x1f,0x10,0x10,0x1f,0x0f,0x00,
-	// -- ID:35,字符:"C",ASCII编码:43,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:35, character:"C", ASCII code:43, dimensions: width x height = 8x16, 16 bytes total
 	0xe0,0xf0,0x18,0x08,0x08,0x18,0x30,0x00,0x07,0x0f,0x18,0x10,0x10,0x18,0x0c,0x00,
-	// -- ID:36,字符:"D",ASCII编码:44,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:36, character:"D", ASCII code:44, dimensions: width x height = 8x16, 16 bytes total
 	0x08,0xf8,0xf8,0x08,0x18,0xf0,0xe0,0x00,0x10,0x1f,0x1f,0x10,0x18,0x0f,0x07,0x00,
-	// -- ID:37,字符:"E",ASCII编码:45,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:37, character:"E", ASCII code:45, dimensions: width x height = 8x16, 16 bytes total
 	0x08,0xf8,0xf8,0x88,0xc8,0x18,0x38,0x00,0x10,0x1f,0x1f,0x10,0x11,0x18,0x1c,0x00,
-	// -- ID:38,字符:"F",ASCII编码:46,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:38, character:"F", ASCII code:46, dimensions: width x height = 8x16, 16 bytes total
 	0x08,0xf8,0xf8,0x88,0xc8,0x18,0x38,0x00,0x10,0x1f,0x1f,0x10,0x01,0x00,0x00,0x00,
-	// -- ID:39,字符:"G",ASCII编码:47,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:39, character:"G", ASCII code:47, dimensions: width x height = 8x16, 16 bytes total
 	0xe0,0xf0,0x18,0x08,0x08,0x18,0x30,0x00,0x07,0x0f,0x18,0x11,0x11,0x0f,0x1f,0x00,
-	// -- ID:40,字符:"H",ASCII编码:48,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:40, character:"H", ASCII code:48, dimensions: width x height = 8x16, 16 bytes total
 	0xf8,0xf8,0x80,0x80,0x80,0xf8,0xf8,0x00,0x1f,0x1f,0x00,0x00,0x00,0x1f,0x1f,0x00,
-	// -- ID:41,字符:"I",ASCII编码:49,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:41, character:"I", ASCII code:49, dimensions: width x height = 8x16, 16 bytes total
 	0x00,0x00,0x08,0xf8,0xf8,0x08,0x00,0x00,0x00,0x00,0x10,0x1f,0x1f,0x10,0x00,0x00,
-	// -- ID:42,字符:"J",ASCII编码:4A,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:42, character:"J", ASCII code:4A, dimensions: width x height = 8x16, 16 bytes total
 	0x00,0x00,0x00,0x08,0xf8,0xf8,0x08,0x00,0x0e,0x1e,0x10,0x10,0x1f,0x0f,0x00,0x00,
-	// -- ID:43,字符:"K",ASCII编码:4B,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:43, character:"K", ASCII code:4B, dimensions: width x height = 8x16, 16 bytes total
 	0x08,0xf8,0xf8,0x80,0xe0,0x78,0x18,0x00,0x10,0x1f,0x1f,0x01,0x03,0x1e,0x1c,0x00,
-	// -- ID:44,字符:"L",ASCII编码:4C,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:44, character:"L", ASCII code:4C, dimensions: width x height = 8x16, 16 bytes total
 	0x08,0xf8,0xf8,0x08,0x00,0x00,0x00,0x00,0x10,0x1f,0x1f,0x10,0x10,0x18,0x1c,0x00,
-	// -- ID:45,字符:"M",ASCII编码:4D,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:45, character:"M", ASCII code:4D, dimensions: width x height = 8x16, 16 bytes total
 	0xf8,0xf8,0x70,0xe0,0x70,0xf8,0xf8,0x00,0x1f,0x1f,0x00,0x00,0x00,0x1f,0x1f,0x00,
-	// -- ID:46,字符:"N",ASCII编码:4E,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:46, character:"N", ASCII code:4E, dimensions: width x height = 8x16, 16 bytes total
 	0xf8,0xf8,0x70,0xe0,0xc0,0xf8,0xf8,0x00,0x1f,0x1f,0x00,0x00,0x01,0x1f,0x1f,0x00,
-	// -- ID:47,字符:"O",ASCII编码:4F,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:47, character:"O", ASCII code:4F, dimensions: width x height = 8x16, 16 bytes total
 	0xe0,0xf0,0x18,0x08,0x18,0xf0,0xe0,0x00,0x07,0x0f,0x18,0x10,0x18,0x0f,0x07,0x00,
-	// -- ID:48,字符:"P",ASCII编码:50,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:48, character:"P", ASCII code:50, dimensions: width x height = 8x16, 16 bytes total
 	0x08,0xf8,0xf8,0x88,0x88,0xf8,0x70,0x00,0x10,0x1f,0x1f,0x10,0x00,0x00,0x00,0x00,
-	// -- ID:49,字符:"Q",ASCII编码:51,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:49, character:"Q", ASCII code:51, dimensions: width x height = 8x16, 16 bytes total
 	0xf0,0xf8,0x08,0x08,0x08,0xf8,0xf0,0x00,0x0f,0x1f,0x10,0x1c,0x78,0x7f,0x4f,0x00,
-	// -- ID:50,字符:"R",ASCII编码:52,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:50, character:"R", ASCII code:52, dimensions: width x height = 8x16, 16 bytes total
 	0x08,0xf8,0xf8,0x88,0x88,0xf8,0x70,0x00,0x10,0x1f,0x1f,0x00,0x01,0x1f,0x1e,0x00,
-	// -- ID:51,字符:"S",ASCII编码:53,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:51, character:"S", ASCII code:53, dimensions: width x height = 8x16, 16 bytes total
 	0x30,0x78,0xc8,0x88,0x88,0x38,0x30,0x00,0x0c,0x1c,0x10,0x10,0x11,0x1f,0x0e,0x00,
-	// -- ID:52,字符:"T",ASCII编码:54,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:52, character:"T", ASCII code:54, dimensions: width x height = 8x16, 16 bytes total
 	0x00,0x38,0x18,0xf8,0xf8,0x18,0x38,0x00,0x00,0x00,0x10,0x1f,0x1f,0x10,0x00,0x00,
-	// -- ID:53,字符:"U",ASCII编码:55,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:53, character:"U", ASCII code:55, dimensions: width x height = 8x16, 16 bytes total
 	0xf8,0xf8,0x00,0x00,0x00,0xf8,0xf8,0x00,0x0f,0x1f,0x10,0x10,0x10,0x1f,0x0f,0x00,
-	// -- ID:54,字符:"V",ASCII编码:56,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:54, character:"V", ASCII code:56, dimensions: width x height = 8x16, 16 bytes total
 	0xf8,0xf8,0x00,0x00,0x00,0xf8,0xf8,0x00,0x03,0x07,0x0c,0x18,0x0c,0x07,0x03,0x00,
-	// -- ID:55,字符:"W",ASCII编码:57,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:55, character:"W", ASCII code:57, dimensions: width x height = 8x16, 16 bytes total
 	0xf8,0xf8,0x00,0x00,0x00,0xf8,0xf8,0x00,0x07,0x1f,0x1c,0x07,0x1c,0x1f,0x07,0x00,
-	// -- ID:56,字符:"X",ASCII编码:58,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:56, character:"X", ASCII code:58, dimensions: width x height = 8x16, 16 bytes total
 	0x18,0x78,0xe0,0x80,0xe0,0x78,0x18,0x00,0x18,0x1e,0x07,0x01,0x07,0x1e,0x18,0x00,
-	// -- ID:57,字符:"Y",ASCII编码:59,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:57, character:"Y", ASCII code:59, dimensions: width x height = 8x16, 16 bytes total
 	0x00,0x78,0xf8,0x80,0x80,0xf8,0x78,0x00,0x00,0x00,0x10,0x1f,0x1f,0x10,0x00,0x00,
-	// -- ID:58,字符:"Z",ASCII编码:5A,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:58, character:"Z", ASCII code:5A, dimensions: width x height = 8x16, 16 bytes total
 	0x38,0x18,0x08,0x88,0xc8,0x78,0x38,0x00,0x1c,0x1e,0x13,0x11,0x10,0x18,0x1c,0x00,
-	// -- ID:59,字符:"[",ASCII编码:5B,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:59, character:"[", ASCII code:5B, dimensions: width x height = 8x16, 16 bytes total
 	0x00,0x00,0xf8,0xf8,0x08,0x08,0x00,0x00,0x00,0x00,0x1f,0x1f,0x10,0x10,0x00,0x00,
-	// -- ID:60,字符:"\",ASCII编码:5C,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:60, character:"\", ASCII code:5C, dimensions: width x height = 8x16, 16 bytes total
 	0x70,0xe0,0xc0,0x80,0x00,0x00,0x00,0x00,0x00,0x00,0x01,0x03,0x07,0x0e,0x1c,0x00,
-	// -- ID:61,字符:"]",ASCII编码:5D,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:61, character:"]", ASCII code:5D, dimensions: width x height = 8x16, 16 bytes total
 	0x00,0x00,0x08,0x08,0xf8,0xf8,0x00,0x00,0x00,0x00,0x10,0x10,0x1f,0x1f,0x00,0x00,
-	// -- ID:62,字符:"^",ASCII编码:5E,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:62, character:"^", ASCII code:5E, dimensions: width x height = 8x16, 16 bytes total
 	0x10,0x18,0x0e,0x07,0x0e,0x18,0x10,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-	// -- ID:63,字符:"_",ASCII编码:5F,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:63, character:"_", ASCII code:5F, dimensions: width x height = 8x16, 16 bytes total
 	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x40,0x40,0x40,0x40,0x40,0x40,0x40,0x40,
-	// -- ID:64,字符:"`",ASCII编码:60,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:64, character:"`", ASCII code:60, dimensions: width x height = 8x16, 16 bytes total
 	0x00,0x00,0x07,0x0f,0x08,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-	// -- ID:65,字符:"a",ASCII编码:61,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:65, character:"a", ASCII code:61, dimensions: width x height = 8x16, 16 bytes total
 	0x00,0x40,0x40,0x40,0xc0,0x80,0x00,0x00,0x0e,0x1f,0x11,0x11,0x0f,0x1f,0x10,0x00,
-	// -- ID:66,字符:"b",ASCII编码:62,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:66, character:"b", ASCII code:62, dimensions: width x height = 8x16, 16 bytes total
 	0x08,0xf8,0xf8,0x40,0xc0,0x80,0x00,0x00,0x10,0x1f,0x0f,0x10,0x10,0x1f,0x0f,0x00,
-	// -- ID:67,字符:"c",ASCII编码:63,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:67, character:"c", ASCII code:63, dimensions: width x height = 8x16, 16 bytes total
 	0x80,0xc0,0x40,0x40,0x40,0xc0,0x80,0x00,0x0f,0x1f,0x10,0x10,0x10,0x18,0x08,0x00,
-	// -- ID:68,字符:"d",ASCII编码:64,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:68, character:"d", ASCII code:64, dimensions: width x height = 8x16, 16 bytes total
 	0x00,0x80,0xc0,0x48,0xf8,0xf8,0x00,0x00,0x0f,0x1f,0x10,0x10,0x0f,0x1f,0x10,0x00,
-	// -- ID:69,字符:"e",ASCII编码:65,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:69, character:"e", ASCII code:65, dimensions: width x height = 8x16, 16 bytes total
 	0x80,0xc0,0x40,0x40,0x40,0xc0,0x80,0x00,0x0f,0x1f,0x11,0x11,0x11,0x19,0x09,0x00,
-	// -- ID:70,字符:"f",ASCII编码:66,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:70, character:"f", ASCII code:66, dimensions: width x height = 8x16, 16 bytes total
 	0x80,0xf0,0xf8,0x88,0x18,0x30,0x00,0x00,0x10,0x1f,0x1f,0x10,0x00,0x00,0x00,0x00,
-	// -- ID:71,字符:"g",ASCII编码:67,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:71, character:"g", ASCII code:67, dimensions: width x height = 8x16, 16 bytes total
 	0x80,0xc0,0x40,0x40,0x80,0xc0,0x40,0x00,0x4f,0xdf,0x90,0x90,0xff,0x7f,0x00,0x00,
-	// -- ID:72,字符:"h",ASCII编码:68,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:72, character:"h", ASCII code:68, dimensions: width x height = 8x16, 16 bytes total
 	0x08,0xf8,0xf8,0x80,0x40,0xc0,0x80,0x00,0x10,0x1f,0x1f,0x00,0x00,0x1f,0x1f,0x00,
-	// -- ID:73,字符:"i",ASCII编码:69,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:73, character:"i", ASCII code:69, dimensions: width x height = 8x16, 16 bytes total
 	0x00,0x00,0x40,0xd8,0xd8,0x00,0x00,0x00,0x00,0x00,0x10,0x1f,0x1f,0x10,0x00,0x00,
-	// -- ID:74,字符:"j",ASCII编码:6A,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:74, character:"j", ASCII code:6A, dimensions: width x height = 8x16, 16 bytes total
 	0x00,0x00,0x00,0x00,0x40,0xd8,0xd8,0x00,0x00,0x60,0xe0,0x80,0x80,0xff,0x7f,0x00,
-	// -- ID:75,字符:"k",ASCII编码:6B,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:75, character:"k", ASCII code:6B, dimensions: width x height = 8x16, 16 bytes total
 	0x08,0xf8,0xf8,0x00,0x80,0xc0,0x40,0x00,0x10,0x1f,0x1f,0x03,0x07,0x1c,0x18,0x00,
-	// -- ID:76,字符:"l",ASCII编码:6C,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:76, character:"l", ASCII code:6C, dimensions: width x height = 8x16, 16 bytes total
 	0x00,0x00,0x08,0xf8,0xf8,0x00,0x00,0x00,0x00,0x00,0x10,0x1f,0x1f,0x10,0x00,0x00,
-	// -- ID:77,字符:"m",ASCII编码:6D,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:77, character:"m", ASCII code:6D, dimensions: width x height = 8x16, 16 bytes total
 	0xc0,0xc0,0xc0,0x80,0xc0,0xc0,0x80,0x00,0x1f,0x1f,0x00,0x1f,0x00,0x1f,0x1f,0x00,
-	// -- ID:78,字符:"n",ASCII编码:6E,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:78, character:"n", ASCII code:6E, dimensions: width x height = 8x16, 16 bytes total
 	0x40,0xc0,0x80,0x40,0x40,0xc0,0x80,0x00,0x00,0x1f,0x1f,0x00,0x00,0x1f,0x1f,0x00,
-	// -- ID:79,字符:"o",ASCII编码:6F,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:79, character:"o", ASCII code:6F, dimensions: width x height = 8x16, 16 bytes total
 	0x80,0xc0,0x40,0x40,0x40,0xc0,0x80,0x00,0x0f,0x1f,0x10,0x10,0x10,0x1f,0x0f,0x00,
-	// -- ID:80,字符:"p",ASCII编码:70,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:80, character:"p", ASCII code:70, dimensions: width x height = 8x16, 16 bytes total
 	0x40,0xc0,0x80,0x40,0x40,0xc0,0x80,0x00,0x80,0xff,0xff,0x90,0x10,0x1f,0x0f,0x00,
-	// -- ID:81,字符:"q",ASCII编码:71,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:81, character:"q", ASCII code:71, dimensions: width x height = 8x16, 16 bytes total
 	0x80,0xc0,0x40,0x40,0x80,0xc0,0x40,0x00,0x0f,0x1f,0x10,0x90,0xff,0xff,0x80,0x00,
-	// -- ID:82,字符:"r",ASCII编码:72,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:82, character:"r", ASCII code:72, dimensions: width x height = 8x16, 16 bytes total
 	0x40,0xc0,0x80,0xc0,0x40,0xc0,0x80,0x00,0x10,0x1f,0x1f,0x10,0x00,0x00,0x01,0x00,
-	// -- ID:83,字符:"s",ASCII编码:73,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:83, character:"s", ASCII code:73, dimensions: width x height = 8x16, 16 bytes total
 	0x80,0xc0,0x40,0x40,0x40,0xc0,0x80,0x00,0x08,0x19,0x13,0x12,0x16,0x1c,0x08,0x00,
-	// -- ID:84,字符:"t",ASCII编码:74,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:84, character:"t", ASCII code:74, dimensions: width x height = 8x16, 16 bytes total
 	0x40,0x40,0xf0,0xf8,0x40,0x40,0x00,0x00,0x00,0x00,0x0f,0x1f,0x10,0x18,0x08,0x00,
-	// -- ID:85,字符:"u",ASCII编码:75,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:85, character:"u", ASCII code:75, dimensions: width x height = 8x16, 16 bytes total
 	0xc0,0xc0,0x00,0x00,0xc0,0xc0,0x00,0x00,0x0f,0x1f,0x10,0x10,0x0f,0x1f,0x10,0x00,
-	// -- ID:86,字符:"v",ASCII编码:76,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:86, character:"v", ASCII code:76, dimensions: width x height = 8x16, 16 bytes total
 	0x00,0xc0,0xc0,0x00,0x00,0xc0,0xc0,0x00,0x00,0x07,0x0f,0x18,0x18,0x0f,0x07,0x00,
-	// -- ID:87,字符:"w",ASCII编码:77,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:87, character:"w", ASCII code:77, dimensions: width x height = 8x16, 16 bytes total
 	0xc0,0xc0,0x00,0x00,0x00,0xc0,0xc0,0x00,0x0f,0x1f,0x18,0x0e,0x18,0x1f,0x0f,0x00,
-	// -- ID:88,字符:"x",ASCII编码:78,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:88, character:"x", ASCII code:78, dimensions: width x height = 8x16, 16 bytes total
 	0x40,0xc0,0x80,0x00,0x80,0xc0,0x40,0x00,0x10,0x18,0x0f,0x07,0x0f,0x18,0x10,0x00,
-	// -- ID:89,字符:"y",ASCII编码:79,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:89, character:"y", ASCII code:79, dimensions: width x height = 8x16, 16 bytes total
 	0xc0,0xc0,0x00,0x00,0x00,0xc0,0xc0,0x00,0x8f,0x9f,0x90,0x90,0xd0,0x7f,0x3f,0x00,
-	// -- ID:90,字符:"z",ASCII编码:7A,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:90, character:"z", ASCII code:7A, dimensions: width x height = 8x16, 16 bytes total
 	0xc0,0xc0,0x40,0x40,0xc0,0xc0,0x40,0x00,0x18,0x1c,0x16,0x13,0x11,0x18,0x18,0x00,
-	// -- ID:91,字符:"{",ASCII编码:7B,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:91, character:"{", ASCII code:7B, dimensions: width x height = 8x16, 16 bytes total
 	0x00,0x80,0x80,0xf0,0x78,0x08,0x08,0x00,0x00,0x00,0x00,0x0f,0x1f,0x10,0x10,0x00,
-	// -- ID:92,字符:"|",ASCII编码:7C,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:92, character:"|", ASCII code:7C, dimensions: width x height = 8x16, 16 bytes total
 	0x00,0x00,0x00,0x78,0x78,0x00,0x00,0x00,0x00,0x00,0x00,0x1f,0x1f,0x00,0x00,0x00,
-	// -- ID:93,字符:"}",ASCII编码:7D,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:93, character:"}", ASCII code:7D, dimensions: width x height = 8x16, 16 bytes total
 	0x00,0x08,0x08,0x78,0xf0,0x80,0x80,0x00,0x00,0x10,0x10,0x1f,0x0f,0x00,0x00,0x00,
-	// -- ID:94,字符:"~",ASCII编码:7E,对应字:宽x高=8x16,画布:宽W=8 高H=16,共16字节
+	// -- ID:94, character:"~", ASCII code:7E, dimensions: width x height = 8x16, 16 bytes total
 	0x10,0x18,0x08,0x18,0x10,0x18,0x08,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
 };
 
 
-/* [字库]：[ASC5x8E字库] [数据排列]:从左到右从上到下 [取模方式]:纵向8点下高位 [正负反色]:否 [去掉重复后]共95个字符
-[总字符库]：" !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~" */
+/* Font library: ASC 5x8 font. Data arrangement: left-to-right, top-to-bottom. Extraction method: vertical 8-point (lsb first). No inversion. Total 95 characters.
+Complete character set: !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~ */
 
 uint8_t F5x8[] = {
 
-	// -- ID:0,字符:" ",ASCII编码:20,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:0, character:" ", ASCII code:20, dimensions: width x height = 5x8, 5 bytes total
 	0x00,0x00,0x00,0x00,0x00,
-	// -- ID:1,字符:"!",ASCII编码:21,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:1, character:"!", ASCII code:21, dimensions: width x height = 5x8, 5 bytes total
 	0x00,0x00,0x5f,0x00,0x00,
-	// -- ID:2,字符:""",ASCII编码:22,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:2, character:""", ASCII code:22, dimensions: width x height = 5x8, 5 bytes total
 	0x00,0x07,0x00,0x07,0x00,
-	// -- ID:3,字符:"#",ASCII编码:23,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:3, character:"#", ASCII code:23, dimensions: width x height = 5x8, 5 bytes total
 	0x14,0x7f,0x14,0x7f,0x14,
-	// -- ID:4,字符:"$",ASCII编码:24,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
-	0x24,0x2e,0x7b,0x2a,0x12,
-	// -- ID:5,字符:"%",ASCII编码:25,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:4, character:"$", ASCII code:24, dimensions: width x height = 5x8, 5 bytes total
+	0x24,0x2A,0x7F,0x2A,0x12,
+	// -- ID:5, character:"%", ASCII code:25, dimensions: width x height = 5x8, 5 bytes total
 	0x23,0x13,0x08,0x64,0x62,
-	// -- ID:6,字符:"&",ASCII编码:26,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:6, character:"&", ASCII code:26, dimensions: width x height = 5x8, 5 bytes total
 	0x36,0x49,0x56,0x20,0x50,
-	// -- ID:7,字符:"'",ASCII编码:27,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:7, character:"'", ASCII code:27, dimensions: width x height = 5x8, 5 bytes total
 	0x00,0x04,0x03,0x01,0x00,
-	// -- ID:8,字符:"(",ASCII编码:28,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:8, character:"(", ASCII code:28, dimensions: width x height = 5x8, 5 bytes total
 	0x00,0x1c,0x22,0x41,0x00,
-	// -- ID:9,字符:")",ASCII编码:29,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:9, character:")", ASCII code:29, dimensions: width x height = 5x8, 5 bytes total
 	0x00,0x41,0x22,0x1c,0x00,
-	// -- ID:10,字符:"*",ASCII编码:2A,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:10, character:"*", ASCII code:2A, dimensions: width x height = 5x8, 5 bytes total
 	0x22,0x14,0x7f,0x14,0x22,
-	// -- ID:11,字符:"+",ASCII编码:2B,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:11, character:"+", ASCII code:2B, dimensions: width x height = 5x8, 5 bytes total
 	0x08,0x08,0x7f,0x08,0x08,
-	// -- ID:12,字符:",",ASCII编码:2C,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:12, character:",", ASCII code:2C, dimensions: width x height = 5x8, 5 bytes total
 	0x40,0x30,0x10,0x00,0x00,
-	// -- ID:13,字符:"-",ASCII编码:2D,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:13, character:"-", ASCII code:2D, dimensions: width x height = 5x8, 5 bytes total
 	0x08,0x08,0x08,0x08,0x08,
-	// -- ID:14,字符:".",ASCII编码:2E,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:14, character:".", ASCII code:2E, dimensions: width x height = 5x8, 5 bytes total
 	0x00,0x60,0x60,0x00,0x00,
-	// -- ID:15,字符:"/",ASCII编码:2F,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:15, character:"/", ASCII code:2F, dimensions: width x height = 5x8, 5 bytes total
 	0x20,0x10,0x08,0x04,0x02,
-	// -- ID:16,字符:"0",ASCII编码:30,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:16, character:"0", ASCII code:30, dimensions: width x height = 5x8, 5 bytes total
 	0x3e,0x51,0x49,0x45,0x3e,
-	// -- ID:17,字符:"1",ASCII编码:31,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:17, character:"1", ASCII code:31, dimensions: width x height = 5x8, 5 bytes total
 	0x00,0x42,0x7f,0x40,0x00,
-	// -- ID:18,字符:"2",ASCII编码:32,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:18, character:"2", ASCII code:32, dimensions: width x height = 5x8, 5 bytes total
 	0x62,0x51,0x49,0x49,0x46,
-	// -- ID:19,字符:"3",ASCII编码:33,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:19, character:"3", ASCII code:33, dimensions: width x height = 5x8, 5 bytes total
 	0x21,0x41,0x49,0x4d,0x33,
-	// -- ID:20,字符:"4",ASCII编码:34,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:20, character:"4", ASCII code:34, dimensions: width x height = 5x8, 5 bytes total
 	0x18,0x14,0x12,0x7f,0x10,
-	// -- ID:21,字符:"5",ASCII编码:35,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:21, character:"5", ASCII code:35, dimensions: width x height = 5x8, 5 bytes total
 	0x27,0x45,0x45,0x45,0x39,
-	// -- ID:22,字符:"6",ASCII编码:36,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:22, character:"6", ASCII code:36, dimensions: width x height = 5x8, 5 bytes total
 	0x3c,0x4a,0x49,0x49,0x31,
-	// -- ID:23,字符:"7",ASCII编码:37,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:23, character:"7", ASCII code:37, dimensions: width x height = 5x8, 5 bytes total
 	0x01,0x71,0x09,0x05,0x03,
-	// -- ID:24,字符:"8",ASCII编码:38,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:24, character:"8", ASCII code:38, dimensions: width x height = 5x8, 5 bytes total
 	0x36,0x49,0x49,0x49,0x36,
-	// -- ID:25,字符:"9",ASCII编码:39,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:25, character:"9", ASCII code:39, dimensions: width x height = 5x8, 5 bytes total
 	0x46,0x49,0x49,0x29,0x1e,
-	// -- ID:26,字符:":",ASCII编码:3A,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:26, character:":", ASCII code:3A, dimensions: width x height = 5x8, 5 bytes total
 	0x00,0x36,0x36,0x00,0x00,
-	// -- ID:27,字符:";",ASCII编码:3B,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
-	0x40,0x36,0x36,0x00,0x00,
-	// -- ID:28,字符:"<",ASCII编码:3C,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:27, character:";", ASCII code:3B, dimensions: width x height = 5x8, 5 bytes total
+	0x40,0x76,0x36,0x00,0x00,
+	// -- ID:28, character:"<", ASCII code:3C, dimensions: width x height = 5x8, 5 bytes total
 	0x08,0x14,0x22,0x41,0x00,
-	// -- ID:29,字符:"=",ASCII编码:3D,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:29, character:"=", ASCII code:3D, dimensions: WxH = 5x8, total 5 bytes
 	0x14,0x14,0x14,0x14,0x14,
-	// -- ID:30,字符:">",ASCII编码:3E,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:30, character:">", ASCII code:3E, dimensions: width x height = 5x8, 5 bytes total
 	0x00,0x41,0x22,0x14,0x08,
-	// -- ID:31,字符:"?",ASCII编码:3F,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:31, character:"?", ASCII code:3F, dimensions: width x height = 5x8, 5 bytes total
 	0x02,0x01,0x59,0x05,0x02,
-	// -- ID:32,字符:"@",ASCII编码:40,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:32, character:"@", ASCII code:40, dimensions: width x height = 5x8, 5 bytes total
 	0x3e,0x41,0x5d,0x55,0x5e,
-	// -- ID:33,字符:"A",ASCII编码:41,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:33, character:"A", ASCII code:41, dimensions: width x height = 5x8, 5 bytes total
 	0x7c,0x12,0x11,0x12,0x7c,
-	// -- ID:34,字符:"B",ASCII编码:42,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:34, character:"B", ASCII code:42, dimensions: width x height = 5x8, 5 bytes total
 	0x7f,0x49,0x49,0x49,0x36,
-	// -- ID:35,字符:"C",ASCII编码:43,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:35, character:"C", ASCII code:43, dimensions: width x height = 5x8, 5 bytes total
 	0x3e,0x41,0x41,0x41,0x22,
-	// -- ID:36,字符:"D",ASCII编码:44,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:36, character:"D", ASCII code:44, dimensions: width x height = 5x8, 5 bytes total
 	0x7f,0x41,0x41,0x41,0x3e,
-	// -- ID:37,字符:"E",ASCII编码:45,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:37, character:"E", ASCII code:45, dimensions: width x height = 5x8, 5 bytes total
 	0x7f,0x49,0x49,0x49,0x41,
-	// -- ID:38,字符:"F",ASCII编码:46,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:38, character:"F", ASCII code:46, dimensions: width x height = 5x8, 5 bytes total
 	0x7f,0x09,0x09,0x09,0x01,
-	// -- ID:39,字符:"G",ASCII编码:47,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:39, character:"G", ASCII code:47, dimensions: width x height = 5x8, 5 bytes total
 	0x3e,0x41,0x51,0x51,0x72,
-	// -- ID:40,字符:"H",ASCII编码:48,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:40, character:"H", ASCII code:48, dimensions: width x height = 5x8, 5 bytes total
 	0x7f,0x08,0x08,0x08,0x7f,
-	// -- ID:41,字符:"I",ASCII编码:49,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:41, character:"I", ASCII code:49, dimensions: width x height = 5x8, 5 bytes total
 	0x00,0x41,0x7f,0x41,0x00,
-	// -- ID:42,字符:"J",ASCII编码:4A,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:42, character:"J", ASCII code:4A, dimensions: width x height = 5x8, 5 bytes total
 	0x20,0x40,0x41,0x3f,0x01,
-	// -- ID:43,字符:"K",ASCII编码:4B,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:43, character:"K", ASCII code:4B, dimensions: width x height = 5x8, 5 bytes total
 	0x7f,0x08,0x14,0x22,0x41,
-	// -- ID:44,字符:"L",ASCII编码:4C,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:44, character:"L", ASCII code:4C, dimensions: width x height = 5x8, 5 bytes total
 	0x7f,0x40,0x40,0x40,0x40,
-	// -- ID:45,字符:"M",ASCII编码:4D,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:45, character:"M", ASCII code:4D, dimensions: width x height = 5x8, 5 bytes total
 	0x7f,0x02,0x0c,0x02,0x7f,
-	// -- ID:46,字符:"N",ASCII编码:4E,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:46, character:"N", ASCII code:4E, dimensions: width x height = 5x8, 5 bytes total
 	0x7f,0x04,0x08,0x10,0x7f,
-	// -- ID:47,字符:"O",ASCII编码:4F,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:47, character:"O", ASCII code:4F, dimensions: width x height = 5x8, 5 bytes total
 	0x3e,0x41,0x41,0x41,0x3e,
-	// -- ID:48,字符:"P",ASCII编码:50,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:48, character:"P", ASCII code:50, dimensions: width x height = 5x8, 5 bytes total
 	0x7f,0x09,0x09,0x09,0x06,
-	// -- ID:49,字符:"Q",ASCII编码:51,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:49, character:"Q", ASCII code:51, dimensions: width x height = 5x8, 5 bytes total
 	0x3e,0x41,0x51,0x21,0x5e,
-	// -- ID:50,字符:"R",ASCII编码:52,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:50, character:"R", ASCII code:52, dimensions: width x height = 5x8, 5 bytes total
 	0x7f,0x09,0x19,0x29,0x46,
-	// -- ID:51,字符:"S",ASCII编码:53,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:51, character:"S", ASCII code:53, dimensions: width x height = 5x8, 5 bytes total
 	0x26,0x49,0x49,0x49,0x32,
-	// -- ID:52,字符:"T",ASCII编码:54,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:52, character:"T", ASCII code:54, dimensions: width x height = 5x8, 5 bytes total
 	0x01,0x01,0x7f,0x01,0x01,
-	// -- ID:53,字符:"U",ASCII编码:55,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:53, character:"U", ASCII code:55, dimensions: width x height = 5x8, 5 bytes total
 	0x3f,0x40,0x40,0x40,0x3f,
-	// -- ID:54,字符:"V",ASCII编码:56,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:54, character:"V", ASCII code:56, dimensions: width x height = 5x8, 5 bytes total
 	0x1f,0x20,0x40,0x20,0x1f,
-	// -- ID:55,字符:"W",ASCII编码:57,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:55, character:"W", ASCII code:57, dimensions: width x height = 5x8, 5 bytes total
 	0x7f,0x20,0x18,0x20,0x7f,
-	// -- ID:56,字符:"X",ASCII编码:58,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:56, character:"X", ASCII code:58, dimensions: width x height = 5x8, 5 bytes total
 	0x63,0x14,0x08,0x14,0x63,
-	// -- ID:57,字符:"Y",ASCII编码:59,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:57, character:"Y", ASCII code:59, dimensions: width x height = 5x8, 5 bytes total
 	0x03,0x04,0x78,0x04,0x03,
-	// -- ID:58,字符:"Z",ASCII编码:5A,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:58, character:"Z", ASCII code:5A, dimensions: width x height = 5x8, 5 bytes total
 	0x61,0x51,0x49,0x45,0x43,
-	// -- ID:59,字符:"[",ASCII编码:5B,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:59, character:"[", ASCII code:5B, dimensions: width x height = 5x8, 5 bytes total
 	0x7f,0x7f,0x41,0x41,0x00,
-	// -- ID:60,字符:"\",ASCII编码:5C,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:60, character:"\", ASCII code:5C, dimensions: width x height = 5x8, 5 bytes total
 	0x02,0x04,0x08,0x10,0x20,
-	// -- ID:61,字符:"]",ASCII编码:5D,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:61, character:"]", ASCII code:5D, dimensions: width x height = 5x8, 5 bytes total
 	0x00,0x41,0x41,0x7f,0x7f,
-	// -- ID:62,字符:"^",ASCII编码:5E,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
-	0x04,0x02,0x7f,0x02,0x04,
-	// -- ID:63,字符:"_",ASCII编码:5F,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
-	0x08,0x1c,0x2a,0x08,0x08,
-	// -- ID:64,字符:"`",ASCII编码:60,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:62, character:"^", ASCII code:5E, dimensions: width x height = 5x8, 5 bytes total
+	0x04,0x02,0x01,0x02,0x04,
+	// -- ID:63, character:"_", ASCII code:5F, dimensions: width x height = 5x8, 5 bytes total
+	0x40,0x40,0x40,0x40,0x40,
+	// -- ID:64, character:"`", ASCII code:60, dimensions: width x height = 5x8, 5 bytes total
 	0x00,0x00,0x01,0x02,0x04,
-	// -- ID:65,字符:"a",ASCII编码:61,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:65, character:"a", ASCII code:61, dimensions: width x height = 5x8, 5 bytes total
 	0x24,0x54,0x54,0x38,0x40,
-	// -- ID:66,字符:"b",ASCII编码:62,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:66, character:"b", ASCII code:62, dimensions: width x height = 5x8, 5 bytes total
 	0x7f,0x28,0x44,0x44,0x38,
-	// -- ID:67,字符:"c",ASCII编码:63,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:67, character:"c", ASCII code:63, dimensions: width x height = 5x8, 5 bytes total
 	0x38,0x44,0x44,0x44,0x08,
-	// -- ID:68,字符:"d",ASCII编码:64,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:68, character:"d", ASCII code:64, dimensions: width x height = 5x8, 5 bytes total
 	0x38,0x44,0x44,0x28,0x7f,
-	// -- ID:69,字符:"e",ASCII编码:65,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:69, character:"e", ASCII code:65, dimensions: width x height = 5x8, 5 bytes total
 	0x38,0x54,0x54,0x54,0x08,
-	// -- ID:70,字符:"f",ASCII编码:66,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:70, character:"f", ASCII code:66, dimensions: width x height = 5x8, 5 bytes total
 	0x08,0x7e,0x09,0x09,0x02,
-	// -- ID:71,字符:"g",ASCII编码:67,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:71, character:"g", ASCII code:67, dimensions: width x height = 5x8, 5 bytes total
 	0x98,0xa4,0xa4,0xa4,0x78,
-	// -- ID:72,字符:"h",ASCII编码:68,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:72, character:"h", ASCII code:68, dimensions: width x height = 5x8, 5 bytes total
 	0x7f,0x08,0x04,0x04,0x78,
-	// -- ID:73,字符:"i",ASCII编码:69,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:73, character:"i", ASCII code:69, dimensions: width x height = 5x8, 5 bytes total
 	0x00,0x00,0x79,0x00,0x00,
-	// -- ID:74,字符:"j",ASCII编码:6A,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:74, character:"j", ASCII code:6A, dimensions: width x height = 5x8, 5 bytes total
 	0x00,0x80,0x88,0x79,0x00,
-	// -- ID:75,字符:"k",ASCII编码:6B,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:75, character:"k", ASCII code:6B, dimensions: width x height = 5x8, 5 bytes total
 	0x7f,0x10,0x28,0x44,0x40,
-	// -- ID:76,字符:"l",ASCII编码:6C,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:76, character:"l", ASCII code:6C, dimensions: width x height = 5x8, 5 bytes total
 	0x00,0x41,0x7f,0x40,0x00,
-	// -- ID:77,字符:"m",ASCII编码:6D,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:77, character:"m", ASCII code:6D, dimensions: width x height = 5x8, 5 bytes total
 	0x78,0x04,0x78,0x04,0x78,
-	// -- ID:78,字符:"n",ASCII编码:6E,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:78, character:"n", ASCII code:6E, dimensions: width x height = 5x8, 5 bytes total
 	0x04,0x78,0x04,0x04,0x78,
-	// -- ID:79,字符:"o",ASCII编码:6F,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:79, character:"o", ASCII code:6F, dimensions: width x height = 5x8, 5 bytes total
 	0x38,0x44,0x44,0x44,0x38,
-	// -- ID:80,字符:"p",ASCII编码:70,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:80, character:"p", ASCII code:70, dimensions: width x height = 5x8, 5 bytes total
 	0xfc,0x24,0x24,0x24,0x18,
-	// -- ID:81,字符:"q",ASCII编码:71,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:81, character:"q", ASCII code:71, dimensions: width x height = 5x8, 5 bytes total
 	0x18,0x24,0x24,0x24,0xfc,
-	// -- ID:82,字符:"r",ASCII编码:72,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:82, character:"r", ASCII code:72, dimensions: width x height = 5x8, 5 bytes total
 	0x04,0x78,0x04,0x04,0x08,
-	// -- ID:83,字符:"s",ASCII编码:73,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:83, character:"s", ASCII code:73, dimensions: width x height = 5x8, 5 bytes total
 	0x48,0x54,0x54,0x54,0x24,
-	// -- ID:84,字符:"t",ASCII编码:74,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:84, character:"t", ASCII code:74, dimensions: width x height = 5x8, 5 bytes total
 	0x04,0x3f,0x44,0x44,0x24,
-	// -- ID:85,字符:"u",ASCII编码:75,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:85, character:"u", ASCII code:75, dimensions: width x height = 5x8, 5 bytes total
 	0x3c,0x40,0x40,0x3c,0x40,
-	// -- ID:86,字符:"v",ASCII编码:76,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:86, character:"v", ASCII code:76, dimensions: width x height = 5x8, 5 bytes total
 	0x1c,0x20,0x40,0x20,0x1c,
-	// -- ID:87,字符:"w",ASCII编码:77,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:87, character:"w", ASCII code:77, dimensions: width x height = 5x8, 5 bytes total
 	0x3c,0x40,0x3c,0x40,0x3c,
-	// -- ID:88,字符:"x",ASCII编码:78,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:88, character:"x", ASCII code:78, dimensions: width x height = 5x8, 5 bytes total
 	0x44,0x28,0x10,0x28,0x44,
-	// -- ID:89,字符:"y",ASCII编码:79,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:89, character:"y", ASCII code:79, dimensions: width x height = 5x8, 5 bytes total
 	0x9c,0xa0,0xa0,0x90,0x7c,
-	// -- ID:90,字符:"z",ASCII编码:7A,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:90, character:"z", ASCII code:7A, dimensions: width x height = 5x8, 5 bytes total
 	0x44,0x64,0x54,0x4c,0x44,
-	// -- ID:91,字符:"{",ASCII编码:7B,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:91, character:"{", ASCII code:7B, dimensions: width x height = 5x8, 5 bytes total
 	0x08,0x36,0x41,0x00,0x00,
-	// -- ID:92,字符:"|",ASCII编码:7C,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:92, character:"|", ASCII code:7C, dimensions: width x height = 5x8, 5 bytes total
 	0x00,0x00,0x77,0x00,0x00,
-	// -- ID:93,字符:"}",ASCII编码:7D,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
+	// -- ID:93, character:"}", ASCII code:7D, dimensions: width x height = 5x8, 5 bytes total
 	0x00,0x00,0x41,0x36,0x08,
-	// -- ID:94,字符:"~",ASCII编码:7E,对应字:宽x高=5x8,画布:宽W=5 高H=8,共5字节
-	0x08,0x04,0x08,0x10,0x08};
+	// -- ID:94, character:"~", ASCII code:7E, dimensions: width x height = 5x8, 5 bytes total
+	0x08,0x04,0x08,0x10,0x08
+};
 
 
 void I2cInit(void)
@@ -427,10 +428,10 @@ void SSD1306_WriteCmd(uint8_t var)
 	while(i2c_flag_get(I2C1, I2C_FLAG_I2CBSY));
 	// Send a start condition to I2C bus
 	i2c_start_on_bus(I2C1);
-	while(!i2c_flag_get(I2C1, I2C_FLAG_SBSEND));	// 等待起始位发送完成
+	while(!i2c_flag_get(I2C1, I2C_FLAG_SBSEND));	// Wait until start bit is sent
 
 	// Wait until the transmit data buffer is empty
-	i2c_master_addressing(I2C1, SSD1306_ADDR << 1, I2C_TRANSMITTER); // 发送器件地址,写数据 */
+	i2c_master_addressing(I2C1, SSD1306_ADDR << 1, I2C_TRANSMITTER); // Send device address and write data
 	while(!i2c_flag_get(I2C1, I2C_FLAG_ADDSEND));
 	i2c_flag_clear(I2C1, I2C_FLAG_ADDSEND);
 	while(!i2c_flag_get(I2C1, I2C_FLAG_TBE));

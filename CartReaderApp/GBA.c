@@ -1662,23 +1662,23 @@ void idFlashrom_GBA()
 			if(manufacturerid == 0x1)
 			{
 				// S29GL128N
-				if(strcmp(flashid, "217E") == 0 && romType == 0x1)
+				if(strcmp(flashid, "217E") == 0 && romType == 0x1)	// testing
 				{
-					cartSize = 0x8000000;
+					cartSize = 0x1000000;
 					resetSpansion_GBA();
 					return;
 				}
 				// S29GL256N
 				if(strcmp(flashid, "227E") == 0 && romType == 0x1)
 				{
-					cartSize = 0x10000000;
-					resetSpansion_GBA();
+					cartSize = 0x4000000;	// should be 0x2000000, making 0x4000000 for testing
+					resetSpansion_GBA();	// should read 64MB on device
 					return;
 				}
 				// S29GL512N
 				if(strcmp(flashid, "237E") == 0 && romType == 0x1)
 				{
-					cartSize = 0x20000000;
+					cartSize = 0x4000000;
 					resetSpansion_GBA();
 					return;
 				}

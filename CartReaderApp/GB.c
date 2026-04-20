@@ -719,8 +719,9 @@ void readSRAM_GB()
 			f_close(&tfile);
 
 			// Signal end of process
-			OledShowString(0,0,"Saved to: ",8);
+			OledShowString(0,0,"Saving to: ",8);
 			OledShowString(4,1,folder,8);
+			OledShowString(4,4,"Done!",8);
 		}
 		else
 		{
