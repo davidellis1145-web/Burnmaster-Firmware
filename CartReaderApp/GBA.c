@@ -2952,9 +2952,14 @@ void setup_GBA()
 	getCartInfo_GBA();
 	OledClear();
 	OledShowString(0,0,"Name: ",8);
-	OledShowString(35,0,romName,8);
+	if (strcmp(romName, "") == 0)
+		OledShowString(35,0,"Unknown",8);
+	else
+	{
+		OledShowString(35,0,romName,8);
+	}
 	OledShowString(0,1,"Cart ID: ",8);
-	if (strcmp(checksumStr, "") == 0)
+	if (strcmp(cartID, "") == 0)
 	{
 		OledShowString(60,1,"Unknown",8);
 	}

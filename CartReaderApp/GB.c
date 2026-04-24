@@ -404,7 +404,6 @@ void showCartInfo_GB()
 			OledShowString(10,5,"No Cart?",8);
 			OledShowString(0,7,"Press OK Button...",8);
 			WaitOKBtn();
-			ResetSystem();
 		}
 	}
 }
@@ -454,24 +453,28 @@ void setup_GB()
 // Read ROM
 void readROM_GB()
 {
-	if (strcmp(romName, "456789") == 0)
+	if ((strcmp(romName, "456789") == 0) ||
+        (strcmp(checksumStr, "FFFF") == 0) ||
+        (strcmp(checksumStr, "0000") == 0))
 	{
-		OledShowString(0,1,"GAMEPAK ERROR",8);
-		OledShowString(0,3,"Try reflashing ROM.",8);
-		OledShowString(0,4,"Rom Name: ",8);
-		OledShowString(63,4,romName,8);
-		OledShowString(0,5,"Checksum: ",8);
-		OledShowString(63,5,checksumStr,8);
-		OledShowString(0,7,"Press OK Button...",8);
+		strcpy(romName, "ERROR");
+		OledShowString(0,0,"GAMEPAK ERROR",8);
+		OledShowString(0,2,"Try reflashing ROM.",8);
+		OledShowString(0,3,"Rom Name: ",8);
+		OledShowString(63,3,romName,8);
+		OledShowString(0,4,"Checksum: ",8);
+		OledShowString(63,4,checksumStr,8);
+		OledShowString(0,6,"Press OK Button to ignore",8);
+		OledShowString(0,7,"or power cycle to retry",8);
 		WaitOKBtn();
-		ResetSystem();
+		goto here;
 	}
 	else
 	{
+here:
 		// Get name, add extension and convert to char array for sd lib
 		strcpy(fileName, romName);
 		strcat(fileName, ".gb");
-
 		// Find the highest existing folder number and use next one
 		char basePath[64];
 		sprintf(basePath, "GB/ROM/%s", romName);
@@ -639,20 +642,25 @@ boolean compare_checksum_GB()
 // Read RAM
 void readSRAM_GB()
 {
-	if (strcmp(romName, "456789") == 0)
+	if ((strcmp(romName, "456789") == 0) ||
+        (strcmp(checksumStr, "FFFF") == 0) ||
+        (strcmp(checksumStr, "0000") == 0))
 	{
-		OledShowString(0,1,"GAMEPAK ERROR",8);
-		OledShowString(0,3,"Try reflashing ROM.",8);
-		OledShowString(0,4,"Rom Name: ",8);
-		OledShowString(63,4,romName,8);
-		OledShowString(0,5,"Checksum: ",8);
-		OledShowString(63,5,checksumStr,8);
-		OledShowString(0,7,"Press OK Button...",8);
+		strcpy(romName, "ERROR");
+		OledShowString(0,0,"GAMEPAK ERROR",8);
+		OledShowString(0,2,"Try reflashing ROM.",8);
+		OledShowString(0,3,"Rom Name: ",8);
+		OledShowString(63,3,romName,8);
+		OledShowString(0,4,"Checksum: ",8);
+		OledShowString(63,4,checksumStr,8);
+		OledShowString(0,6,"Press OK Button to ignore",8);
+		OledShowString(0,7,"or power cycle to retry",8);
 		WaitOKBtn();
-		ResetSystem();
+		goto here;
 	}
 	else
 	{
+here:
 		// Does cartridge have RAM
 		if (lastByte > 0)
 		{
