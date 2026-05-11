@@ -119,10 +119,10 @@ void aboutScreen()
 void aboutScreen()
 {
 	OledClear();
+	OledShowString(0,0,"Game Boy",16); // Not sure what (char *) is for...Try removing them.
 	OledShowPicData(79,0,48,6,Icon_data_DGE); // Draws DGE logo icon
-	OledShowString(2,0,"Game Boy",16); // Not sure what (char *) is for...Try removing them.
 	OledShowString(3,2,"Flash Master",8);
-	OledShowString(8,4,"v1.04a",8); // Based on Funnyplaying v1.10 release.
+	OledShowString(8,4,"v1.04a1",8); // Based on Funnyplaying v1.10 release.
 	OledShowString(2,5,"May 11, 2026",8);
 	OledShowString(0,7,"Press OK Button...",8);
 	WaitOKBtn();
