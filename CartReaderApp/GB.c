@@ -464,8 +464,8 @@ void readROM_GB()
 		OledShowString(63,3,romName,8);
 		OledShowString(0,4,"Checksum: ",8);
 		OledShowString(63,4,checksumStr,8);
-		OledShowString(0,6,"Press OK Button to ignore",8);
-		OledShowString(0,7,"or power cycle to retry",8);
+		OledShowString(0,6,"Press OK to ignore or",8);
+		OledShowString(0,7,"power cycle to retry",8);
 		WaitOKBtn();
 		goto here;
 	}
@@ -653,8 +653,8 @@ void readSRAM_GB()
 		OledShowString(63,3,romName,8);
 		OledShowString(0,4,"Checksum: ",8);
 		OledShowString(63,4,checksumStr,8);
-		OledShowString(0,6,"Press OK Button to ignore",8);
-		OledShowString(0,7,"or power cycle to retry",8);
+		OledShowString(0,6,"Press OK to ignore or",8);
+		OledShowString(0,7,"power cycle to retry",8);
 		WaitOKBtn();
 		goto here;
 	}

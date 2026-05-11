@@ -2953,7 +2953,9 @@ void setup_GBA()
 	OledClear();
 	OledShowString(0,0,"Name: ",8);
 	if (strcmp(romName, "") == 0)
+	{
 		OledShowString(35,0,"Unknown",8);
+	}
 	else
 	{
 		OledShowString(35,0,romName,8);
