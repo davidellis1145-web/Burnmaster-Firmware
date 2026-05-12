@@ -126,8 +126,8 @@ void delay(int n)
 
 void ResetSystem()
 {
-	__set_FAULTMASK(1); // 关闭总中断
-	NVIC_SystemReset(); // 请求单片机重启
+	__set_FAULTMASK(1); // Disable global interrupts
+	NVIC_SystemReset(); // Request Restart
 }
 
 

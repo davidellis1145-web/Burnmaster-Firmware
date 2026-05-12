@@ -12,7 +12,7 @@
 void KeyBrdInit()
 {
 	gpio_init(GPIOE, GPIO_MODE_IPU, GPIO_OSPEED_2MHZ, 0x3F);
-	gpio_init(GPIOB, GPIO_MODE_IN_FLOATING, GPIO_OSPEED_2MHZ, GPIO_PIN_1); // 低电量获取
+	gpio_init(GPIOB, GPIO_MODE_IN_FLOATING, GPIO_OSPEED_2MHZ, GPIO_PIN_1); // Low battery handling
 }
 
 
@@ -185,16 +185,16 @@ uint8_t my_mkdir(char * dir)
 {
 	uint8_t bret = false;
 	bool opendir_err = 0;
-	char SonPath[10][30];	// 最多10层，每层最多30字符
-	char RootPath[128];		// 最低已存在路径
-	memset(SonPath, '\0', sizeof(SonPath)); // 初始化
+	char SonPath[10][30];	// Up to 10 levels, max 30 characters each
+	char RootPath[128];		// Lowest existing path
+	memset(SonPath, '\0', sizeof(SonPath)); // Initialize
 	strcpy(RootPath, dir);
-	uint8_t num = 0;		// 剔除的次数
+	uint8_t num = 0;
 	DIR W_Ddir;
 
-	do						// 遍历寻找文件夹
+	do						// Search for folder
 	{
-		char *dot = strrchr(RootPath, '\\');	// 剔除一层
+		char *dot = strrchr(RootPath, '\\');	// Search for last "\"
 		if(dot == NULL)
 			dot = strrchr(RootPath, '/');
 		if(dot == NULL)
@@ -208,7 +208,7 @@ uint8_t my_mkdir(char * dir)
 		}
 
 		strcpy(SonPath[num], dot);
-		FRESULT W_Dresult = f_opendir(&W_Ddir, RootPath); // 检测文件夹
+		FRESULT W_Dresult = f_opendir(&W_Ddir, RootPath); // Try open directory
 		if(W_Dresult == FR_OK)
 		{
 			printf("Exist[%s]\r\n",RootPath);
@@ -233,7 +233,7 @@ uint8_t my_mkdir(char * dir)
 
 	if(opendir_err == 1)
 	{
-		// 遍历创建文件夹
+		// Create folder
 		opendir_err = 0;
 		for(int i=0;i<num;i++)
 		{
@@ -310,7 +310,7 @@ next_page:
 		fret = f_readdir(&tdir,&finfo);
 		if(fret == FR_OK)
 		{
-			// 到底了或者菜单填满了
+			// Reached end, or menu full
 			if(finfo.fname[0] == 0x00)
 			{
 				bnomore = true;

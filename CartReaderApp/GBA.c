@@ -362,7 +362,7 @@ void getCartInfo_GBA()
 					// Skip the , in the file
 					f_lseek(&tf,f_tell(&tf) + 1);
 
-					// Read the next ascii character and subtract 48 to convert to decimal
+					// Read the next ASCII character and subtract 48 to convert to decimal
 					f_read(&tf,&tb,1,&rdt);
 					cartSize = tb - 48;
 					f_read(&tf,&tb,1,&rdt);
@@ -380,7 +380,7 @@ void getCartInfo_GBA()
 					f_lseek(&tf,f_tell(&tf) + 1);
 					f_read(&tf,&tb,1,&rdt);
 
-					// Read the next ascii character and subtract 48 to convert to decimal
+					// Read the next ASCII character and subtract 48 to convert to decimal
 					saveType = tb - 48;
 				}
 				// If no match, empty string, advance by 7 and try again
@@ -475,7 +475,7 @@ void readROM_GBA()
 		if (myAddress % 16384 == 0)
 		{
 			LED_GREEN_BLINK;
-			showPersent(myAddress,cartSize,20,3);
+			showPercent(myAddress,cartSize,20,3);
 		}
 
 		for (int currWord = 0; currWord < 256; currWord++)
@@ -488,7 +488,7 @@ void readROM_GBA()
 		f_write(&tf, sdBuffer, 512, &wdt);
 	}
 
-	showPersent(1,1,20,3);
+	showPercent(1,1,20,3);
 	// Close the file
 	f_close(&tf);
 }
@@ -644,11 +644,11 @@ void writeSRAM_GBA(boolean browseFile, unsigned long sramSize, uint32_t pos)
 				writeByte_GBA(currAddress + c, sdBuffer[c]);
 			}
 
-			showPersent(currAddress,sramSize,6,2);
+			showPercent(currAddress,sramSize,6,2);
 		}
 		// Close the file
 		f_close(&tf);
-		showPersent(1,1,6,2);
+		showPercent(1,1,6,2);
 		OledShowString(0,3,"Done!",8);
 	}
 	else
@@ -713,9 +713,9 @@ void TestSRAM_GBA(unsigned long sramSize)
 		byte wb = currAddress & 0xFF;
 		// Write byte
 		writeByte_GBA(currAddress, wb);
-		if(wb == 0xFF)showPersent(currAddress,sramSize,36,1);
+		if(wb == 0xFF)showPercent(currAddress,sramSize,36,1);
 	}
-	showPersent(1,1,36,1);
+	showPercent(1,1,36,1);
 	OledShowString(68,1,"read:",8);
 
 	setAddrOutMode();
@@ -729,9 +729,9 @@ void TestSRAM_GBA(unsigned long sramSize)
 		{
 			wErrors++;
 		}
-		if(bt == 0xFF)showPersent(currAddress,sramSize,96,1);
+		if(bt == 0xFF)showPercent(currAddress,sramSize,96,1);
 	}
-	showPersent(1,1,96,1);
+	showPercent(1,1,96,1);
 	char msgbuf[64] = {0};
 	if(wErrors > 0)
 	{
@@ -1383,7 +1383,7 @@ void readFLASH_GBA (boolean browseFile, unsigned long flashSize, uint32_t pos)
 	for (unsigned long currAddress = 0; currAddress < flashSize; currAddress += 512)
 	{
 		LED_GREEN_BLINK;
-		showPersent(currAddress,flashSize,20,3);
+		showPercent(currAddress,flashSize,20,3);
 		for (int c = 0; c < 512; c++)
 		{
 			// Read byte
@@ -1394,7 +1394,7 @@ void readFLASH_GBA (boolean browseFile, unsigned long flashSize, uint32_t pos)
 		f_write(&tf, sdBuffer, 512, &wdt);
 		OledShowString(20,4,"     ",8);
 	}
-	showPersent(1,1,20,3);
+	showPercent(1,1,20,3);
 	f_close(&tf);
 
 	// Set CS_FLASH(PH0) high
@@ -1739,7 +1739,7 @@ void eraseIntel4000_GBA()
 			statusReg = readWord_GBA(currBlock);
 		}
 		LED_GREEN_BLINK;
-		showPersent(currBlock,lastBlock,70,2);
+		showPercent(currBlock,lastBlock,70,2);
 	}
 
 	// Erase 126 blocks with 64kwords each
@@ -1761,9 +1761,9 @@ void eraseIntel4000_GBA()
 		}
 		// Blink led
 		LED_GREEN_BLINK;
-		showPersent(currBlock,lastBlock,70,2);
+		showPercent(currBlock,lastBlock,70,2);
 	}
-	showPersent(1,1,70,2);
+	showPercent(1,1,70,2);
 
 	// Erase the second chip
 	if (fileSize > 0x1000000)
@@ -1839,7 +1839,7 @@ void eraseIntel4400_GBA()
 		}
 
 		LED_GREEN_BLINK;
-		showPersent(currBlock,lastBlock,70,2);
+		showPercent(currBlock,lastBlock,70,2);
 	}
 
 	// Erase 255 blocks with 64kwords each
@@ -1861,10 +1861,10 @@ void eraseIntel4400_GBA()
 		}
 		// Blink led
 		LED_GREEN_BLINK;
-		showPersent(currBlock,lastBlock,70,2);
+		showPercent(currBlock,lastBlock,70,2);
 	}
 
-	showPersent(1,1,70,2);
+	showPercent(1,1,70,2);
 }
 
 
@@ -1891,7 +1891,7 @@ void sectorEraseMSP55LV128_GBA(unsigned long lastSector)
 
 		// Blink LED
 		LED_GREEN_BLINK;
-		showPersent(currSector,lastSector,68,2);
+		showPercent(currSector,lastSector,68,2);
 
 		// Read the status register
 		word statusReg = readWord_GAB(currSector);
@@ -1904,7 +1904,7 @@ void sectorEraseMSP55LV128_GBA(unsigned long lastSector)
 		delayMicroseconds(deley_us_lv128);
 
 	}
-	showPersent(1,1,68,2);
+	showPercent(1,1,68,2);
 }
 
 
@@ -1929,7 +1929,7 @@ void sectorEraseTest_GBA(unsigned long lastSector)
 
 		// Blink LED
 		LED_GREEN_BLINK;
-		showPersent(currSector,lastSector,88,4);
+		showPercent(currSector,lastSector,88,4);
 
 		// Read the status register
 		word statusReg = readWord_GAB(currSector);
@@ -1940,7 +1940,7 @@ void sectorEraseTest_GBA(unsigned long lastSector)
 		}
 		delayMicroseconds(deley_us_lv128);
 	}
-	showPersent(1,1,88,4);
+	showPercent(1,1,88,4);
 }
 
 
@@ -1958,7 +1958,7 @@ void sectorEraseMX29GL128E_GBA(unsigned long lastSector)
 		writeWord_GAB(currSector, 0x30);
 		// Blink LED
 		LED_GREEN_BLINK;
-		showPersent(currSector,lastSector,68,2);
+		showPercent(currSector,lastSector,68,2);
 		// Read the status register
 		word statusReg = readWord_GAB(currSector);
 		while ((statusReg | 0xFF7F) != 0xFFFF)
@@ -1966,7 +1966,7 @@ void sectorEraseMX29GL128E_GBA(unsigned long lastSector)
 			statusReg = readWord_GAB(currSector);
 		}
 	}
-	showPersent(1,1,68,2);
+	showPercent(1,1,68,2);
 }
 
 
@@ -1984,14 +1984,14 @@ void sectorEraseSpansion_GBA(unsigned long lastSector)
 		writeWord_GBA(currSector, 0x30);
 		// Blink LED
 		LED_GREEN_BLINK;
-		showPersent(currSector,lastSector,68,2);
+		showPercent(currSector,lastSector,68,2);
 		// Read the status register
 		word statusReg = readWord_GBA(currSector);
 		while ((statusReg | 0xFF7F) != 0xFFFF)
 		{
 			statusReg = readWord_GBA(currSector);
 		}
-		showPersent(1,1,68,2);
+		showPercent(1,1,68,2);
 	}
 }
 
@@ -2010,7 +2010,7 @@ void sectorEraseMX29GL128E_GBA_1(unsigned long lastSector)
 		writeWord_GAB(currSector, 0x30);
 		// Blink LED
 		LED_GREEN_BLINK;
-		showPersent(currSector,lastSector,68,2);
+		showPercent(currSector,lastSector,68,2);
 		// Read the status register
 		word statusReg = readWord_GAB(currSector);
 		while ((statusReg | 0xFF7F) != 0xFFFF)
@@ -2018,7 +2018,7 @@ void sectorEraseMX29GL128E_GBA_1(unsigned long lastSector)
 			statusReg = readWord_GAB(currSector);
 		}
 	}
-	showPersent(1,1,68,2);
+	showPercent(1,1,68,2);
 }
 
 
@@ -2028,7 +2028,7 @@ void writeIntel4000_GBA(FIL * ptf)
 	{
 		// Blink led
 		LED_GREEN_BLINK;
-		showPersent(currBlock,fileSize,68,3);
+		showPercent(currBlock,fileSize,68,3);
 		// Write to flashrom
 		for (unsigned long currSdBuffer = 0; currSdBuffer < 0x20000; currSdBuffer += 512)
 		{
@@ -2075,7 +2075,7 @@ void writeIntel4000_GBA(FIL * ptf)
 			}
 		}
 	}
-	showPersent(1,1,68,3);
+	showPercent(1,1,68,3);
 }
 
 
@@ -2085,7 +2085,7 @@ void writeMSP55LV128_GBA(FIL * ptf)
 	{
 		// Blink led
 		LED_GREEN_BLINK;
-		showPersent(currSector,fileSize,68,3);
+		showPercent(currSector,fileSize,68,3);
 		// Write to flashrom
 		for (unsigned long currSdBuffer = 0; currSdBuffer < 0x20000; currSdBuffer += 512)
 		{
@@ -2171,7 +2171,7 @@ void writeMSP55LV128_GBA(FIL * ptf)
 			}
 		}
 	}
-	showPersent(1,1,68,3);
+	showPercent(1,1,68,3);
 }
 
 
@@ -2181,7 +2181,7 @@ void writeMX29GL128E_GBA(FIL * ptf)
 	{
 		// Blink led
 		LED_GREEN_BLINK;
-		showPersent(currSector,fileSize,68,3);
+		showPercent(currSector,fileSize,68,3);
 		// Write to flashrom
 		for (unsigned long currSdBuffer = 0; currSdBuffer < 0x10000; currSdBuffer += 512)
 		{
@@ -2268,7 +2268,7 @@ void writeMX29GL128E_GBA(FIL * ptf)
 			}
 		}
 	}
-	showPersent(1,1,68,3);
+	showPercent(1,1,68,3);
 }
 
 
@@ -2278,7 +2278,7 @@ void writeMX29GL128E_GBA_1(FIL * ptf)
 	{
 		// Blink led
 		LED_GREEN_BLINK;
-		showPersent(currSector,fileSize,68,3);
+		showPercent(currSector,fileSize,68,3);
 		// Write to flashrom
 		for (unsigned long currSdBuffer = 0; currSdBuffer < 0x10000; currSdBuffer += 512)
 		{
@@ -2308,7 +2308,7 @@ void writeMX29GL128E_GBA_1(FIL * ptf)
 			}
 		}
 	}
-	showPersent(1,1,68,3);
+	showPercent(1,1,68,3);
 }
 
 
@@ -2318,7 +2318,7 @@ void writeSpansion_GBA(FIL * ptf)
 	{
 		// Blink led
 		LED_GREEN_BLINK;
-		showPersent(currSector,fileSize,68,3);
+		showPercent(currSector,fileSize,68,3);
 		// Write to flashrom
 		for (unsigned long currSdBuffer = 0; currSdBuffer < 0x20000; currSdBuffer += 512) // Was 0x20000
 		{
@@ -2409,7 +2409,7 @@ void writeSpansion_GBA(FIL * ptf)
 			}
 		}
 	}
-	showPersent(1,1,68,3);
+	showPercent(1,1,68,3);
 }
 
 
@@ -2425,7 +2425,7 @@ boolean verifyFlashrom_GBA()
 		{
 			// Blink led
 			LED_GREEN_BLINK;
-			showPersent(currSector,fileSize,82,6);
+			showPercent(currSector,fileSize,82,6);
 			for (unsigned long currSdBuffer = 0; currSdBuffer < 131072; currSdBuffer += 512)
 			{
 				// Fill SD buffer
@@ -2449,7 +2449,7 @@ boolean verifyFlashrom_GBA()
 			}
 		}
 
-		showPersent(1,1,82,6);
+		showPercent(1,1,82,6);
 		// Close the file
 		f_close(&tf);
 		if (writeErrors == 0)
@@ -2482,7 +2482,7 @@ boolean verifyFlashrom_GBA_new()
 		{
 			// Blink led
 			LED_GREEN_BLINK;
-			showPersent(currSector,fileSize,82,5);
+			showPercent(currSector,fileSize,82,5);
 			for (unsigned long currSdBuffer = 0; currSdBuffer < 131072; currSdBuffer += 512)
 			{
 				// Fill SD buffer
@@ -2503,7 +2503,7 @@ boolean verifyFlashrom_GBA_new()
 				}
 			}
 		}
-		showPersent(1,1,82,5);
+		showPercent(1,1,82,5);
 		// Close the file
 		f_close(&tf);
 		if (writeErrors == 0)
@@ -2531,7 +2531,7 @@ boolean verifyFlashromTest_GBA(uint32_t testSize)
 	{
 		// Blink led
 		LED_GREEN_BLINK;
-		showPersent(currSector,fileSize,96,6);
+		showPercent(currSector,fileSize,96,6);
 		for (unsigned long currSdBuffer = 0; currSdBuffer < 131072; currSdBuffer += 512)
 		{
 			readWord_buf_GBA(currSector + currSdBuffer,tbuf,256);
@@ -2547,7 +2547,7 @@ boolean verifyFlashromTest_GBA(uint32_t testSize)
 			}
 		}
 	}
-	showPersent(1,1,96,6);
+	showPercent(1,1,96,6);
 	if (wErrors == 0)
 	{
 		return 1;
@@ -2751,7 +2751,7 @@ void flashRepro_GBA()
 
 			if (strcmp(flashid, "8802") == 0)
 			{
-				// Don't know the correct size so just take some guesse
+				// Don't know the correct size so just take some guesses
 				resetIntel_GBA(0x8000);
 				delay(1000);
 				resetIntel_GBA(0x100000);
@@ -2809,7 +2809,7 @@ void writeTEST_GBA(uint32_t testSize)
 	{
 		// Blink led
 		LED_GREEN_BLINK;
-		showPersent(currSector,testSize,88,5);
+		showPercent(currSector,testSize,88,5);
 		word wWord = 0;
 		word tw = 0;
 
@@ -2896,7 +2896,7 @@ void writeTEST_GBA(uint32_t testSize)
 			delayMicroseconds(deley_us_lv128);
 		}
 	}
-	showPersent(1,1,88,5);
+	showPercent(1,1,88,5);
 }
 
 

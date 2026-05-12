@@ -528,7 +528,7 @@ here:
 				writeByte_GB(0x2000, currBank & 0x1F);
 			}
 
-			// Switch data pins to intput
+			// Switch data pins to input
 			dataIn_GB();
 
 			// Second bank starts at 0x4000
@@ -696,7 +696,7 @@ here:
 				writeByte_GB(0x6000, 1);
 			}
 
-			// Initialise MBC
+			// initialize MBC
 			writeByte_GB(0x0000, 0x0A);
 
 			// Switch SRAM banks
@@ -763,7 +763,7 @@ void writeSRAM_GB()
 				writeByte_GB(0x6000, 1);
 			}
 
-			// Initialise MBC
+			// initialize MBC
 			writeByte_GB(0x0000, 0x0A);
 
 			// Switch RAM banks
@@ -826,7 +826,7 @@ unsigned long verifySRAM_GB()
 				writeByte_GB(0x6000, 1); // Set RAM Mode
 			}
 
-			// Initialise MBC
+			// initialize MBC
 			writeByte_GB(0x0000, 0x0A);
 
 			// Switch SRAM banks
@@ -868,7 +868,7 @@ unsigned long verifySRAM_GB()
 }
 
 
-// 检测sram
+// Testing SRAM
 void TestSramGB(byte bankCnt , word wTestSize)
 {
 	OledClear();
@@ -887,7 +887,7 @@ void TestSramGB(byte bankCnt , word wTestSize)
 		writeByte_GB(0x6000, 1);
 	}
 
-	// Initialise MBC
+	// initialize MBC
 	writeByte_GB(0x0000, 0x0A);
 
 	// Switch RAM banks
@@ -922,7 +922,7 @@ void TestSramGB(byte bankCnt , word wTestSize)
 		writeByte_GB(0x6000, 1); // Set RAM Mode
 	}
 
-	// Initialise MBC
+	// initialize MBC
 	writeByte_GB(0x0000, 0x0A);
 
 	// Switch SRAM banks
@@ -1271,7 +1271,7 @@ void writeFlash29F_GB(byte MBC, boolean flashErase)
 				writeByte_GB(0x2000, bank & 0x1F); // Set bits 0 & 4 (00011111) of ROM bank
 			}
 
-			// Switch data pins to intput
+			// Switch data pins to input
 			dataIn_GB();
 
 			if (bank > 1)
@@ -1449,6 +1449,9 @@ void identifyCFI_GB()
 		else
 		{
 			printf("CFI Query failed!");
+			OledShowString(0,0,"CFI Query failed!,8);
+			OledShowString(0,3,"Press OK to ignore or",8);
+			OledShowString(0,4,"powercycle and retry.",8);
 			WaitOKBtn();
 			return;
 		}
@@ -1497,7 +1500,7 @@ bool writeCFI_GB()
 		}
 		else
 		{
-			sprintf(msgbuf,"Error:\nFlash has too few banks!\nHas %d\nbut needs %d banks.",flashBanks,romBanks);
+			sprintf(msgbuf,"Error:\nFlash has too few\nbanks! Flash has %d\nbut needs %d banks.",flashBanks,romBanks);
 			OledShowString(0,0,msgbuf,8);
 			OledShowString(0,7,"Press OK button...",8);
 			f_close(&tf);
@@ -1546,7 +1549,7 @@ bool writeCFI_GB()
 
 			// Blink LED
 			LED_BLUE_BLINK;
-			showPersent(currSector,lastSector,61,1);
+			showPercent(currSector,lastSector,61,1);
 
 			dataIn_GB();
 			// Read the status register
@@ -1563,7 +1566,7 @@ bool writeCFI_GB()
 			}
 		}
 
-		showPersent(1,1,61,1);
+		showPercent(1,1,61,1);
 
 		// Blankcheck
 		OledShowString(0,2,"Blank check...",8);
@@ -1572,7 +1575,7 @@ bool writeCFI_GB()
 		{
 			// Blink led
 			LED_BLUE_BLINK;
-			showPersent(currBank,romBanks,84,2);
+			showPercent(currBank,romBanks,84,2);
 			dataOut_GB();
 
 			// Set ROM bank
@@ -1598,7 +1601,7 @@ bool writeCFI_GB()
 				}
 			}
 		}
-		showPersent(1,1,84,2);
+		showPercent(1,1,84,2);
 
 		OledShowString(0,3,"Writing flash MBC3/5",8);
 
@@ -1629,7 +1632,7 @@ bool writeCFI_GB()
 		{
 			// Blink led
 			LED_BLUE_BLINK;
-			showPersent(currBank,romBanks,10,4);
+			showPercent(currBank,romBanks,10,4);
 
 			// Set ROM bank
 			writeByte_GB(0x2100, currBank);
@@ -1673,7 +1676,7 @@ bool writeCFI_GB()
 						{
 							if (currAddr >= 0x4000)
 							{
-								// This happens when trying to flash an MBC5 as if it was an MBC3. Retry to flash as MBC5, starting from last successfull byte.
+								// This happens when trying to flash an MBC5 as if it was an MBC3. Retry to flash as MBC5, starting from last successful byte.
 								currByte--;
 								currAddr += 0x4000;
 								endAddr = 0x7FFF;
@@ -1703,7 +1706,7 @@ bool writeCFI_GB()
 				currAddr += 512;
 			}
 		}
-		showPersent(1,1,10,4);
+		showPercent(1,1,10,4);
 
 		// Set data pins to input again
 		dataIn_GB();
@@ -1733,7 +1736,7 @@ bool writeCFI_GB()
 				writeByte_GB(0x2000, bank & 0x1F); // Set bits 0 & 4 (00011111) of ROM bank
 			}
 
-			// Switch data pins to intput
+			// Switch data pins to input
 			dataIn_GB();
 
 			if (bank > 1)
@@ -1742,7 +1745,7 @@ bool writeCFI_GB()
 			}
 			// Blink led
 			LED_BLUE_BLINK;
-			showPersent(bank - 1,romBanks,72,5);
+			showPercent(bank - 1,romBanks,72,5);
 
 			// Read up to 7FFF per bank
 			while (romAddress <= 0x7FFF)
@@ -1761,7 +1764,7 @@ bool writeCFI_GB()
 			}
 		}
 
-		showPersent(1,1,72,5);
+		showPercent(1,1,72,5);
 		// Close the file
 		f_close(&tf);
 
@@ -1827,7 +1830,7 @@ void testCFI_GB(uint16_t testBanks)
 
 		// Blink LED
 		LED_BLUE_BLINK;
-		showPersent(currSector,lastSector,60,3);
+		showPercent(currSector,lastSector,60,3);
 
 		dataIn_GB();
 		// Read the status register
@@ -1843,7 +1846,7 @@ void testCFI_GB(uint16_t testBanks)
 			statusReg = readByte_GB(SA);
 		}
 	}
-	showPersent(1,1,60,3);
+	showPercent(1,1,60,3);
 
 	OledShowString(0,4,"Writing...",8);
 	// Write flash
@@ -1869,7 +1872,7 @@ void testCFI_GB(uint16_t testBanks)
 	{
 		// Blink led
 		LED_BLUE_BLINK;
-		showPersent(currBank,testBanks,60,4);
+		showPercent(currBank,testBanks,60,4);
 
 		// Set ROM bank
 		writeByte_GB(0x2100, currBank);
@@ -1912,7 +1915,7 @@ void testCFI_GB(uint16_t testBanks)
 					{
 						if (currAddr >= 0x4000)
 						{
-							// This happens when trying to flash an MBC5 as if it was an MBC3. Retry to flash as MBC5, starting from last successfull byte.
+							// This happens when trying to flash an MBC5 as if it was an MBC3. Retry to flash as MBC5, starting from last successful byte.
 							currByte--;
 							currAddr += 0x4000;
 							endAddr = 0x7FFF;
@@ -1940,7 +1943,7 @@ void testCFI_GB(uint16_t testBanks)
 			currAddr += 512;
 		}
 	}
-	showPersent(1,1,60,4);
+	showPercent(1,1,60,4);
 
 	OledShowString(0,5,"Verifying...",8);
 	// Set data pins to input again
@@ -1964,7 +1967,7 @@ void testCFI_GB(uint16_t testBanks)
 			writeByte_GB(0x2000, bank & 0x1F); // Set bits 0 & 4 (00011111) of ROM bank
 		}
 
-		// Switch data pins to intput
+		// Switch data pins to input
 		dataIn_GB();
 		if (bank > 1)
 		{
@@ -1972,7 +1975,7 @@ void testCFI_GB(uint16_t testBanks)
 		}
 		// Blink led
 		LED_BLUE_BLINK;
-		showPersent(bank - 1,testBanks,72,5);
+		showPercent(bank - 1,testBanks,72,5);
 
 		// Read up to 7FFF per bank
 		while (romAddress <= 0x7FFF)
@@ -1989,7 +1992,7 @@ void testCFI_GB(uint16_t testBanks)
 			romAddress += 512;
 		}
 	}
-	showPersent(1,1,72,5);
+	showPercent(1,1,72,5);
 
 	if (wErrors == 0)
 	{
@@ -2127,7 +2130,7 @@ static const char* const menuOptionsGB[] = {GBMenuItem1, GBMenuItem2, GBMenuItem
 uint8_t gbMenu()
 {
 	uint8_t bret = 0;
-	LED_BLUE_OFF; // Make sure blue led is off after blinkng (posibly redundant)
+	LED_BLUE_OFF; // Make sure blue led is off after blinking (probably redundant)
 
 	// Create menu with title and 3 options to choose from
 	unsigned char gbMenu = questionBox_OLED("GB(C) Main Menu", menuOptionsGB, 6, 1, 1, 1);

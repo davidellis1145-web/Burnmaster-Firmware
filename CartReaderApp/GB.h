@@ -1,4 +1,4 @@
-#pragma onece
+#pragma once
 
 #define ADDRLOW		GPIOD
 #define ADDRHIGH	GPIOA

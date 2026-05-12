@@ -26,7 +26,8 @@
 #include "gd32f10x_sdio.h"
 #include "flashparam.h"
 
-// PC5是卡带3V3电压档位，低电平有效，PB0是卡带5V电压档位，低电平有效
+/* PC5 corresponds to the 3.3v (GBA) cart voltage setting (active low)
+PB0 corresponds to the 5v (GB) cart voltage setting (active low)*/
 
 #define TYPE_GBC (0)
 #define TYPE_GBA (1)
@@ -102,27 +103,14 @@ static const char* const menuOptionsGBA[] = {gbxMenuItem2,gbxMenuTests,gbxAbout}
 static const char* const menuOptionsGBx[] = {gbxMenuItem1,gbxMenuItem2};
 static const char* const menuOptionsGBT[] = {gbxMenuTestFast,gbxMenuTestAll,gbxReset};
 
-/*  #For backup, testing new about screen below...
-void aboutScreen()
-{
-	OledClear();
-	OledShowString(0,0,(char *)("Game Boy"),16);
-	OledShowString(5,2,(char *)("Flash Master"),16);
-	OledShowString(20,4,(char *)("Ver:1.04_alpha"),8); // Based on Funnyplaying v1.10 release.
-	OledShowString(20,5,(char *)("Apr. 23, 2026"),8);
-	OledShowString(3,6,(char *)("Dave's Game Emporium"),8);
-	OledShowString(0,7,(char *)("Press OK Button..."),8);
-	WaitOKBtn();
-}
-*/
 
 void aboutScreen()
 {
 	OledClear();
-	OledShowString(0,0,"Game Boy",16); // Not sure what (char *) is for...Try removing them.
+	OledShowString(0,0,"Game Boy",16);
 	OledShowPicData(79,0,48,6,Icon_data_DGE); // Draws DGE logo icon
 	OledShowString(3,2,"Flash Master",8);
-	OledShowString(8,4,"v1.04a1",8); // Based on Funnyplaying v1.10 release.
+	OledShowString(8,4,"v1.04a2",8); // Based on Funnyplaying v1.10 release.
 	OledShowString(2,5,"May 11, 2026",8);
 	OledShowString(0,7,"Press OK Button...",8);
 	WaitOKBtn();
@@ -482,11 +470,11 @@ void SDCardInit()
 	// Get the information of the card and print it out by USART
 	card_info_get();
 
-	// 在外部SPI Flash挂载文件系统，文件系统挂载时会对SPI设备初始化
+	// When mounting a FS on external SPI flash, it is initialized during mounting
 	res_sd = f_mount(&fs,"",1);
 
-	/*----------------------- 格式化测试 ---------------------------
-		如果没有文件系统就格式化创建创建文件系统 */
+	/*---------------- Formatting Test --------------------
+		If no file system exists, format and create one */
 	if(res_sd == FR_NO_FILESYSTEM)
 	{
 		printf("\r\n!No File System...");

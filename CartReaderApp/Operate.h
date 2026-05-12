@@ -1,4 +1,4 @@
-#pragma onece
+#pragma once
 
 #define BTNNONE (0)
 #define BTNUP (1)

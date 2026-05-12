@@ -8,9 +8,9 @@
   I2C Oled sdd1306 Display functions
 ***************************************/
 
-// Display size 105px x 64px
+// Display size 128px x 64px
 
-/* Font library: ASC 8x16 font. Data arrangement: left-to-right, top-to-bottom. Extraction method: vertical 8-point (lsb first). No inversion. Total 95 characters.
+/* Font library: ASCII 8x16 font. Data arrangement: left-to-right, top-to-bottom. Extraction method: vertical 8-point (lsb first). No inversion. Total 95 characters.
 Complete character set: !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~ */
 
 uint8_t F8X16[] = {	// Dimensions: width x height = 8x16, 16 bytes total each character
@@ -208,7 +208,7 @@ uint8_t F8X16[] = {	// Dimensions: width x height = 8x16, 16 bytes total each ch
 };
 
 
-/* Font library: ASC 5x8 font. Data arrangement: left-to-right, top-to-bottom. Extraction method: vertical 8-point (lsb first). No inversion. Total 95 characters.
+/* Font library: ASCII 5x8 font. Data arrangement: left-to-right, top-to-bottom. Extraction method: vertical 8-point (lsb first). No inversion. Total 95 characters.
 Complete character set: !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~ */
 
 uint8_t F5x8[] = {	// Dimensions: width x height = 5x8, 5 bytes total each character
@@ -460,10 +460,10 @@ void SSD1306_WriteData(uint8_t var)
 	while(i2c_flag_get(I2C1, I2C_FLAG_I2CBSY));
 	// Send a start condition to I2C bus
 	i2c_start_on_bus(I2C1);
-	while(!i2c_flag_get(I2C1, I2C_FLAG_SBSEND));	// 等待起始位发送完成
+	while(!i2c_flag_get(I2C1, I2C_FLAG_SBSEND));	// Wait for start condition to send
 
 	// Wait until the transmit data buffer is empty
-	i2c_master_addressing(I2C1, SSD1306_ADDR << 1, I2C_TRANSMITTER); // 发送器件地址,写数据 */
+	i2c_master_addressing(I2C1, SSD1306_ADDR << 1, I2C_TRANSMITTER); // Send device address and write data
 	while(!i2c_flag_get(I2C1, I2C_FLAG_ADDSEND));
 	i2c_flag_clear(I2C1, I2C_FLAG_ADDSEND);
 	while(!i2c_flag_get(I2C1, I2C_FLAG_TBE));
@@ -484,58 +484,58 @@ void SSD1306_WriteData(uint8_t var)
 }
 
 
-// 坐标设置：也就是在哪里显示
+// Coordinate settings: where to display
 void OledSetPos(uint8_t x, uint8_t y)
 {
-	// 以下3个寄存器只在页寻址的模式下有效
-	SSD1306_WriteCmd(0xb0+y);				// 页地址设置     0xb0~0xb7
-	SSD1306_WriteCmd(((x&0xf0)>>4)|0x10);	// 列高位地址设置
-	SSD1306_WriteCmd((x&0x0f));				// 列低位地址设置
+	// The following 3 registers are valid only in line addressing mode.
+	SSD1306_WriteCmd(0xb0+y);				// Line address settings: 0xb0-0xb7
+	SSD1306_WriteCmd(((x&0xf0)>>4)|0x10);	// Column high address setting
+	SSD1306_WriteCmd((x&0x0f));				// Column low address setting
 }
 
 
-// 开启Oled显示
+// Enable OLED display
 void OledDisplayOn(void)
 {
-	SSD1306_WriteCmd(0X8D);	// SET DCDC命令
+	SSD1306_WriteCmd(0X8D);	// SET DCDC command
 	SSD1306_WriteCmd(0X14);	// DCDC ON
 	SSD1306_WriteCmd(0XAF);	// DISPLAY ON
 }
 
 
-// 关闭Oled显示
+// Turn off OLED display
 void OledDisplayOff(void)
 {
-	SSD1306_WriteCmd(0X8D);	// SET DCDC命令
+	SSD1306_WriteCmd(0X8D);	// SET DCDC command
 	SSD1306_WriteCmd(0X10);	// DCDC OFF
 	SSD1306_WriteCmd(0XAE);	// DISPLAY OFF
 }
 
 
-// 清屏函数,清完屏,整个屏幕是黑色的!和没点亮一样
+// Clears entire screen, making it all black as if it was not on
 void OledClear(void)
 {
 	uint8_t i,n;
 
 	for(i=0;i<8;i++)
 	{
-		SSD1306_WriteCmd (0xb0+i);		// 设置页地址（0~7）
-		SSD1306_WriteCmd (0x00);		// 设置显示位置—列低地址
-		SSD1306_WriteCmd (0x10);		// 设置显示位置—列高地址
+		SSD1306_WriteCmd (0xb0+i);		// Line # address
+		SSD1306_WriteCmd (0x00);		// Set line column position low address
+		SSD1306_WriteCmd (0x10);		// Set line column position high address
 		for(n=0;n<128;n++)
 			SSD1306_WriteData(0);
-	} // 更新显示
+	} // Update display
 }
 
 
-// 在指定位置显示一个字符,包括部分字符
-// x:0~127，y:0~7
-// Char_Size:选择字体 16/12
+// Displays a character, or part of one, at specified position
+// x:0-127,y:0-7
+// Char_Size: font size 16/8
 void OledShowChar(uint8_t x,uint8_t y,uint8_t chr,uint8_t Char_Size)
 {
 	uint8_t c=0,i=0;
 
-	c=chr-' '; // 得到偏移后的值
+	c=chr-' '; // Check character position isn't too far
 	if(x>MAX_COLUMN-1)
 	{
 		x=0;
@@ -546,13 +546,13 @@ void OledShowChar(uint8_t x,uint8_t y,uint8_t chr,uint8_t Char_Size)
 		OledSetPos(x,y);
 		for(i=0;i<8;i++)
 		{
-			SSD1306_WriteData(F8X16[c*16+i]); // 先写上半部分
+			SSD1306_WriteData(F8X16[c*16+i]); // Write upper half (8px) first
 		}
 
 		OledSetPos(x,y+1);
 		for(i=0;i<8;i++)
 		{
-			SSD1306_WriteData(F8X16[c*16+i+8]); // 后写下半部分
+			SSD1306_WriteData(F8X16[c*16+i+8]); // Write lower half (8px)
 		}
 	}
 	else
@@ -566,7 +566,7 @@ void OledShowChar(uint8_t x,uint8_t y,uint8_t chr,uint8_t Char_Size)
 }
 
 
-// 显示一个字符串
+// Display a string
 uint8_t OledShowString(uint8_t x,uint8_t y,char *str,uint8_t Char_Size)
 {
 	unsigned char j=0;
@@ -587,14 +587,14 @@ uint8_t OledShowString(uint8_t x,uint8_t y,char *str,uint8_t Char_Size)
 				return 1;
 			}
 		}
-		j++; // 移动一次就是一个page，取值0-7
+		j++; // Each movement constitutes 1 line, ranging from 0-7 (8px each line)
 	}
 	OledShowChar(x,y,' ',Char_Size);
 	return 0;
 }
 
 
-// 在指定位置显示一个图片
+// Display an image at specified location
 void OledShowPicData(uint8_t x,uint8_t y,uint8_t wdt,uint8_t hgt,uint8_t *pPicData)
 {
 	uint8_t i = 0,j = 0;
@@ -616,7 +616,7 @@ void OledInit(void)
 {
 	I2cInit();
 
-	// SSD1306复位之后，默认的是页寻址方式
+	// After SSD1306 is reset, default addressing is Line addressing mode.
 
 	SSD1306_WriteCmd(0xAE); // Display off
 
@@ -624,7 +624,7 @@ void OledInit(void)
 	SSD1306_WriteCmd(0x10); // Set high column address
 	SSD1306_WriteCmd(0x40); // Set start line address
 
-	SSD1306_WriteCmd(0xB0); // Set page address
+	SSD1306_WriteCmd(0xB0); // Set line address
 
 	SSD1306_WriteCmd(0x81); // Contract control
 	SSD1306_WriteCmd(0xFF); // 128
@@ -646,7 +646,7 @@ void OledInit(void)
 	SSD1306_WriteCmd(0xD9); // Set Pre-Charge Period
 	SSD1306_WriteCmd(0xF1);
 
-	SSD1306_WriteCmd(0xDA); // Set com pin hardware configuartion
+	SSD1306_WriteCmd(0xDA); // Set com pin hardware configuration
 	SSD1306_WriteCmd(0x12);
 
 	SSD1306_WriteCmd(0xDB); // Set Vcomh
@@ -733,7 +733,7 @@ void draw_progressbar(uint32_t processed, uint32_t total, uint8_t line)
 }
 
 
-void showPersent(uint32_t processed, uint32_t total, uint8_t x, uint8_t line)
+void showPercent(uint32_t processed, uint32_t total, uint8_t x, uint8_t line)
 {
 	char szt[16] = {0};
 	static uint8_t oripst = 0;

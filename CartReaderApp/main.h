@@ -1,4 +1,4 @@
-#pragma ONECE
+#pragma once
 
 #define enable_GBX
 
