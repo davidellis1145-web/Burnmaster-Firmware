@@ -1500,6 +1500,7 @@ bool writeCFI_GB()
 		}
 		else
 		{
+			OledClear();
 			sprintf(msgbuf,"Error:\nFlash has too few\nbanks! Flash has %d\nbut needs %d banks.",flashBanks,romBanks);
 			OledShowString(0,0,msgbuf,8);
 			OledShowString(0,7,"Press OK button...",8);
