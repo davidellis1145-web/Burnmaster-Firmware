@@ -1449,7 +1449,7 @@ void identifyCFI_GB()
 		else
 		{
 			printf("CFI Query failed!");
-			OledShowString(0,0,"CFI Query failed!,8);
+			OledShowString(0,0,"CFI Query failed!",8);
 			OledShowString(0,3,"Press OK to ignore or",8);
 			OledShowString(0,4,"powercycle and retry.",8);
 			WaitOKBtn();
