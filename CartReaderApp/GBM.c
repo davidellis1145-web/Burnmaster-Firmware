@@ -114,7 +114,7 @@ void readROM_GBM(word numBanks)
 	// Open file on sd card
 	if (f_open(&tf, fileName, FA_CREATE_ALWAYS | FA_WRITE) != FR_OK)
 	{
-		print_Error("Can't create file on SD!", true);
+		print_Error("SD: Can't create file", true);
 	}
 	else
 	{

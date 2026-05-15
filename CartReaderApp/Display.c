@@ -535,7 +535,7 @@ void OledShowChar(uint8_t x,uint8_t y,uint8_t chr,uint8_t Char_Size)
 {
 	uint8_t c=0,i=0;
 
-	c=chr-' '; // Check character position isn't too far
+	c=chr-' '; // Check char position isn't too far right
 	if(x>MAX_COLUMN-1)
 	{
 		x=0;
@@ -659,16 +659,19 @@ void OledInit(void)
 }
 
 
-// Set RGB color
-void setColor_RGB(uint8_t r, uint8_t g, uint8_t b)
+// Set Red LED to show error status
+void setError_LED()
 {
+	LED_GREEN_OFF;
+	LED_BLUE_OFF;
+	LED_RED_ON;
 }
 
 
 void print_Error(char *errorMessage, uint8_t forceReset)
 {
 	errorLvl = 1;
-	setColor_RGB(255, 0, 0);
+	setError_LED();
 	OledShowString(0,5,errorMessage,8);
 
 	if (forceReset)

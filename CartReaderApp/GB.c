@@ -1500,10 +1500,11 @@ bool writeCFI_GB()
 		}
 		else
 		{
+			setError_LED();
 			OledClear();
 			sprintf(msgbuf,"Error:\nFlash has too few\nbanks! Flash has %d\nbut needs %d banks.",flashBanks,romBanks);
 			OledShowString(0,0,msgbuf,8);
-			OledShowString(0,7,"Press OK button...",8);
+			OledShowString(0,7,"Press OK to reset...",8);
 			f_close(&tf);
 			WaitOKBtn();
 			ResetSystem();
@@ -1792,220 +1793,226 @@ bool writeCFI_GB()
 
 void testCFI_GB(uint16_t testBanks)
 {
-	OledShowString(0,2,"Start ROM Testing...",8);
-	// Set data pins to output
-	dataOut_GB();
-
-	// Set ROM bank hi 0
-	writeByte_GB(0x3000, 0);
-	// Set ROM bank low 0
-	writeByte_GB(0x2000, 0);
-	delay(100);
-
-	// Reset flash
-	writeByteCompensated(0xAAA, 0xf0);
-	delay(100);
-	dataOut_GB();
-	// Reset flash
-	writeByte_GB(0x555, 0xf0);
-	delay(100);
-
-	// Erase flash
-	OledShowString(0,3,"Erasing...",8);
-	int lastSector = (testBanks << 1);
-	printf("lastSector=%d\n",lastSector);
-	for (int currSector = 0x0; currSector < lastSector; currSector++)
+	if (flashbanks > 0)
 	{
-		int SA = ((currSector >> 1)?0x4000:0) + (currSector & 0x01)*0x2000;
+		OledShowString(0,2,"Start ROM Testing...",8);
+		// Set data pins to output
 		dataOut_GB();
-		writeByte_GB(0x2100, currSector >> 1);
-		delayMicroseconds(1);
 
-		writeByteCompensated(0xAAA, 0xAA);
-		writeByteCompensated(0x555, 0x55);
-		writeByteCompensated(0xAAA, 0x80);
-		writeByteCompensated(0xAAA, 0xAA);
-		writeByteCompensated(0x555, 0x55);
+		// Set ROM bank hi 0
+		writeByte_GB(0x3000, 0);
+		// Set ROM bank low 0
+		writeByte_GB(0x2000, 0);
+		delay(100);
 
-		writeByteCompensated(SA, 0x30);
+		// Reset flash
+		writeByteCompensated(0xAAA, 0xf0);
+		delay(100);
+		dataOut_GB();
+		// Reset flash
+		writeByte_GB(0x555, 0xf0);
+		delay(100);
 
-		// Blink LED
-		LED_BLUE_BLINK;
-		showPercent(currSector,lastSector,60,3);
+		// Erase flash
+		OledShowString(0,3,"Erasing...",8);
+		int lastSector = (testBanks << 1);
+		printf("lastSector=%d\n",lastSector);
+		for (int currSector = 0x0; currSector < lastSector; currSector++)
+		{
+			int SA = ((currSector >> 1)?0x4000:0) + (currSector & 0x01)*0x2000;
+			dataOut_GB();
+			writeByte_GB(0x2100, currSector >> 1);
+			delayMicroseconds(1);
 
-		dataIn_GB();
-		// Read the status register
-		byte statusReg = readByte_GB(SA);
-		printf("curSector = %d,SA=0x%04x\n",currSector,SA);
+			writeByteCompensated(0xAAA, 0xAA);
+			writeByteCompensated(0x555, 0x55);
+			writeByteCompensated(0xAAA, 0x80);
+			writeByteCompensated(0xAAA, 0xAA);
+			writeByteCompensated(0x555, 0x55);
 
-		// After a completed erase D7 will output 1
-		while ((statusReg | 0x7F) != 0xFF)
+			writeByteCompensated(SA, 0x30);
+
+			// Blink LED
+			LED_BLUE_BLINK;
+			showPercent(currSector,lastSector,60,3);
+
+			dataIn_GB();
+			// Read the status register
+			byte statusReg = readByte_GB(SA);
+			printf("curSector = %d,SA=0x%04x\n",currSector,SA);
+
+			// After a completed erase D7 will output 1
+			while ((statusReg | 0x7F) != 0xFF)
+			{
+				// Blink led
+				delay(5);
+				// Update Status
+				statusReg = readByte_GB(SA);
+			}
+		}
+		showPercent(1,1,60,3);
+
+		OledShowString(0,4,"Writing...",8);
+		// Write flash
+		// Set data pins to output
+		dataOut_GB();
+		// Set ROM bank hi 0
+		writeByte_GB(0x3000, 0);
+		// Set ROM bank low 0
+		writeByte_GB(0x2000, 0);
+		delay(100);
+		// Reset flash
+		writeByteCompensated(0xAAA, 0xf0);
+		delay(100);
+		dataOut_GB();
+		// Reset flash
+		writeByte_GB(0x555, 0xf0);
+		delay(100);
+
+		word currAddr = 0;
+		word endAddr = 0x3FFF;
+
+		for (int currBank = 0; currBank < testBanks; currBank++)
 		{
 			// Blink led
-			delay(5);
-			// Update Status
-			statusReg = readByte_GB(SA);
-		}
-	}
-	showPercent(1,1,60,3);
+			LED_BLUE_BLINK;
+			showPercent(currBank,testBanks,60,4);
 
-	OledShowString(0,4,"Writing...",8);
-	// Write flash
-	// Set data pins to output
-	dataOut_GB();
-	// Set ROM bank hi 0
-	writeByte_GB(0x3000, 0);
-	// Set ROM bank low 0
-	writeByte_GB(0x2000, 0);
-	delay(100);
-	// Reset flash
-	writeByteCompensated(0xAAA, 0xf0);
-	delay(100);
-	dataOut_GB();
-	// Reset flash
-	writeByte_GB(0x555, 0xf0);
-	delay(100);
+			// Set ROM bank
+			writeByte_GB(0x2100, currBank);
+			writeByte_GB(0x3000, 0x0); // Bank addr high byte, maybe recovered by normal write, need to reset to zero here.
 
-	word currAddr = 0;
-	word endAddr = 0x3FFF;
-
-	for (int currBank = 0; currBank < testBanks; currBank++)
-	{
-		// Blink led
-		LED_BLUE_BLINK;
-		showPercent(currBank,testBanks,60,4);
-
-		// Set ROM bank
-		writeByte_GB(0x2100, currBank);
-		writeByte_GB(0x3000, 0x0); // Bank addr high byte, maybe recovered by normal write, need to reset to zero here.
-
-		if (currBank > 0)
-		{
-			currAddr = 0x4000;
-			endAddr = 0x7FFF;
-		}
-
-		while (currAddr <= endAddr)
-		{
-			for (int currByte = 0; currByte < 512; currByte++)
+			if (currBank > 0)
 			{
-				// Write command sequence
-				writeByteCompensated(0xAAA, 0xaa);
-				writeByteCompensated(0x555, 0x55);
-				writeByteCompensated(0xAAA, 0xa0);
-				byte tb = currByte & 0xFF;
-				// Write current byte
-				writeByteCompensated(currAddr + currByte, tb);
+				currAddr = 0x4000;
+				endAddr = 0x7FFF;
+			}
 
-				delay_GB();
-				// Set data pins to input
-				dataIn_GB();
-
-				delay_GB();
-				// Setting CS(PH3) and OE/RD(PH6) LOW
-				gpio_bit_reset(CTRL,CS);
-				gpio_bit_reset(CTRL,RD);
-
-				// Busy check
-				short i = 0;
-
-				while (((GPIO_ISTAT(DATA) >> 8) & 0x80) != (tb & 0x80))
+			while (currAddr <= endAddr)
+			{
+				for (int currByte = 0; currByte < 512; currByte++)
 				{
-					i++;
-					if (i > 2000)
+					// Write command sequence
+					writeByteCompensated(0xAAA, 0xaa);
+					writeByteCompensated(0x555, 0x55);
+					writeByteCompensated(0xAAA, 0xa0);
+					byte tb = currByte & 0xFF;
+					// Write current byte
+					writeByteCompensated(currAddr + currByte, tb);
+
+					delay_GB();
+					// Set data pins to input
+					dataIn_GB();
+
+					delay_GB();
+					// Setting CS(PH3) and OE/RD(PH6) LOW
+					gpio_bit_reset(CTRL,CS);
+					gpio_bit_reset(CTRL,RD);
+
+					// Busy check
+					short i = 0;
+
+					while (((GPIO_ISTAT(DATA) >> 8) & 0x80) != (tb & 0x80))
 					{
-						if (currAddr >= 0x4000)
+						i++;
+						if (i > 2000)
 						{
-							// This happens when trying to flash an MBC5 as if it was an MBC3. Retry to flash as MBC5, starting from last successful byte.
-							currByte--;
-							currAddr += 0x4000;
-							endAddr = 0x7FFF;
-							break;
-						}
-						else
-						{
-							return;
+							if (currAddr >= 0x4000)
+							{
+								// This happens when trying to flash an MBC5 as if it was an MBC3. Retry to flash as MBC5, starting from last successful byte.
+								currByte--;
+								currAddr += 0x4000;
+								endAddr = 0x7FFF;
+								break;
+							}
+							else
+							{
+								return;
+							}
 						}
 					}
+
+					// Switch CS(PH3) and OE/RD(PH6) to HIGH
+					gpio_bit_set(CTRL,RD);
+					gpio_bit_set(CTRL,CS);
+
+					// Waste a few CPU cycles to remove write errors
+					delay_GB();
+					delay_GB();
+					delay_GB();
+
+					// Set data pins to output
+					dataOut_GB();
 				}
-
-				// Switch CS(PH3) and OE/RD(PH6) to HIGH
-				gpio_bit_set(CTRL,RD);
-				gpio_bit_set(CTRL,CS);
-
-				// Waste a few CPU cycles to remove write errors
-				delay_GB();
-				delay_GB();
-				delay_GB();
-
-				// Set data pins to output
-				dataOut_GB();
+				currAddr += 512;
 			}
-			currAddr += 512;
 		}
-	}
-	showPercent(1,1,60,4);
+		showPercent(1,1,60,4);
 
-	OledShowString(0,5,"Verifying...",8);
-	// Set data pins to input again
-	dataIn_GB();
-	uint32_t wErrors = 0;
-	// Verify flashrom
-	word romAddress = 0;
-	// Read number of banks and switch banks
-	for (word bank = 1; bank < testBanks; bank++)
-	{
-		// Switch data pins to output
-		dataOut_GB();
-		if (romType >= 5) // MBC2 and above
-		{
-			writeByte_GB(0x2100, bank); // Set ROM bank
-		}
-		else // MBC1
-		{
-			writeByte_GB(0x6000, 0); // Set ROM Mode
-			writeByte_GB(0x4000, bank >> 5); // Set bits 5 & 6 (01100000) of ROM bank
-			writeByte_GB(0x2000, bank & 0x1F); // Set bits 0 & 4 (00011111) of ROM bank
-		}
-
-		// Switch data pins to input
+		OledShowString(0,5,"Verifying...",8);
+		// Set data pins to input again
 		dataIn_GB();
-		if (bank > 1)
+		uint32_t wErrors = 0;
+		// Verify flashrom
+		word romAddress = 0;
+		// Read number of banks and switch banks
+		for (word bank = 1; bank < testBanks; bank++)
 		{
-			romAddress = 0x4000;
-		}
-		// Blink led
-		LED_BLUE_BLINK;
-		showPercent(bank - 1,testBanks,72,5);
-
-		// Read up to 7FFF per bank
-		while (romAddress <= 0x7FFF)
-		{
-			// Compare
-			for (int i = 0; i < 512; i++)
+			// Switch data pins to output
+			dataOut_GB();
+			if (romType >= 5) // MBC2 and above
 			{
-				byte tb = i & 0xFF;
-				if (readByte_GB(romAddress + i) != tb)
-				{
-					wErrors++;
-				}
+				writeByte_GB(0x2100, bank); // Set ROM bank
 			}
-			romAddress += 512;
-		}
-	}
-	showPercent(1,1,72,5);
+			else // MBC1
+			{
+				writeByte_GB(0x6000, 0); // Set ROM Mode
+				writeByte_GB(0x4000, bank >> 5); // Set bits 5 & 6 (01100000) of ROM bank
+				writeByte_GB(0x2000, bank & 0x1F); // Set bits 0 & 4 (00011111) of ROM bank
+			}
 
-	if (wErrors == 0)
-	{
-		OledShowString(0,6,"ROM Test OK!",8);
-	}
+			// Switch data pins to input
+			dataIn_GB();
+			if (bank > 1)
+			{
+				romAddress = 0x4000;
+			}
+			// Blink led
+			LED_BLUE_BLINK;
+			showPercent(bank - 1,testBanks,72,5);
+
+			// Read up to 7FFF per bank
+			while (romAddress <= 0x7FFF)
+			{
+				// Compare
+				for (int i = 0; i < 512; i++)
+				{
+					byte tb = i & 0xFF;
+					if (readByte_GB(romAddress + i) != tb)
+					{
+						wErrors++;
+					}
+				}
+				romAddress += 512;
+			}
+		}
+		showPercent(1,1,72,5);
+
+		if (wErrors == 0)
+		{
+			OledShowString(0,6,"ROM Test OK!",8);
+		}
+		else
+		{
+			char msgbuf[64] = {0};
+			sprintf(msgbuf,"Error:%d bytes",wErrors);
+			OledShowString(0,6,msgbuf,8);
+			print_Error("Verify failed...", false);
+		}
 	else
 	{
-		char msgbuf[64] = {0};
-		sprintf(msgbuf,"Error:%d bytes",wErrors);
-		OledShowString(0,6,msgbuf,8);
-		print_Error("Verify failed...", false);
-	}
+		OledShowString(0,4,"Error!",8);
+		print_Error("Unknown flashrom!", true);
 }
 
 
