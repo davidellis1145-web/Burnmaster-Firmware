@@ -1793,7 +1793,7 @@ bool writeCFI_GB()
 
 void testCFI_GB(uint16_t testBanks)
 {
-	if (flashbanks > 0)
+	if (flashBanks > 0)
 	{
 		OledShowString(0,2,"Start ROM Testing...",8);
 		// Set data pins to output
@@ -2009,10 +2009,12 @@ void testCFI_GB(uint16_t testBanks)
 			OledShowString(0,6,msgbuf,8);
 			print_Error("Verify failed...", false);
 		}
+	}
 	else
 	{
 		OledShowString(0,4,"Error!",8);
 		print_Error("Unknown flashrom!", true);
+	}
 }
 
 
