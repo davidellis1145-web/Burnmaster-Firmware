@@ -27,6 +27,7 @@ uint8_t checkButton()
 	uint8_t keycode = keyState();
 	delay(44);
 
+	/* <- testing to keep red led on during error. see if low batt still works.
 	if(gpio_input_bit_get(GPIOB,GPIO_PIN_1) == RESET)
 	{
 		LED_RED_ON;
@@ -35,7 +36,7 @@ uint8_t checkButton()
 	{
 		LED_RED_OFF;
 	}
-
+	*/
 	if(keyState() != keycode)
 	{
 		return (~keycode)&0x3F;
