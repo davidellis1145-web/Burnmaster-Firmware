@@ -661,7 +661,7 @@ void readSRAM_GB()
 		OledShowString(0,6,"Press OK to ignore or",8);
 		OledShowString(0,7,"power cycle to retry",8);
 		WaitOKBtn();
-		LED_RED_OFF
+		LED_RED_OFF;
 		goto here;
 	}
 	else
