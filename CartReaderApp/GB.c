@@ -2240,7 +2240,7 @@ uint8_t gbMenu()
 		// OledShowString(0,7,"Press OK Button...",8);
 		OledShowString(0,7,"debug msg 02...",8);
 		WaitOKBtn();
-		clearError_GB;
+		clearError_GB();
 	}
 	return bret;
 }
