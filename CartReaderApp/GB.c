@@ -656,13 +656,14 @@ void readSRAM_GB()
 		OledShowString(0,6,"Press OK to ignore or",8);
 		OledShowString(0,7,"power cycle to retry",8);
 		WaitOKBtn();
+		OledClear();
 		goto here;
 	}
 	else
 	{
 here:
 		// Does cartridge have RAM
-		if (lastByte > 0)
+		if ((lastByte > 0) && (sramBanks > 0))
 		{
 			// Get name, add extension and convert to char array for sd lib
 			strcpy(fileName, romName);
@@ -743,7 +744,7 @@ here:
 void writeSRAM_GB()
 {
 	// Does cartridge have SRAM
-	if (lastByte > 0)
+	if ((lastByte > 0) && (sramBanks > 0))
 	{
 		// Open file on sd card
 		FIL tfile;
@@ -818,7 +819,7 @@ unsigned long verifySRAM_GB()
 		readByte_GB(0x0134);
 
 		// Check SRAM size
-		if (lastByte > 0)
+		if ((lastByte > 0) && (sramBanks > 0))
 		{
 			dataOut_GB();
 			if (romType <= 4) // MBC1
@@ -856,8 +857,17 @@ unsigned long verifySRAM_GB()
 			writeByte_GB(0x0000, 0x00);
 			dataIn_GB();
 		}
+		else
+		{
+			print_Error("Cart has no SRAM", false);
+		}
+
 		// Close the file
 		f_close(&tfile);
+		waitOKBtn();
+		OledClear();
+		OledShowString(0,6,"debug msg 00",8);
+		waitOKBtn();
 		return writeErrors;
 	}
 	else
@@ -2161,7 +2171,7 @@ uint8_t gbMenu()
 		case 3:
 			OledClear();
 			// Does cartridge have SRAM
-			if (lastByte > 0)
+			if ((lastByte > 0) && (sramBanks > 0))
 			{
 				// Change working dir to root
 				f_chdir("/");
@@ -2175,7 +2185,7 @@ uint8_t gbMenu()
 		case 4:
 			OledClear();
 			// Does cartridge have SRAM
-			if (lastByte > 0)
+			if ((lastByte > 0) && (sramBanks > 0))
 			{
 				// Change working dir to root
 				f_chdir("/");
