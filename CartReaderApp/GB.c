@@ -379,7 +379,8 @@ void showCartInfo_GB()
 		OledShowString(65,6,checksumStr,8);
 
 		// Wait for user input
-		OledShowString(0,7,"Press OK Button...",8);
+		// OledShowString(0,7,"Press OK Button...",8);
+		OledShowString(0,7,"debug msg 00",8);
 		WaitOKBtn();
 	}
 	else
@@ -406,7 +407,7 @@ void showCartInfo_GB()
 			OledShowString(0,7,"Press OK Button...",8);
 			WaitOKBtn();
 		}
-		LED_RED_OFF;
+		clearError_GB();
 	}
 }
 
@@ -470,7 +471,7 @@ void readROM_GB()
 		OledShowString(0,6,"Press OK to ignore or",8);
 		OledShowString(0,7,"power cycle to retry",8);
 		WaitOKBtn();
-		LED_RED_OFF;
+		clearError_GB();
 		goto here;
 	}
 	else
@@ -661,14 +662,20 @@ void readSRAM_GB()
 		OledShowString(0,6,"Press OK to ignore or",8);
 		OledShowString(0,7,"power cycle to retry",8);
 		WaitOKBtn();
-		LED_RED_OFF;
+		clearError_GB();
+		OledClear();
 		goto here;
 	}
 	else
 	{
 here:
-		// Does cartridge have RAM
-		if (lastByte > 0)
+		// 'DEBUGGING' ...Does cartridge have RAM
+		OledClear();	// <-delete from here to...
+		OledShowString(0,0,"DEBUG~",8);
+		OledShowString(0,2,lastByte,8);
+		WaitOKBtn();
+		ResetSystem();	// here, and uncoment 'if (lastByte...'
+		/*if (lastByte > 0) 
 		{
 			// Get name, add extension and convert to char array for sd lib
 			strcpy(fileName, romName);
@@ -740,7 +747,7 @@ here:
 		else
 		{
 			print_Error("Cart has no SRAM", false);
-		}
+		}*/
 	}
 }
 
@@ -1319,7 +1326,9 @@ void writeFlash29F_GB(byte MBC, boolean flashErase)
 	}
 	else
 	{
-		OledShowString(0,0,"Can't open file!",8);
+		OledClear();
+		// OledShowString(0,0,"Can't open file!",8);
+		OledShowString(0,0,"debug msg FF",8);
 	}
 }
 
@@ -1460,7 +1469,7 @@ void identifyCFI_GB()
 			OledShowString(0,3,"Press OK to ignore or",8);
 			OledShowString(0,4,"powercycle and retry.",8);
 			WaitOKBtn();
-			LED_RED_OFF;
+			clearError_GB();
 			return;
 		}
 	}
@@ -1793,7 +1802,9 @@ bool writeCFI_GB()
 	}
 	else
 	{
-		OledShowString(0,1,"Can't open file!",8);
+		OledClear();
+		// OledShowString(0,1,"Can't open file!",8);
+		OledShowString(0,0,"debug msg FE",8);
 	}
 	return true;
 }
@@ -2040,7 +2051,8 @@ void TestMemGB(boolean bFast)
 		TestSramGB(8,0xBFFF);
 		testCFI_GB(512);
 	}
-	OledShowString(0,7,"Press OK Button...",8);
+	// OledShowString(0,7,"Press OK Button...",8);
+	OledShowString(0,7,"debug msg a0",8);
 	WaitOKBtn();
 	ResetSystem();
 }
@@ -2094,7 +2106,8 @@ uint8_t gbFlashMenu()
 			// Flash GB Camera
 			// MBC3
 			writeFlash29F_GB(3, 1);
-			OledShowString(0,7,"Press OK Button...",8);
+			// OledShowString(0,7,"Press OK Button...",8);
+			OledShowString(0,7,"debug msg 01",8);
 			WaitOKBtn();
 			OledClear();
 			OledShowString(0,0,"Please change the",8);
@@ -2222,7 +2235,8 @@ uint8_t gbMenu()
 
 	if(bret == 0)
 	{
-		OledShowString(0,7,"Press OK Button...",8);
+		// OledShowString(0,7,"Press OK Button...",8);
+		OledShowString(0,7,"debug msg 02...",8);
 		WaitOKBtn();
 	}
 	return bret;

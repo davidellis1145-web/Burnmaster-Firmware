@@ -33,6 +33,10 @@ void OledShowPicData(uint8_t x,uint8_t y,uint8_t wdt,uint8_t hgt,uint8_t *pPicDa
 void OledInit(void);
 
 void setError_LED();
+void clearError_GB();
+void clearError_GBA();
+void setWarn_LED();
+void clearWarn_LED();
 void print_Error(char *errorMessage, uint8_t forceReset);
 void draw_progressbar(uint32_t processed, uint32_t total, uint8_t line);
 void showPercent(uint32_t processed, uint32_t total, uint8_t x, uint8_t line);

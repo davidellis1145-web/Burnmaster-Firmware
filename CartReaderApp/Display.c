@@ -668,6 +668,39 @@ void setError_LED()
 }
 
 
+// Clear error LED for GB mode
+void clearError_GB()
+{
+	LED_RED_OFF;
+	LED_GREEN_ON;
+}
+
+
+// Clear error LED for GBA mode
+void clearError_GBA()
+{
+	LED_RED_OFF;
+	LED_BLUE_ON;
+}
+
+
+// Set Red and Green LED (warning)
+void setWarn_LED()
+{
+	LED_BLUE_OFF;
+	LED_GREEN_ON;
+	LED_RED_ON;
+}
+
+
+// Turn warning LEDs off
+void clearWarn_LED()
+{
+	LED_GREEN_OFF;
+	LED_RED_OFF;
+}
+
+
 void print_Error(char *errorMessage, uint8_t forceReset)
 {
 	errorLvl = 1;
@@ -692,7 +725,7 @@ void print_Error(char *errorMessage, uint8_t forceReset)
 			LED_RED_OFF;
 		}
 	}
-	LED_RED_OFF;
+	LED_RED_OFF; // this is messing up error light for 'false' in print_error reset
 }
 
 

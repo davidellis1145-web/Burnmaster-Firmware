@@ -34,7 +34,7 @@ uint8_t checkButton()
 	}
 	else
 	{
-		LED_RED_OFF;	<- Red led does stay on, yet to see if low batt works.
+		LED_RED_OFF;	<- Red led does stay on, still waiting to see if low batt works.
 	}
 	*/
 	if(keyState() != keycode)
