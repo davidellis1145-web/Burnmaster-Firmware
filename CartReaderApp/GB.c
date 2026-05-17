@@ -384,6 +384,7 @@ void showCartInfo_GB()
 	}
 	else
 	{
+		setError_LED();
 		if ((strcmp(romName, "456789") == 0) &&
 			(strcmp(checksumStr, "4E4F") == 0))
 		{
@@ -405,6 +406,7 @@ void showCartInfo_GB()
 			OledShowString(0,7,"Press OK Button...",8);
 			WaitOKBtn();
 		}
+		LED_RED_OFF;
 	}
 }
 
@@ -457,6 +459,7 @@ void readROM_GB()
         (strcmp(checksumStr, "FFFF") == 0) ||
         (strcmp(checksumStr, "0000") == 0))
 	{
+		setError_LED();
 		strcpy(romName, "ERROR");
 		OledShowString(0,0,"GAMEPAK ERROR",8);
 		OledShowString(0,2,"Try reflashing ROM.",8);
@@ -467,6 +470,7 @@ void readROM_GB()
 		OledShowString(0,6,"Press OK to ignore or",8);
 		OledShowString(0,7,"power cycle to retry",8);
 		WaitOKBtn();
+		LED_RED_OFF;
 		goto here;
 	}
 	else
@@ -646,6 +650,7 @@ void readSRAM_GB()
         (strcmp(checksumStr, "FFFF") == 0) ||
         (strcmp(checksumStr, "0000") == 0))
 	{
+		setError_LED();
 		strcpy(romName, "ERROR");
 		OledShowString(0,0,"GAMEPAK ERROR",8);
 		OledShowString(0,2,"Try reflashing ROM.",8);
@@ -656,6 +661,7 @@ void readSRAM_GB()
 		OledShowString(0,6,"Press OK to ignore or",8);
 		OledShowString(0,7,"power cycle to retry",8);
 		WaitOKBtn();
+		LED_RED_OFF
 		goto here;
 	}
 	else
@@ -981,7 +987,7 @@ void writeFlash29F_GB(byte MBC, boolean flashErase)
 	char msgbuf[64] = {0};
 
 	// Open file on sd card
-	if (f_open(&tf,filePath, FA_READ) == FR_OK)
+	if (f_open(&tf,filePath, FA_READ) != FR_OK) // Debugging, change back to '== FR_OK'
 	{
 		// Get rom size from file
 		f_lseek(&tf,0x147);
@@ -1448,11 +1454,13 @@ void identifyCFI_GB()
 		}
 		else
 		{
+			setError_LED();
 			printf("CFI Query failed!");
 			OledShowString(0,0,"CFI Query failed!",8);
 			OledShowString(0,3,"Press OK to ignore or",8);
 			OledShowString(0,4,"powercycle and retry.",8);
 			WaitOKBtn();
+			LED_RED_OFF;
 			return;
 		}
 	}
@@ -1478,7 +1486,7 @@ bool writeCFI_GB()
 	char msgbuf[128] = {0};
 	uint32_t use_tick = getSystick();
 	// Open file on sd card
-	if (f_open(&tf,filePath, FA_READ) == FR_OK)
+	if (f_open(&tf,filePath, FA_READ) != FR_OK) // Debugging, change back to '== FR_OK'
 	{
 		// Get rom size from file
 		f_lseek(&tf,0x147);
@@ -1793,7 +1801,7 @@ bool writeCFI_GB()
 
 void testCFI_GB(uint16_t testBanks)
 {
-	if (flashBanks > 0)
+	if (flashBanks > 0) // False on unkown flashroms
 	{
 		OledShowString(0,2,"Start ROM Testing...",8);
 		// Set data pins to output
@@ -2053,6 +2061,7 @@ uint8_t gbFlashMenu()
 	unsigned char gbFlash = questionBox_OLED("Select type:", menuOptionsGBFlash, 5, 1, 1, 1);
 	OledClear();
 	LED_BLUE_OFF; // Make sure blue led is off after blinking
+	LED_GREEN_ON; // Make sure green led is on (after erros etc.)
 	// Wait for user choice to come back from the question box menu
 	switch (gbFlash)
 	{
@@ -2141,7 +2150,7 @@ uint8_t gbMenu()
 {
 	uint8_t bret = 0;
 	LED_BLUE_OFF; // Make sure blue led is off after blinking (probably redundant)
-
+	LED_GREEN_ON; // Make sure green led is on (after error etc.)
 	// Create menu with title and 3 options to choose from
 	unsigned char gbMenu = questionBox_OLED("GB(C) Main Menu", menuOptionsGB, 6, 1, 1, 1);
 

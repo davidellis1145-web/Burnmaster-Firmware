@@ -110,8 +110,8 @@ void aboutScreen()
 	OledShowString(0,0,"Game Boy",16);
 	OledShowPicData(79,0,48,6,Icon_data_DGE); // Draws DGE logo icon
 	OledShowString(3,2,"Flash Master",8);
-	OledShowString(8,4,"v1.04b",8); // Based on Funnyplaying v1.10 release.
-	OledShowString(2,5,"May 14, 2026",8);
+	OledShowString(8,4,"v1.04b1",8); // Based on Funnyplaying v1.10 release.
+	OledShowString(2,5,"May 16, 2026",8);
 	OledShowString(0,7,"Press OK Button...",8);
 	WaitOKBtn();
 }

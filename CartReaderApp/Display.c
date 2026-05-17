@@ -689,8 +689,10 @@ void print_Error(char *errorMessage, uint8_t forceReset)
 			OledClear();
 			OledShowString(0,2,"Error Overwrite",8);
 			delay(2000);
+			LED_RED_OFF;
 		}
 	}
+	LED_RED_OFF;
 }
 
 
