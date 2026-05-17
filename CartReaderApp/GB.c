@@ -864,10 +864,6 @@ unsigned long verifySRAM_GB()
 
 		// Close the file
 		f_close(&tfile);
-		WaitOKBtn();
-		OledClear();
-		OledShowString(0,6,"debug msg 00",8);
-		WaitOKBtn();
 		return writeErrors;
 	}
 	else

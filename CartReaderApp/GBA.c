@@ -612,48 +612,55 @@ void readSRAM_GBA(boolean browseFile, unsigned long sramSize, uint32_t pos)
 
 void writeSRAM_GBA(boolean browseFile, unsigned long sramSize, uint32_t pos)
 {
-	if (browseFile)
+	if (sramSize > 0)
 	{
-		filePath[0] = '\0';
-		fileBrowser("/","Select srm file:");
-		// Create filepath
-		OledClear();
-	}
-
-	// Open file on sd card
-	FIL tf;
-	if (f_open(&tf, filePath, FA_READ) == FR_OK)
-	{
-		OledShowString(0,1,"SRAM writing...",8);
-
-		// Seek to a new position in the file
-		if (pos != 0)
-			f_lseek(&tf,pos);
-
-		setAddrOutMode();
-
-		for (unsigned long currAddress = 0; currAddress < sramSize; currAddress += 512)
+		if (browseFile)
 		{
-			// Fill sdBuffer
-			UINT rdt;
-			f_read(&tf, sdBuffer, 512, &rdt);
-
-			for (int c = 0; c < 512; c++)
-			{
-				// Write byte
-				writeByte_GBA(currAddress + c, sdBuffer[c]);
-			}
-
-			showPercent(currAddress,sramSize,6,2);
+			filePath[0] = '\0';
+			fileBrowser("/","Select srm file:");
+			// Create filepath
+			OledClear();
 		}
-		// Close the file
-		f_close(&tf);
-		showPercent(1,1,6,2);
-		OledShowString(0,3,"Done!",8);
+
+		// Open file on sd card
+		FIL tf;
+		if (f_open(&tf, filePath, FA_READ) == FR_OK)
+		{
+			OledShowString(0,1,"SRAM writing...",8);
+
+			// Seek to a new position in the file
+			if (pos != 0)
+				f_lseek(&tf,pos);
+
+			setAddrOutMode();
+
+			for (unsigned long currAddress = 0; currAddress < sramSize; currAddress += 512)
+			{
+				// Fill sdBuffer
+				UINT rdt;
+				f_read(&tf, sdBuffer, 512, &rdt);
+
+				for (int c = 0; c < 512; c++)
+				{
+					// Write byte
+					writeByte_GBA(currAddress + c, sdBuffer[c]);
+				}
+
+				showPercent(currAddress,sramSize,6,2);
+			}
+			// Close the file
+			f_close(&tf);
+			showPercent(1,1,6,2);
+			OledShowString(0,3,"Done!",8);
+		}
+		else
+		{
+			print_Error("File doesn't exist!", false);
+		}
 	}
 	else
 	{
-		print_Error("File doesn't exist!", false);
+		print_Error("Unknown SRAM", false);
 	}
 }
 
@@ -1005,6 +1012,7 @@ void writeEeprom_GBA(word eepSize)
 	filePath[0] = '\0';
 	fileBrowser("/","Select EEP file");
 
+	OledClear();
 	OledShowString(0,0,"Writing EEPROM...",8);
 
 	FIL tf;
