@@ -379,13 +379,11 @@ void showCartInfo_GB()
 		OledShowString(65,6,checksumStr,8);
 
 		// Wait for user input
-		// OledShowString(0,7,"Press OK Button...",8);
-		OledShowString(0,7,"debug msg 00",8);
+		OledShowString(0,7,"Press OK Button...",8);
 		WaitOKBtn();
 	}
 	else
 	{
-		setError_LED();
 		if ((strcmp(romName, "456789") == 0) &&
 			(strcmp(checksumStr, "4E4F") == 0))
 		{
@@ -407,7 +405,6 @@ void showCartInfo_GB()
 			OledShowString(0,7,"Press OK Button...",8);
 			WaitOKBtn();
 		}
-		clearError_GB();
 	}
 }
 
@@ -460,7 +457,6 @@ void readROM_GB()
         (strcmp(checksumStr, "FFFF") == 0) ||
         (strcmp(checksumStr, "0000") == 0))
 	{
-		setError_LED();
 		strcpy(romName, "ERROR");
 		OledShowString(0,0,"GAMEPAK ERROR",8);
 		OledShowString(0,2,"Try reflashing ROM.",8);
@@ -471,7 +467,6 @@ void readROM_GB()
 		OledShowString(0,6,"Press OK to ignore or",8);
 		OledShowString(0,7,"power cycle to retry",8);
 		WaitOKBtn();
-		clearError_GB();
 		goto here;
 	}
 	else
@@ -651,7 +646,6 @@ void readSRAM_GB()
         (strcmp(checksumStr, "FFFF") == 0) ||
         (strcmp(checksumStr, "0000") == 0))
 	{
-		setError_LED();
 		strcpy(romName, "ERROR");
 		OledShowString(0,0,"GAMEPAK ERROR",8);
 		OledShowString(0,2,"Try reflashing ROM.",8);
@@ -662,20 +656,13 @@ void readSRAM_GB()
 		OledShowString(0,6,"Press OK to ignore or",8);
 		OledShowString(0,7,"power cycle to retry",8);
 		WaitOKBtn();
-		clearError_GB();
-		OledClear();
 		goto here;
 	}
 	else
 	{
 here:
-		/* 'DEBUGGING' ...Does cartridge have RAM
-		OledClear();	// <-delete from here to...
-		OledShowString(0,0,"DEBUG~",8);
-		OledShowString(0,2,lastByte,8);
-		WaitOKBtn();
-		ResetSystem();	// here, and uncoment 'if (lastByte...'*/
-		if ((lastByte > 0) && (strcmp(lastByte, "..") != 0))
+		// Does cartridge have RAM
+		if (lastByte > 0)
 		{
 			// Get name, add extension and convert to char array for sd lib
 			strcpy(fileName, romName);
@@ -994,7 +981,7 @@ void writeFlash29F_GB(byte MBC, boolean flashErase)
 	char msgbuf[64] = {0};
 
 	// Open file on sd card
-	if (f_open(&tf,filePath, FA_READ) != FR_OK) // Debugging, change back to '== FR_OK'
+	if (f_open(&tf,filePath, FA_READ) == FR_OK)
 	{
 		// Get rom size from file
 		f_lseek(&tf,0x147);
@@ -1326,9 +1313,7 @@ void writeFlash29F_GB(byte MBC, boolean flashErase)
 	}
 	else
 	{
-		OledClear();
-		// OledShowString(0,0,"Can't open file!",8);
-		OledShowString(0,0,"debug msg FF",8);
+		OledShowString(0,0,"Can't open file!",8);
 	}
 }
 
@@ -1463,13 +1448,11 @@ void identifyCFI_GB()
 		}
 		else
 		{
-			setError_LED();
 			printf("CFI Query failed!");
 			OledShowString(0,0,"CFI Query failed!",8);
 			OledShowString(0,3,"Press OK to ignore or",8);
 			OledShowString(0,4,"powercycle and retry.",8);
 			WaitOKBtn();
-			clearError_GB();
 			return;
 		}
 	}
@@ -1495,7 +1478,7 @@ bool writeCFI_GB()
 	char msgbuf[128] = {0};
 	uint32_t use_tick = getSystick();
 	// Open file on sd card
-	if (f_open(&tf,filePath, FA_READ) != FR_OK) // Debugging, change back to '== FR_OK'
+	if (f_open(&tf,filePath, FA_READ) == FR_OK)
 	{
 		// Get rom size from file
 		f_lseek(&tf,0x147);
@@ -1517,7 +1500,6 @@ bool writeCFI_GB()
 		}
 		else
 		{
-			setError_LED();
 			OledClear();
 			sprintf(msgbuf,"Error:\nFlash has too few\nbanks! Flash has %d\nbut needs %d banks.",flashBanks,romBanks);
 			OledShowString(0,0,msgbuf,8);
@@ -1802,9 +1784,7 @@ bool writeCFI_GB()
 	}
 	else
 	{
-		OledClear();
-		// OledShowString(0,1,"Can't open file!",8);
-		OledShowString(0,0,"debug msg FE",8);
+		OledShowString(0,1,"Can't open file!",8);
 	}
 	return true;
 }
@@ -1812,7 +1792,7 @@ bool writeCFI_GB()
 
 void testCFI_GB(uint16_t testBanks)
 {
-	if (flashBanks > 0) // False on unkown flashroms
+	if (flashBanks > 0) // False on unknown flashroms
 	{
 		OledShowString(0,2,"Start ROM Testing...",8);
 		// Set data pins to output
@@ -2051,8 +2031,7 @@ void TestMemGB(boolean bFast)
 		TestSramGB(8,0xBFFF);
 		testCFI_GB(512);
 	}
-	// OledShowString(0,7,"Press OK Button...",8);
-	OledShowString(0,7,"debug msg a0",8);
+	OledShowString(0,7,"Press OK Button...",8);
 	WaitOKBtn();
 	ResetSystem();
 }
@@ -2073,7 +2052,6 @@ uint8_t gbFlashMenu()
 	unsigned char gbFlash = questionBox_OLED("Select type:", menuOptionsGBFlash, 5, 1, 1, 1);
 	OledClear();
 	LED_BLUE_OFF; // Make sure blue led is off after blinking
-	LED_GREEN_ON; // Make sure green led is on (after erros etc.)
 	// Wait for user choice to come back from the question box menu
 	switch (gbFlash)
 	{
@@ -2106,8 +2084,7 @@ uint8_t gbFlashMenu()
 			// Flash GB Camera
 			// MBC3
 			writeFlash29F_GB(3, 1);
-			// OledShowString(0,7,"Press OK Button...",8);
-			OledShowString(0,7,"debug msg 01",8);
+			OledShowString(0,7,"Press OK Button...",8);
 			WaitOKBtn();
 			OledClear();
 			OledShowString(0,0,"Please change the",8);
@@ -2116,8 +2093,7 @@ uint8_t gbFlashMenu()
 			OledShowString(0,3,"if you want to flash",8);
 			OledShowString(0,4,"a second game",8);
 
-			// OledShowString(0,7,"Press OK Button...",8);
-			OledShowString(0,7,"debug msg 30...",8);
+			OledShowString(0,7,"Press OK Button...",8);
 			WaitOKBtn();
 
 			// Flash second bank without erase
@@ -2132,8 +2108,7 @@ uint8_t gbFlashMenu()
 	if(bret == 0)
 	{
 		// Reset
-		// OledShowString(0,7,"Press OK Button...",8);
-		OledShowString(0,7,"debug msg 31...",8);
+		OledShowString(0,7,"Press OK Button...",8);
 		WaitOKBtn();
 		ResetSystem();
 	}
@@ -2165,7 +2140,7 @@ uint8_t gbMenu()
 {
 	uint8_t bret = 0;
 	LED_BLUE_OFF; // Make sure blue led is off after blinking (probably redundant)
-	LED_GREEN_ON; // Make sure green led is on (after error etc.)
+
 	// Create menu with title and 3 options to choose from
 	unsigned char gbMenu = questionBox_OLED("GB(C) Main Menu", menuOptionsGB, 6, 1, 1, 1);
 
@@ -2237,10 +2212,8 @@ uint8_t gbMenu()
 
 	if(bret == 0)
 	{
-		// OledShowString(0,7,"Press OK Button...",8);
-		OledShowString(0,7,"debug msg 02...",8);
+		OledShowString(0,7,"Press OK Button...",8);
 		WaitOKBtn();
-		clearError_GB();
 	}
 	return bret;
 }

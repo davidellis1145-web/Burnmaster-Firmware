@@ -110,8 +110,8 @@ void aboutScreen()
 	OledShowString(0,0,"Game Boy",16);
 	OledShowPicData(79,0,48,6,Icon_data_DGE); // Draws DGE logo icon
 	OledShowString(3,2,"Flash Master",8);
-	OledShowString(8,4,"v1.04b2",8); // Based on Funnyplaying v1.10 release.
-	OledShowString(2,5,"May 16, 2026",8);
+	OledShowString(8,4,"v1.04a3",8); // Based on Funnyplaying v1.10 release.
+	OledShowString(2,5,"May 17, 2026",8);
 	OledShowString(0,7,"Press OK Button...",8);
 	WaitOKBtn();
 }
@@ -199,14 +199,11 @@ uint8_t gbTestsMenu()
 {
 	// Show warning
 	OledClear();
-	setWarn_LED();
 	OledShowString(30,1,"**WARNING**",8);
 	OledShowString(3,3,"The following tests",8);
 	OledShowString(2,4,"will erase the cart!",8);
-	// OledShowString(0,7,"Press OK Button...",8);
-	OledShowString(0,7,"debug msg 32...",8);
+	OledShowString(0,7,"Press OK Button...",8);
 	WaitOKBtn();
-	LED_RED_OFF;
 	OledClear();
 
 	// Create menu with title and 3 options to choose from
@@ -236,15 +233,11 @@ uint8_t gbaTestsMenu()
 {
 	// Show warning
 	OledClear();
-	setWarn_LED();
 	OledShowString(30,1,"**WARNING**",8);
 	OledShowString(3,3,"The following tests",8);
 	OledShowString(2,4,"will erase the cart!",8);
-	// OledShowString(0,7,"Press OK Button...",8);
-	OledShowString(0,7,"debug msg 33...",8);
+	OledShowString(0,7,"Press OK Button...",8);
 	WaitOKBtn();
-	clearWarn_LED();
-	LED_BLUE_ON;
 	OledClear();
 
 	// Create menu with title and 3 options to choose from
