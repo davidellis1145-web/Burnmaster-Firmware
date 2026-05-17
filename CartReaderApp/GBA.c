@@ -612,7 +612,7 @@ void readSRAM_GBA(boolean browseFile, unsigned long sramSize, uint32_t pos)
 
 void writeSRAM_GBA(boolean browseFile, unsigned long sramSize, uint32_t pos)
 {
-	if (sramSize > 0)
+	if (saveType > 0)
 	{
 		if (browseFile)
 		{
