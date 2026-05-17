@@ -669,13 +669,13 @@ void readSRAM_GB()
 	else
 	{
 here:
-		// 'DEBUGGING' ...Does cartridge have RAM
+		/* 'DEBUGGING' ...Does cartridge have RAM
 		OledClear();	// <-delete from here to...
 		OledShowString(0,0,"DEBUG~",8);
 		OledShowString(0,2,lastByte,8);
 		WaitOKBtn();
-		ResetSystem();	// here, and uncoment 'if (lastByte...'
-		/*if (lastByte > 0) 
+		ResetSystem();	// here, and uncoment 'if (lastByte...'*/
+		if ((lastByte > 0) && (strcmp(lastByte, "..") != 0))
 		{
 			// Get name, add extension and convert to char array for sd lib
 			strcpy(fileName, romName);
@@ -747,7 +747,7 @@ here:
 		else
 		{
 			print_Error("Cart has no SRAM", false);
-		}*/
+		}
 	}
 }
 
@@ -2116,7 +2116,8 @@ uint8_t gbFlashMenu()
 			OledShowString(0,3,"if you want to flash",8);
 			OledShowString(0,4,"a second game",8);
 
-			OledShowString(0,7,"Press OK Button...",8);
+			// OledShowString(0,7,"Press OK Button...",8);
+			OledShowString(0,7,"debug msg 30...",8);
 			WaitOKBtn();
 
 			// Flash second bank without erase
@@ -2131,7 +2132,8 @@ uint8_t gbFlashMenu()
 	if(bret == 0)
 	{
 		// Reset
-		OledShowString(0,7,"Press OK Button...",8);
+		// OledShowString(0,7,"Press OK Button...",8);
+		OledShowString(0,7,"debug msg 31...",8);
 		WaitOKBtn();
 		ResetSystem();
 	}
@@ -2238,6 +2240,7 @@ uint8_t gbMenu()
 		// OledShowString(0,7,"Press OK Button...",8);
 		OledShowString(0,7,"debug msg 02...",8);
 		WaitOKBtn();
+		clearError_GB;
 	}
 	return bret;
 }
