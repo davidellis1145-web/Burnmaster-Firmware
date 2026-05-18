@@ -612,55 +612,48 @@ void readSRAM_GBA(boolean browseFile, unsigned long sramSize, uint32_t pos)
 
 void writeSRAM_GBA(boolean browseFile, unsigned long sramSize, uint32_t pos)
 {
-	if (saveType > 0)
+	if (browseFile)
 	{
-		if (browseFile)
+		filePath[0] = '\0';
+		fileBrowser("/","Select srm file:");
+		// Create filepath
+		OledClear();
+	}
+
+	// Open file on sd card
+	FIL tf;
+	if (f_open(&tf, filePath, FA_READ) == FR_OK)
+	{
+		OledShowString(0,1,"SRAM writing...",8);
+
+		// Seek to a new position in the file
+		if (pos != 0)
+			f_lseek(&tf,pos);
+
+		setAddrOutMode();
+
+		for (unsigned long currAddress = 0; currAddress < sramSize; currAddress += 512)
 		{
-			filePath[0] = '\0';
-			fileBrowser("/","Select srm file:");
-			// Create filepath
-			OledClear();
-		}
+			// Fill sdBuffer
+			UINT rdt;
+			f_read(&tf, sdBuffer, 512, &rdt);
 
-		// Open file on sd card
-		FIL tf;
-		if (f_open(&tf, filePath, FA_READ) == FR_OK)
-		{
-			OledShowString(0,1,"SRAM writing...",8);
-
-			// Seek to a new position in the file
-			if (pos != 0)
-				f_lseek(&tf,pos);
-
-			setAddrOutMode();
-
-			for (unsigned long currAddress = 0; currAddress < sramSize; currAddress += 512)
+			for (int c = 0; c < 512; c++)
 			{
-				// Fill sdBuffer
-				UINT rdt;
-				f_read(&tf, sdBuffer, 512, &rdt);
-
-				for (int c = 0; c < 512; c++)
-				{
-					// Write byte
-					writeByte_GBA(currAddress + c, sdBuffer[c]);
-				}
-
-				showPercent(currAddress,sramSize,6,2);
+				// Write byte
+				writeByte_GBA(currAddress + c, sdBuffer[c]);
 			}
-			// Close the file
-			f_close(&tf);
-			showPercent(1,1,6,2);
-			OledShowString(0,3,"Done!",8);
+
+			showPercent(currAddress,sramSize,6,2);
 		}
-		else
-		{
-			print_Error("File doesn't exist!", false);
-		}
+		// Close the file
+		f_close(&tf);
+		showPercent(1,1,6,2);
+		OledShowString(0,3,"Done!",8);
 	}
 	else
 	{
-		print_Error("Unknown SRAM", false);
+		print_Error("File doesn't exist!", false);
 	}
 }
 
@@ -3113,13 +3106,37 @@ uint8_t gbaMenu()
 			switch (cartSize)
 			{
 				case 0:
+					// Create submenu with title and 4 options to choose from
 					{
-						OledClear();
-						OledShowString(0,4,"Error!",8);
-						print_Error("Unknown Flash", false);
-						OledShowString(0,7,"Press OK Button...",8);
-						WaitOKBtn();
-						break;
+						unsigned char GBARomMenu = questionBox_OLED("Select ROM size", romOptionsGBA, 6, 1, 1, 1);
+						// Wait for user choice to come back from the question box menu
+						switch (GBARomMenu)
+						{
+							case 1:
+								// 1MB
+								cartSize = 0x100000;
+								break;
+							case 2:
+								// 2MB
+								cartSize = 0x200000;
+								break;
+							case 3:
+								// 4MB
+								cartSize = 0x400000;
+								break;
+							case 4:
+								// 8MB
+								cartSize = 0x800000;
+								break;
+							case 5:
+								// 16MB
+								cartSize = 0x1000000;
+								break;
+							case 6:
+								// 32MB
+								cartSize = 0x2000000;
+								break;
+						}
 					}
 					break;
 				case 1:
@@ -3154,11 +3171,36 @@ uint8_t gbaMenu()
 			// Read save
 			if (saveType == 0)
 			{
-				OledShowString(0,4,"Error!",8);
-				print_Error("Unknown SRAM...", false);
-				OledShowString(0,7,"Press OK Button...",8);
-				WaitOKBtn();
-				break;
+				// Create submenu with title and 6 options to choose from
+				unsigned char GBASaveMenu = questionBox_OLED("Select save type:", saveOptionsGBA, 6, 1, 1, 1);
+				// Wait for user choice to come back from the question box menu
+				switch (GBASaveMenu)
+				{
+					case 1:
+						// 4K EEPROM
+						saveType = 1;
+						break;
+					case 2:
+						// 64K EEPROM
+						saveType = 2;
+						break;
+					case 3:
+						// 256K SRAM/FRAM
+						saveType = 3;
+						break;
+					case 4:
+						// 512K SRAM/FRAM
+						saveType = 6;
+						break;
+					case 5:
+						// 512K FLASH
+						saveType = 4;
+						break;
+					case 6:
+						// 1024K FLASH
+						saveType = 5;
+						break;
+				}
 			}
 			OledClear();
 			switch (saveType)
