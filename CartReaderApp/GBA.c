@@ -3117,6 +3117,9 @@ uint8_t gbaMenu()
 						OledClear();
 						OledShowString(0,4,"Error!",8);
 						print_Error("Unknown Flash", false);
+						OledShowString(0,7,"Press OK Button...",8);
+						WaitOKBtn();
+						break;
 					}
 					break;
 				case 1:
@@ -3151,7 +3154,10 @@ uint8_t gbaMenu()
 			// Read save
 			if (saveType == 0)
 			{
+				OledShowString(0,4,"Error!",8);
 				print_Error("Unknown SRAM...", false);
+				OledShowString(0,7,"Press OK Button...",8);
+				WaitOKBtn();
 				break;
 			}
 			OledClear();
