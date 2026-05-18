@@ -3113,37 +3113,10 @@ uint8_t gbaMenu()
 			switch (cartSize)
 			{
 				case 0:
-					// Create submenu with title and 4 options to choose from
 					{
-						unsigned char GBARomMenu = questionBox_OLED("Select ROM size", romOptionsGBA, 6, 1, 1, 1);
-						// Wait for user choice to come back from the question box menu
-						switch (GBARomMenu)
-						{
-							case 1:
-								// 1MB
-								cartSize = 0x100000;
-								break;
-							case 2:
-								// 2MB
-								cartSize = 0x200000;
-								break;
-							case 3:
-								// 4MB
-								cartSize = 0x400000;
-								break;
-							case 4:
-								// 8MB
-								cartSize = 0x800000;
-								break;
-							case 5:
-								// 16MB
-								cartSize = 0x1000000;
-								break;
-							case 6:
-								// 32MB
-								cartSize = 0x2000000;
-								break;
-						}
+						OledClear();
+						OledShowString(0,4,"Error!",8);
+						print_Error("Unknown Flash", false);
 					}
 					break;
 				case 1:
@@ -3178,36 +3151,8 @@ uint8_t gbaMenu()
 			// Read save
 			if (saveType == 0)
 			{
-				// Create submenu with title and 6 options to choose from
-				unsigned char GBASaveMenu = questionBox_OLED("Select save type:", saveOptionsGBA, 6, 1, 1, 1);
-				// Wait for user choice to come back from the question box menu
-				switch (GBASaveMenu)
-				{
-					case 1:
-						// 4K EEPROM
-						saveType = 1;
-						break;
-					case 2:
-						// 64K EEPROM
-						saveType = 2;
-						break;
-					case 3:
-						// 256K SRAM/FRAM
-						saveType = 3;
-						break;
-					case 4:
-						// 512K SRAM/FRAM
-						saveType = 6;
-						break;
-					case 5:
-						// 512K FLASH
-						saveType = 4;
-						break;
-					case 6:
-						// 1024K FLASH
-						saveType = 5;
-						break;
-				}
+				print_Error("Unknown SRAM...", false);
+				break;
 			}
 			OledClear();
 			switch (saveType)
