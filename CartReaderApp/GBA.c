@@ -828,8 +828,6 @@ void writeBlock_EEP(word startAddr, word eepSize)
 			send_GBA(sdBuffer[(currAddr - startAddr) * 8 + currByte], 8);
 		}
 
-		showPercent(currAddr,eepSize,6,1); // testing to show perfcent done
-
 		// Send stop bit
 		// Set A0(PF0) to LOW
 		gpio_bit_reset(ADDR_1,GPIO_PIN_8);
@@ -1023,6 +1021,7 @@ void writeEeprom_GBA(word eepSize)
 			__disable_irq();
 			// Write 512 bytes
 			writeBlock_EEP(i, eepSize);
+			showPercent(i,eepSize,6,1); // testing to show perfcent done
 			__enable_irq();
 
 			// Wait
