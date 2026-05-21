@@ -810,6 +810,8 @@ void writeBlock_EEP(word startAddr, word eepSize)
 		// Set WR(PH5) to High
 		gpio_bit_set(CTRLGBA,GBA_WR);
 
+		// Blink LED
+		LED_GREEN_BLINK;
 		// Send either 6 or 14 bit address
 		if (eepSize == 4)
 		{
@@ -855,6 +857,7 @@ void writeBlock_EEP(word startAddr, word eepSize)
 		// Set A0(PF0) to Output
 		gpio_init(ADDR_1,GPIO_MODE_OUT_PP,GPIO_OSPEED_50MHZ,GPIO_PIN_8);
 	}
+	LED_GREEN_OFF;
 }
 
 
@@ -973,6 +976,7 @@ unsigned long verifyEEP_GBA(word eepSize)
 		print_Error("SD Card Error!", true);
 	}
 
+	OledShowString(0,2,"Verifying...",8);
 	// Fill sd Buffer
 	for (word currAddress = 0; currAddress < eepSize * 16; currAddress += 64)
 	{
@@ -1021,7 +1025,6 @@ void writeEeprom_GBA(word eepSize)
 			__disable_irq();
 			// Write 512 bytes
 			writeBlock_EEP(i, eepSize);
-			showPercent(i,eepSize,6,1); // testing to show perfcent done
 			__enable_irq();
 
 			// Wait
@@ -1030,7 +1033,7 @@ void writeEeprom_GBA(word eepSize)
 
 		// Close the file
 		f_close(&tf);
-		OledShowString(0,2,"Done.",8);
+		OledShowString(0,1,"Done.",8);
 
 	}
 	else
