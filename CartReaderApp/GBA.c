@@ -495,7 +495,7 @@ void readROM_GBA()
 
 
 // Calculate the checksum of the dumped rom
-boolean compare_checksum_GBA ()
+boolean compare_checksum_GBA()
 {
 	OledShowString(0,4,"Calculating Checksum",8);
 
@@ -538,7 +538,7 @@ boolean compare_checksum_GBA ()
 		{
 			OledShowString(0,5,"Result: ",8);
 			OledShowString(50,5,calcChecksumStr,8);
-			print_Error("Checksum Error", false);
+			print_Error("\nChecksum Error", false);
 			return 0;
 		}
 	}
@@ -648,8 +648,8 @@ void writeSRAM_GBA(boolean browseFile, unsigned long sramSize, uint32_t pos)
 		}
 		// Close the file
 		f_close(&tf);
-		showPercent(1,1,6,2);
-		OledShowString(0,3,"Done!",8);
+		//showPercent(1,1,6,2);
+		//OledShowString(0,3,"Done!",8);
 	}
 	else
 	{
@@ -747,9 +747,9 @@ void TestSRAM_GBA(unsigned long sramSize)
 
 
 /******************************
-  GBA Eeprom SAVE Functions
+  GBA EEPROM SAVE Functions
 ******************************/
-// Send address as bits to eeprom
+// Send address as bits to EEPROM
 void send_GBA(word currAddr, word numBits)
 {
 	for (word addrBit = numBits; addrBit > 0; addrBit--)
@@ -774,7 +774,7 @@ void send_GBA(word currAddr, word numBits)
 }
 
 
-// Write 512K eeprom block
+// Write 512K EEPROM block
 void writeBlock_EEP(word startAddr, word eepSize)
 {
 	// Setup
@@ -828,6 +828,8 @@ void writeBlock_EEP(word startAddr, word eepSize)
 			send_GBA(sdBuffer[(currAddr - startAddr) * 8 + currByte], 8);
 		}
 
+		showPercent(currAddress,eepSize,6,1); // testing to show perfcent done
+
 		// Send stop bit
 		// Set A0(PF0) to LOW
 		gpio_bit_reset(ADDR_1,GPIO_PIN_8);
@@ -858,7 +860,7 @@ void writeBlock_EEP(word startAddr, word eepSize)
 }
 
 
-// Reads 512 bytes from eeprom
+// Reads 512 bytes from EEPROM
 void readBlock_EEP(word startAddress, word eepSize)
 {
 	// Setup
@@ -961,7 +963,7 @@ void readBlock_EEP(word startAddress, word eepSize)
 }
 
 
-// Check if the SRAM was written without any error
+// Check if the EEPROM was written without any error
 unsigned long verifyEEP_GBA(word eepSize)
 {
 	unsigned long wrError = 0;
@@ -998,7 +1000,7 @@ unsigned long verifyEEP_GBA(word eepSize)
 }
 
 
-// Write eeprom from file
+// Write EEPROM from file
 void writeEeprom_GBA(word eepSize)
 {
 	// Launch Filebrowser
@@ -1029,7 +1031,7 @@ void writeEeprom_GBA(word eepSize)
 
 		// Close the file
 		f_close(&tf);
-		OledShowString(0,1,"Done.",8);
+		OledShowString(0,2,"Done.",8);
 
 	}
 	else
@@ -1040,7 +1042,7 @@ void writeEeprom_GBA(word eepSize)
 }
 
 
-// Read eeprom to file
+// Read EEPROM to file
 void readEeprom_GBA(word eepSize)
 {
 	// Get name, add extension and convert to char array for sd lib
@@ -1068,7 +1070,7 @@ void readEeprom_GBA(word eepSize)
 		print_Error("SD Card Error!", true);
 	}
 
-	// Each block contains 8 Bytes, so for a 8KB eeprom 1024 blocks need to be read
+	// Each block contains 8 Bytes, so for a 8KB EEPROM 1024 blocks need to be read
 	for (word currAddress = 0; currAddress < eepSize * 16; currAddress += 64)
 	{
 		// Disable interrupts for more uniform clock pulses
@@ -2574,7 +2576,7 @@ void flashRepro_GBA()
 	{
 		sprintf(tmsg,"ID:%s size:%d MB.",flashid,cartSize / 0x100000);
 		// MX29GL128E or MSP55LV128(N) or S29GL256N
-		if (strcmp(flashid, "217E") == 0 ||strcmp(flashid, "227E") == 0 || strcmp(flashid, "237E") == 0 || strcmp(flashid, "227A") == 0)
+		if (strcmp(flashid, "217E") == 0 || strcmp(flashid, "227E") == 0 || strcmp(flashid, "237E") == 0 || strcmp(flashid, "227A") == 0)
 		{
 			// Spansion
 			if(manufacturerid == 0x1)
@@ -2933,6 +2935,7 @@ void flashTest_GBA(uint32_t testSize)
 	}
 	else
 	{
+		OledClear();
 		sprintf(tmsg,"Error!\nUnknown Flash!\nFlash ID: %s",flashid);
 		OledShowString(0,0,tmsg,8);
 		print_Error("Check voltage?", true);
@@ -3055,8 +3058,8 @@ void TestMemGBA(boolean bFast)
 // GBA menu items
 static const char GBAMenuItem1[] = "Flash GBA Cart";
 static const char GBAMenuItem2[] = "Read ROM";
-static const char GBAMenuItem3[] = "Read SRAM";
-static const char GBAMenuItem4[] = "Write SRAM";
+static const char GBAMenuItem3[] = "Read Save";
+static const char GBAMenuItem4[] = "Write Save";
 static const char GBAMenuItem5[] = "Force Savetype";
 static const char GBAMenuItem6[] = "Reset";
 static const char* const menuOptionsGBA[] = {GBAMenuItem1, GBAMenuItem2, GBAMenuItem3, GBAMenuItem4, GBAMenuItem5, GBAMenuItem6};
@@ -3317,6 +3320,7 @@ uint8_t gbaMenu()
 				case 3:
 					// 256K SRAM/FRAM
 					writeSRAM_GBA(1, 32768, 0);
+					OledShowString(0,3,"Verifying...",8);
 					writeErrors = verifySRAM_GBA(32768, 0);
 					if (writeErrors == 0)
 					{
@@ -3394,12 +3398,12 @@ uint8_t gbaMenu()
 					writeErrors = verifySRAM_GBA(65536, 0);
 					if (writeErrors == 0)
 					{
-						OledShowString(0,7,"Success!",8);
+						OledShowString(0,4,"Success!",8);
 					}
 					else
 					{
 						sprintf(tmsg,"Error: %d bytes.",writeErrors);
-						OledShowString(0,5,tmsg,8);
+						OledShowString(0,4,tmsg,8);
 						print_Error("Verify failed...", false);
 					}
 					setROM_GBA();

@@ -2136,8 +2136,8 @@ void gbFlashScreen()
 // GB menu items
 static const char GBMenuItem1[] = "Flash...";
 static const char GBMenuItem2[] = "Read ROM";
-static const char GBMenuItem3[] = "Read SRAM";
-static const char GBMenuItem4[] = "Write SRAM";
+static const char GBMenuItem3[] = "Read Save";
+static const char GBMenuItem4[] = "Write Save";
 static const char GBMenuItem5[] = "NPower GB Memory";
 static const char GBMenuItem6[] = "Reset";
 static const char* const menuOptionsGB[] = {GBMenuItem1, GBMenuItem2, GBMenuItem3, GBMenuItem4, GBMenuItem5, GBMenuItem6};
