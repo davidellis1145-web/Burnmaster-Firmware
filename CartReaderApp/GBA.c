@@ -828,7 +828,7 @@ void writeBlock_EEP(word startAddr, word eepSize)
 			send_GBA(sdBuffer[(currAddr - startAddr) * 8 + currByte], 8);
 		}
 
-		showPercent(currAddress,eepSize,6,1); // testing to show perfcent done
+		showPercent(currAddr,eepSize,6,1); // testing to show perfcent done
 
 		// Send stop bit
 		// Set A0(PF0) to LOW
