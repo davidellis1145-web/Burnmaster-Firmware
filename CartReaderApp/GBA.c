@@ -487,7 +487,7 @@ void readROM_GBA()
 		UINT wdt;
 		f_write(&tf, sdBuffer, 512, &wdt);
 	}
-
+	LED_GREEN_OFF;
 	showPercent(1,1,20,3);
 	// Close the file
 	f_close(&tf);
@@ -592,6 +592,7 @@ void readSRAM_GBA(boolean browseFile, unsigned long sramSize, uint32_t pos)
 
 	for (unsigned long currAddress = 0; currAddress < sramSize; currAddress += 512)
 	{
+		LED_GREEN_BLINK;
 		for (int c = 0; c < 512; c++)
 		{
 			// Read byte
@@ -602,6 +603,7 @@ void readSRAM_GBA(boolean browseFile, unsigned long sramSize, uint32_t pos)
 		UINT wdt;
 		f_write(&tf, sdBuffer, 512, &wdt);
 	}
+	LED_GREEN_OFF;
 	// Close the file
 	f_close(&tf);
 
@@ -660,6 +662,7 @@ void writeSRAM_GBA(boolean browseFile, unsigned long sramSize, uint32_t pos)
 
 unsigned long verifySRAM_GBA(unsigned long sramSize, uint32_t pos)
 {
+	OledShowString(0,3,"Verifying...",8);
 	// Open file on sd card
 	FIL tf;
 	if (f_open(&tf, filePath, FA_READ) == FR_OK)
@@ -879,6 +882,7 @@ void readBlock_EEP(word startAddress, word eepSize)
 	// Read 64*8=512 bytes
 	for (word currAddr = startAddress; currAddr < startAddress + 64; currAddr++)
 	{
+		LED_GREEN_BLINK;
 		// Set CS_ROM(PH3) to LOW
 		gpio_bit_reset(CTRLGBA,CS_ROM);
 
@@ -959,6 +963,7 @@ void readBlock_EEP(word startAddress, word eepSize)
 		{
 			sdBuffer[((currAddr - startAddress) * 8) + (j / 8)] = tempBits[0 + j] << 7 | tempBits[1 + j] << 6 | tempBits[2 + j] << 5 | tempBits[3 + j] << 4 | tempBits[4 + j] << 3 | tempBits[5 + j] << 2 | tempBits[6 + j] << 1 | tempBits[7 + j];
 		}
+		LED_GREEN_OFF;
 	}
 }
 
@@ -1025,7 +1030,6 @@ void writeEeprom_GBA(word eepSize)
 			// Write 512 bytes
 			writeBlock_EEP(i, eepSize);
 			__enable_irq();
-			showPercent(i,eepSize,6,2);
 			// Wait
 			delayMicroseconds(200); // ???
 		}
@@ -1248,7 +1252,7 @@ void resetFLASH_GBA()
 }
 
 
-boolean blankcheckFLASH_GBA (unsigned long flashSize)
+boolean blankcheckFLASH_GBA(unsigned long flashSize)
 {
 	// Output a HIGH signal on CS_ROM(PH3) WE_FLASH(PH5)
 	gpio_bit_set(CTRLGBA,GBA_WR|CS_ROM);
@@ -1275,6 +1279,7 @@ boolean blankcheckFLASH_GBA (unsigned long flashSize)
 
 	for (unsigned long currAddress = 0; currAddress < flashSize; currAddress += 512)
 	{
+		LED_GREEN_BLINK;
 		// Fill buffer
 		for (int c = 0; c < 512; c++)
 		{
@@ -1291,8 +1296,7 @@ boolean blankcheckFLASH_GBA (unsigned long flashSize)
 				blank = 0;
 			}
 		}
-
-		LED_GREEN_BLINK;
+		LED_GREEN_OFF;
 	}
 	// Set CS_FLASH(PH0) high
 	gpio_bit_set(CTRLGBA,CS_SRAM);
@@ -1330,7 +1334,7 @@ void switchBank_GBA(byte bankNum)
 }
 
 
-void readFLASH_GBA (boolean browseFile, unsigned long flashSize, uint32_t pos)
+void readFLASH_GBA(boolean browseFile, unsigned long flashSize, uint32_t pos)
 {
 	// Output a HIGH signal on CS_ROM(PH3) WE_FLASH(PH5)
 	gpio_bit_set(CTRLGBA,GBA_WR|CS_ROM);
@@ -1396,8 +1400,8 @@ void readFLASH_GBA (boolean browseFile, unsigned long flashSize, uint32_t pos)
 		// Write sdBuffer to file
 		UINT wdt;
 		f_write(&tf, sdBuffer, 512, &wdt);
-		OledShowString(20,4,"     ",8);
 	}
+	LED_GREEN_OFF;
 	showPercent(1,1,20,3);
 	f_close(&tf);
 
@@ -1405,7 +1409,6 @@ void readFLASH_GBA (boolean browseFile, unsigned long flashSize, uint32_t pos)
 	gpio_bit_set(CTRLGBA,CS_SRAM);
 
 	// Signal end of process
-	OledShowString(20,4,"Done!",8);
 }
 
 
@@ -1426,7 +1429,7 @@ void busyCheck_GBA(int currByte)
 }
 
 
-void writeFLASH_GBA (boolean browseFile, unsigned long flashSize, uint32_t pos)
+void writeFLASH_GBA(boolean browseFile, unsigned long flashSize, uint32_t pos)
 {
 	// Output a HIGH signal on CS_ROM(PH3) WE_FLASH(PH5) and OE_FLASH(PH6)
 	gpio_bit_set(CTRLGBA,GBA_RD|GBA_WR|CS_ROM);
@@ -1462,6 +1465,7 @@ void writeFLASH_GBA (boolean browseFile, unsigned long flashSize, uint32_t pos)
 
 		for (unsigned long currAddress = 0; currAddress < flashSize; currAddress += 512)
 		{
+			LED_GREEN_BLINK;
 			// Fill sdBuffer
 			UINT rdt;
 			f_read(&tf, sdBuffer, 512, &rdt);
@@ -1474,17 +1478,17 @@ void writeFLASH_GBA (boolean browseFile, unsigned long flashSize, uint32_t pos)
 				writeByteFlash_GBA(0x5555, 0xa0);
 				// Write current byte
 				writeByteFlash_GBA(currAddress + c, sdBuffer[c]);
-
 				// Wait
 				busyCheck_GBA(c);
 			}
+			LED_GREEN_OFF;
 		}
 		// Set CS_FLASH(PH0) high
 		gpio_bit_set(CTRLGBA,CS_SRAM);
 
 		// Close the file
 		f_close(&tf);
-		OledShowString(0,3,"Done!",8);
+		OledShowString(0,3,"Done.",8);
 	}
 	else
 	{
@@ -1548,7 +1552,7 @@ void verifyFLASH_GBA(unsigned long flashSize, uint32_t pos)
 
 	if (wrError == 0)
 	{
-		OledShowString(55,2,"OK!",8);
+		OledShowString(0,3,"OK!",8);
 	}
 	else
 	{
@@ -1714,6 +1718,7 @@ boolean blankcheckFlashrom_GBA()
 			}
 		}
 	}
+	LED_GREEN_OFF;
 	return 1;
 }
 
@@ -3321,7 +3326,6 @@ uint8_t gbaMenu()
 				case 3:
 					// 256K SRAM/FRAM
 					writeSRAM_GBA(1, 32768, 0);
-					OledShowString(0,3,"Verifying...",8);
 					writeErrors = verifySRAM_GBA(32768, 0);
 					if (writeErrors == 0)
 					{
