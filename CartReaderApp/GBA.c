@@ -829,6 +829,8 @@ void writeBlock_EEP(word startAddr, word eepSize)
 		{
 			send_GBA(sdBuffer[(currAddr - startAddr) * 8 + currByte], 8);
 		}
+		
+		showPercent(currByte,eepSize,6,2);
 
 		// Send stop bit
 		// Set A0(PF0) to LOW
@@ -2791,7 +2793,7 @@ void flashRepro_GBA()
 				print_Error("verify ERROR!", true);
 			}
 			use_tick = (getSystick() - use_tick)/1055;
-			sprintf(tmsg,"Use Time: %d(s)",use_tick);
+			sprintf(tmsg,"Time Elapsed: %d(s)",use_tick);
 			OledShowString(10,6,tmsg,8);
 		}
 		else

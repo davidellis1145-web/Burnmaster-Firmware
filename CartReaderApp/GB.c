@@ -453,9 +453,13 @@ void setup_GB()
 // Read ROM
 void readROM_GB()
 {
-	if ((strcmp(romName, "456789") == 0) ||
-        (strcmp(checksumStr, "FFFF") == 0) ||
+	/*if ((strcmp(romName, "456789") == 0) ||  <- testing...
+        (strcmp(checksumStr, "FFFF") == 0) ||	  was this...
         (strcmp(checksumStr, "0000") == 0))
+	*/
+	if (strcmp(romName, "456789") == 0 ||	// <- now this...
+        strcmp(checksumStr, "FFFF") == 0 ||
+        strcmp(checksumStr, "0000") == 0)
 	{
 		strcpy(romName, "ERROR");
 		OledShowString(0,0,"GAMEPAK ERROR",8);
@@ -1778,7 +1782,7 @@ bool writeCFI_GB()
 		if (writeErrors == 0)
 		{
 			use_tick = (getSystick() - use_tick)/1055;
-			sprintf(msgbuf,"Use Time: %d(s)",use_tick);
+			sprintf(msgbuf,"Time Elapsed: %d(s)",use_tick);
 			OledShowString(10,6,msgbuf,8);
 		}
 		else
