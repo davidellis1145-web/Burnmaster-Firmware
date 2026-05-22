@@ -650,8 +650,7 @@ void writeSRAM_GBA(boolean browseFile, unsigned long sramSize, uint32_t pos)
 		}
 		// Close the file
 		f_close(&tf);
-		//showPercent(1,1,6,2);
-		//OledShowString(0,3,"Done!",8);
+		showPercent(1,1,6,2);
 	}
 	else
 	{
