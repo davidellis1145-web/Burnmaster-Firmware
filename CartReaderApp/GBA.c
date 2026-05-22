@@ -829,9 +829,6 @@ void writeBlock_EEP(word startAddr, word eepSize)
 		{
 			send_GBA(sdBuffer[(currAddr - startAddr) * 8 + currByte], 8);
 		}
-		
-		showPercent(currByte,eepSize,6,2);
-
 		// Send stop bit
 		// Set A0(PF0) to LOW
 		gpio_bit_reset(ADDR_1,GPIO_PIN_8);
