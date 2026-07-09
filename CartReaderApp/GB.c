@@ -1060,7 +1060,7 @@ void identifyCFI_GB()
 	sprintf(cfiQRYx16, "%02X%02X%02X", readByte_GB(0x10), readByte_GB(0x11), readByte_GB(0x12)); // Some devices use x8-style CFI Query command even though they are in x16 command mode
 	if (strcmp(cfiQRYx8, "515259") == 0) // QRY in x8 mode
 	{
-			printf("Normal CFI x8 Mode");
+		printf("Normal CFI x8 Mode");
 		flashX16Mode = false;
 		flashSwitchLastBits = false;
 	}
