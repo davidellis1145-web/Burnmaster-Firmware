@@ -3023,7 +3023,7 @@ void setup_GBA()
 	OledShowString(0,3,tmsg,8);
 	if (strcmp(checksumStr, "") == 0)
 	{
-		sprintf(tmsg,"Checksum: Unknown\nVersion:  Unknown);
+		sprintf(tmsg,"Checksum: Unknown\nVersion:  Unknown");
 		OledShowString(0,4,tmsg,8);
 	}
 	else
