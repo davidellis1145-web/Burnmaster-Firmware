@@ -3023,7 +3023,7 @@ void setup_GBA()
 	OledShowString(0,3,tmsg,8);
 	if (strcmp(checksumStr, "") == 0)
 	{
-		sprintf(tmsg,"Checksum: Unknown\nVersion:  1.%d",romVersion);
+		sprintf(tmsg,"Checksum: Unknown\nVersion:  Unknown);
 		OledShowString(0,4,tmsg,8);
 	}
 	else
@@ -3089,7 +3089,7 @@ static const char* const saveOptionsGBA[] = {GBASaveItem1, GBASaveItem2, GBASave
 
 uint8_t gbaMenu()
 {
-	// Create menu with title and 4 options to choose from
+	// Create menu with title and options to choose from
 	uint8_t bret = 0;
 	LED_GREEN_OFF; // Make sure green led is off after blinking
 	unsigned char retMenu = questionBox_OLED("GBA Main Menu", menuOptionsGBA, 6, 1, 1, 1);

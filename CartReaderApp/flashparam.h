@@ -18,7 +18,6 @@ extern "C"{
 #define FMC_GB_ROM_COUNTER_ADDR		((uint32_t)0x0803FC04U)	// Game Boy ROM counter
 #define FMC_GBA_ROM_COUNTER_ADDR	((uint32_t)0x0803FC08U)	// Game Boy Advance ROM counter
 #define FMC_GBA_SAVE_COUNTER_ADDR	((uint32_t)0x0803FC0CU)	// Game Boy Advance save counter
-#define FMC_GBM_SAVE_COUNTER_ADDR	((uint32_t)0x0803FC10U)	// Game Boy Memory save counter
 
 void save_dwordGB(uint32_t data);
 uint32_t load_dwordGB();

@@ -110,8 +110,8 @@ void aboutScreen()
 	OledShowString(0,0,"Game Boy",16);
 	OledShowPicData(79,0,48,6,Icon_data_DGE); // Draws DGE logo icon
 	OledShowString(3,2,"Flash Master",8);
-	OledShowString(8,4,"v1.0.4a5",8); // Based on Funnyplaying v1.10 release.
-	OledShowString(2,5,"May 21, 2026",8);
+	OledShowString(8,4,"v1.0.4a6",8);
+	OledShowString(2,5,"Jul 08, 2026",8);
 	OledShowString(0,7,"Press OK Button...",8);
 	WaitOKBtn();
 }
@@ -130,7 +130,7 @@ uint8_t gbxMenu()
 		OledClear();
 		OledShowPicData(64,4,56,4,Icon_data_GBA); // Draws GBA icon
 
-		// Create menu with title and 3 options to choose from
+		// Create menu with title and options to choose from
 		// Wait for user choice to come back from the question box menu
 		gbType = questionBox_OLED("Game Boy Flash Master", menuOptionsGBA, 3, 1, 1, 0);
 		switch (gbType)
@@ -154,9 +154,9 @@ uint8_t gbxMenu()
 		LED_BLUE_OFF;	// Make sure GBA mode led is off
 		LED_GREEN_ON;	// Make sure GB mode led is on
 		OledClear();
-		OledShowPicData(86,2,29,6,Icon_data_GBC);	// Draws GB icon
+		OledShowPicData(88,2,29,6,Icon_data_GBC);	// Draws GB icon
 
-		// Create menu with title and 3 options to choose from
+		// Create menu with title and options to choose from
 		// Wait for user choice to come back from the question box menu
 		gbType = questionBox_OLED("Game Boy Flash Master", menuOptionsGBC, 3, 1, 1, 0);
 		switch (gbType)
@@ -206,7 +206,7 @@ uint8_t gbTestsMenu()
 	WaitOKBtn();
 	OledClear();
 
-	// Create menu with title and 3 options to choose from
+	// Create menu with title and options to choose from
 	unsigned char gbCTest;
 	gbCTest = questionBox_OLED("GB(C) Cart Tests", menuOptionsGBT, 3, 1, 1, 0);
 	// Wait for user choice to come back from the question box menu
@@ -240,7 +240,7 @@ uint8_t gbaTestsMenu()
 	WaitOKBtn();
 	OledClear();
 
-	// Create menu with title and 3 options to choose from
+	// Create menu with title and options to choose from
 	unsigned char gbaCTest;
 	gbaCTest = questionBox_OLED("GBA Cart Tests", menuOptionsGBT, 3, 1, 1, 0);
 

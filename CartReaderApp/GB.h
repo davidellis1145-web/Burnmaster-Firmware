@@ -17,5 +17,4 @@ extern int romBanks;
 extern word lastByte;
 
 void TestMemGB(boolean bFast);
-void gbFlashScreen();
 void gbScreen();
