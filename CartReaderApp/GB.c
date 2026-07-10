@@ -1376,7 +1376,7 @@ bool writeCFI_GB()
 
 		// Verify flashrom
 		word romAddress = 0;
-		rdt = 0
+		rdt = 0;
 
 		// Read number of banks and switch banks
 		for (word bank = 1; bank < romBanks; bank++)
