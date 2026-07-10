@@ -1030,9 +1030,9 @@ void startCFIMode(boolean x16Mode)
 	else
 	{
 		writeByte_GB(0xAAA, 0xf0);	// x8 mode reset command
-		delay(500);
+		delay(100);
 		writeByte_GB(0xAAA, 0xf0);	// Double reset to get out of possible Autoselect + CFI mode
-		delay(500);
+		delay(100);
 		writeByte_GB(0xAA, 0x98);	// x8 CFI Query command
 	}
 }
@@ -1374,7 +1374,7 @@ bool writeCFI_GB()
 
 		// Verify flashrom
 		word romAddress = 0;
-		
+
 		// Read number of banks and switch banks
 		for (word bank = 1; bank < romBanks; bank++)
 		{
@@ -1405,13 +1405,10 @@ bool writeCFI_GB()
 			// Read up to 7FFF per bank
 			while (romAddress <= 0x7FFF)
 			{
-
 				// Fill sdBuffer
-				UINT rdt = 0;
 				f_read(&tf, sdBuffer, 512, &rdt);
 				// Compare
-				delay_GB();
-				for (int i = 0; i < rdt; i++)
+				for (int i = 0; i < 512; i++)
 				{
 					if (readByte_GB(romAddress + i) != sdBuffer[i])
 					{
