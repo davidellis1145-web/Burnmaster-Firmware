@@ -1408,7 +1408,7 @@ bool writeCFI_GB()
 				// Fill sdBuffer
 				f_read(&tf, sdBuffer, 512, &rdt);
 				// Compare
-				for (int i = 0; i < 512; i++)
+				for (int i = 0; i < rdt; i++)
 				{
 					if (readByte_GB(romAddress + i) != sdBuffer[i])
 					{
