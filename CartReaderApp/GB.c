@@ -38,8 +38,6 @@ void delay_GB()
 	__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\tnop\n\t");
 	__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\tnop\n\t");
 	__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\tnop\n\t");
-	__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\tnop\n\t");
-	__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\tnop\n\t");
 }
 
 
@@ -1376,7 +1374,6 @@ bool writeCFI_GB()
 
 		// Verify flashrom
 		word romAddress = 0;
-		rdt = 0;
 
 		// Read number of banks and switch banks
 		for (word bank = 1; bank < romBanks; bank++)
@@ -1393,12 +1390,9 @@ bool writeCFI_GB()
 				writeByte_GB(0x4000, bank >> 5); // Set bits 5 & 6 (01100000) of ROM bank
 				writeByte_GB(0x2000, bank & 0x1F); // Set bits 0 & 4 (00011111) of ROM bank
 			}
-			delay_GB();
-			
+
 			// Switch data pins to input
 			dataIn_GB();
-			
-			delay_GB();
 
 			if (bank > 1)
 			{
@@ -1414,7 +1408,7 @@ bool writeCFI_GB()
 				// Fill sdBuffer
 				f_read(&tf, sdBuffer, 512, &rdt);
 				// Compare
-				for (int i = 0; i < rdt; i++) // testing only read up to bytes read from sd
+				for (int i = 0; i < 512; i++)
 				{
 					if (readByte_GB(romAddress + i) != sdBuffer[i])
 					{
@@ -1432,7 +1426,7 @@ bool writeCFI_GB()
 		if (writeErrors == 0)
 		{
 			use_tick = (getSystick() - use_tick)/1055;
-			sprintf(msgbuf,"Completed in %d(s)",use_tick);
+			sprintf(msgbuf,"Time Elapsed: %d(s)",use_tick);
 			OledShowString(10,6,msgbuf,8);
 		}
 		else
