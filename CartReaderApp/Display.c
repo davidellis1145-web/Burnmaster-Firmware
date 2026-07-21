@@ -698,7 +698,7 @@ void draw_progressbar(uint32_t processed, uint32_t total, uint8_t line)
 	if (processed == 0)
 	{
 		previous = 0;
-		OledShowString(1, line, "[                   ]", 8);
+		OledShowString(1, line, "[", 8);
 		return;
 	}
 
@@ -713,7 +713,7 @@ void draw_progressbar(uint32_t processed, uint32_t total, uint8_t line)
 			// Check if the final step has been reached yet
 			if (i == steps)
 			{
-				// Make sure "]" is drawn at final step
+				// Draw "]" at 100%
 				OledShowString(1 + (steps * 6), line, "]", 8);
 			}
 			else

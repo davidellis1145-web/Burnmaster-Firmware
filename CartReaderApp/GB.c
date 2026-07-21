@@ -1289,7 +1289,7 @@ bool writeCFI_GB()
 				endAddr = 0x7FFF;
 			}
 
-			writeByte_GB(0x0000, 0x0B);//lock rom addr, disables bank change
+			writeByte_GB(0x0000, 0x0B); // Lock rom addr, disables bank change
 			delay_GB();
 
 			while (currAddr <= endAddr)
@@ -1355,7 +1355,7 @@ bool writeCFI_GB()
 				}
 				currAddr += 512;
 			}
-			writeByte_GB(0x0000, 0x00);//Unlock rom addr, enables bank change
+			writeByte_GB(0x0000, 0x00); // Unlock rom addr, enables bank change
 		}
 		showPercent(1,1,10,4);
 
@@ -1948,6 +1948,7 @@ uint8_t gbMenu()
 		case 2:
 			OledClear();
 			readROM_GB();
+			delay(1000);
 			compare_checksum_GB();
 			break;
 		case 3:
