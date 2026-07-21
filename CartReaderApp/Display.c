@@ -724,6 +724,8 @@ void draw_progressbar(uint32_t processed, uint32_t total, uint8_t line)
 		// Update "*" tracking
 		previous = current;
 	}
+	delay(3000);
+	OledShowString(1, line, "                     ", 8);
 }
 
 
