@@ -685,32 +685,33 @@ void print_Error(char *errorMessage, uint8_t forceReset)
 
 
 /**********************
-  Progressbar
+  Progress Bar
 **********************/
 void draw_progressbar(uint32_t processed, uint32_t total, uint8_t line)
 {
 	uint8_t current, i;
 	static uint8_t previous;
-	uint8_t steps = 20;
+	uint8_t steps = 19;
 
-	// Find progressbar length and draw if processed size is not 0
+	// Initialize bar at 0%
 	if (processed == 0)
 	{
 		previous = 0;
-		OledShowString(0,line,"[",8);
+		// Draw progress bar with 19 blank spaces
+		OledShowString(0,line,"[                   ]",8);
 		return;
 	}
 
-	// Progress bar
+	// Map progress on 0-19 step scale
 	current = (processed >= total) ? steps : (processed * steps / total);
 
-	// Draw "*" if needed
+	// Incrementally draw new "*" to fill bar
 	if (current > previous)
 	{
 		for (i = previous + 1; i <= current; i++)
 		{
-			// Steps are 20, so 20 - 1 = 19.
-			if (i == (19))
+			OledShowChar(i*6,line,'*',8);
+			/*if (i == (19))
 			{
 				// If end of progress bar, finish progress bar by drawing "]"
 				OledShowString(114,line,"]",8);
@@ -718,9 +719,9 @@ void draw_progressbar(uint32_t processed, uint32_t total, uint8_t line)
 			else
 			{
 				OledShowChar(i*6,line,'*',8);
-			}
+			}*/
 		}
-		// Update previous "*" status
+		// Update "*" index
 		previous = current;
 	}
 }
