@@ -452,11 +452,7 @@ void setup_GB()
 // Read ROM
 void readROM_GB()
 {
-	/*if ((strcmp(romName, "456789") == 0) ||  <- testing...
-        (strcmp(checksumStr, "FFFF") == 0) ||	  was this...
-        (strcmp(checksumStr, "0000") == 0))
-	*/
-	if (strcmp(romName, "456789") == 0 ||	// <- now this...
+	if (strcmp(romName, "456789") == 0 ||
         strcmp(checksumStr, "FFFF") == 0 ||
         strcmp(checksumStr, "0000") == 0)
 	{
@@ -1293,7 +1289,7 @@ bool writeCFI_GB()
 				endAddr = 0x7FFF;
 			}
 
-			writeByte_GB(0x0000, 0x0B);//lock rom addr, disables bank change
+			writeByte_GB(0x0000, 0x0B); // lock rom addr, disables bank change
 			delay_GB();
 
 			while (currAddr <= endAddr)
@@ -1359,7 +1355,7 @@ bool writeCFI_GB()
 				}
 				currAddr += 512;
 			}
-			writeByte_GB(0x0000, 0x00);//Unlock rom addr, enables bank change
+			writeByte_GB(0x0000, 0x00); // Unlock rom addr, enables bank change
 		}
 		showPercent(1,1,10,4);
 
