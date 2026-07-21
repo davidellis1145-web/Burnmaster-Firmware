@@ -452,11 +452,7 @@ void setup_GB()
 // Read ROM
 void readROM_GB()
 {
-	/*if ((strcmp(romName, "456789") == 0) ||  <- testing...
-        (strcmp(checksumStr, "FFFF") == 0) ||	  was this...
-        (strcmp(checksumStr, "0000") == 0))
-	*/
-	if (strcmp(romName, "456789") == 0 ||	// <- now this...
+	if (strcmp(romName, "456789") == 0 ||
         strcmp(checksumStr, "FFFF") == 0 ||
         strcmp(checksumStr, "0000") == 0)
 	{

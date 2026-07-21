@@ -711,17 +711,9 @@ void draw_progressbar(uint32_t processed, uint32_t total, uint8_t line)
 		for (i = previous + 1; i <= current; i++)
 		{
 			OledShowChar(i*6,line,'*',8);
-			/*if (i == (19))
-			{
-				// If end of progress bar, finish progress bar by drawing "]"
-				OledShowString(114,line,"]",8);
-			}
-			else
-			{
-				OledShowChar(i*6,line,'*',8);
-			}*/
 		}
-		// Update "*" index
+		
+		// Update tracker
 		previous = current;
 	}
 }
