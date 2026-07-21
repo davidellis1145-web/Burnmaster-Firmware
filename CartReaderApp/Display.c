@@ -697,7 +697,7 @@ void draw_progressbar(uint32_t processed, uint32_t total, uint8_t line)
 	if (processed == 0)
 	{
 		previous = 0;
-		OledShowString(1,line,"[                   ]",8);
+		OledShowString(0,line,"[                   ]",8);
 		return;
 	}
 
@@ -708,7 +708,7 @@ void draw_progressbar(uint32_t processed, uint32_t total, uint8_t line)
 	{
 		for (i = previous + 1; i <= current; i++)
 		{
-			OledShowChar(1 + (i * 6), line, "*",8);
+			OledShowChar(i * 6, line, '*',8);
 			if (i >= steps)
 			{
 				delay(2000);
