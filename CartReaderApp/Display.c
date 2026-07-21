@@ -708,10 +708,14 @@ void draw_progressbar(uint32_t processed, uint32_t total, uint8_t line)
 	{
 		for (i = previous + 1; i <= current; i++)
 		{
-			OledShowChar(i * 6, line, '*',8);
 			if (i >= steps)
 			{
+				//OledShowString(120, line, "]", 8);
 				delay(2000);
+			}
+			else
+			{
+				OledShowChar(i * 6, line, '*',8);
 			}
 		}
 		// Update previous "*" status
