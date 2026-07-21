@@ -1948,7 +1948,6 @@ uint8_t gbMenu()
 		case 2:
 			OledClear();
 			readROM_GB();
-			delay(1000);
 			compare_checksum_GB();
 			break;
 		case 3:

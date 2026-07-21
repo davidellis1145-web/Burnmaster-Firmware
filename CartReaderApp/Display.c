@@ -713,8 +713,10 @@ void draw_progressbar(uint32_t processed, uint32_t total, uint8_t line)
 			// Check if the final step has been reached yet
 			if (i == steps)
 			{
-				// Draw "]" at 100%
+				// Draw "]" at 100%, delay and clear progress bar
 				OledShowString(1 + (steps * 6), line, "]", 8);
+				delay(5000);
+				OledShowString(1, line, "                      ", 8);
 			}
 			else
 			{
@@ -724,8 +726,6 @@ void draw_progressbar(uint32_t processed, uint32_t total, uint8_t line)
 		// Update "*" tracking
 		previous = current;
 	}
-	delay(3000);
-	OledShowString(1, line, "                     ", 8);
 }
 
 
