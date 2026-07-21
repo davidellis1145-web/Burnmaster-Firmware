@@ -13,8 +13,9 @@
 /* Font library: ASCII 8x16 font. Data arrangement: left-to-right, top-to-bottom. Extraction method: vertical 8-point (lsb first). No inversion. Total 95 characters.
 Complete character set: !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~ */
 
-uint8_t F8X16[] = {	// Dimensions: width x height = 8x16, 16 bytes total each character
-
+// Dimensions: width x height = 8x16, 16 bytes total each character
+uint8_t F8X16[] =
+{
 	// -- ID:0, character:" ", ASCII code:20
 	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
 	// -- ID:1, character:"!", ASCII code:21
@@ -211,8 +212,9 @@ uint8_t F8X16[] = {	// Dimensions: width x height = 8x16, 16 bytes total each ch
 /* Font library: ASCII 5x8 font. Data arrangement: left-to-right, top-to-bottom. Extraction method: vertical 8-point (lsb first). No inversion. Total 95 characters.
 Complete character set: !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~ */
 
-uint8_t F5x8[] = {	// Dimensions: width x height = 5x8, 5 bytes total each character
-
+// Dimensions: width x height = 5x8, 5 bytes total each character
+uint8_t F5x8[] =
+{
 	// -- ID:0, character:" ", ASCII code:20
 	0x00,0x00,0x00,0x00,0x00,
 	// -- ID:1, character:"!", ASCII code:21
@@ -697,28 +699,28 @@ void draw_progressbar(uint32_t processed, uint32_t total, uint8_t line)
 	if (processed == 0)
 	{
 		previous = 0;
-		OledShowString(0,line,"[                   ]",8);
+		OledShowString(0,line,"[...................]",8);
 		return;
 	}
 
 	current = (processed >= total) ? steps : (processed * steps / total);
 
-	// Draw "*" if needed
+	// Draw "*" up to 100%
 	if (current > previous)
 	{
 		for (i = previous + 1; i <= current; i++)
 		{
 			if (i >= steps)
 			{
-				//OledShowString(120, line, "]", 8);
-				delay(2000);
+				// Pause to notice full bar
+				delay(1500);
 			}
 			else
 			{
 				OledShowChar(i * 6, line, '*',8);
 			}
 		}
-		// Update previous "*" status
+		// Update progress tracker
 		previous = current;
 	}
 }
