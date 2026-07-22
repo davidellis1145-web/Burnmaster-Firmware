@@ -306,15 +306,16 @@ uint8_t gbxDebugMenu()		// Debug Menu for dev testing
 			WaitOKBtn();
 			OledClear();
 			OledShowString(0,0,"This string is too long\nand has 2 newlines\nNewline two",8);
-			OledShowString(0,7,"Press ok...",8);
+			OledShowString(0,7,"Press OK...",8);
+			WaitOKBtn();
 			gbxDebugScreen();
 			break;
 		case 2:
-			OledShowString(0,0,"String too long",16);
+			OledShowString(0,0,"This string is too long",16);
 			OledShowString(0,7,"Press OK...",8);
 			WaitOKBtn();
 			OledClear();
-			OledShowString(0,0,"String too long\nNewline too long\nNewline",16);
+			OledShowString(0,0,"This string is too long\nThis Newline is too long\nNewline",16);
 			OledShowString(0,7,"Press OK...",8);
 			WaitOKBtn();
 			gbxDebugScreen();
