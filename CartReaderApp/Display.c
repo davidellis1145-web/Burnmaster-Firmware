@@ -572,7 +572,7 @@ void OledShowChar(uint8_t x,uint8_t y,uint8_t chr,uint8_t Char_Size)
 uint8_t OledShowString(uint8_t x, uint8_t y, const char *str, uint8_t Char_Size)
 {
 	unsigned char j=0;
-	uint8_t char_width = (Char_Size > 8) ? 8 : 5;
+	uint8_t char_width = (Char_Size > 8) ? 8 : 6;
 	uint8_t truncated = 0;		// Tracks if any line in the string was truncated
 	uint8_t skipping_line = 0;	// Keeps track of when an overflowing line is being skipped
 
