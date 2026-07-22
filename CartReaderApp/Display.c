@@ -532,7 +532,7 @@ void OledClear(void)
 
 // Displays a character, or part of one, at specified position
 // x:0-127,y:0-7
-// Char_Size: font size 16/8
+// Char_Size: font size 16/8 (8px/5px)
 void OledShowChar(uint8_t x,uint8_t y,uint8_t chr,uint8_t Char_Size)
 {
 	uint8_t c=0,i=0;
@@ -572,7 +572,7 @@ void OledShowChar(uint8_t x,uint8_t y,uint8_t chr,uint8_t Char_Size)
 uint8_t OledShowString(uint8_t x, uint8_t y, const char *str, uint8_t Char_Size)
 {
 	unsigned char j=0;
-	uint8_t char_width = (Char_Size >> 1) + 2;
+	uint8_t char_width = (Char_Size > 8) ? 8 : 5;
 	uint8_t truncated = 0;		// Tracks if any line in the string was truncated
 	uint8_t skipping_line = 0;	// Keeps track of when an overflowing line is being skipped
 
@@ -581,7 +581,14 @@ uint8_t OledShowString(uint8_t x, uint8_t y, const char *str, uint8_t Char_Size)
 		if (str[j] == '\n')
 		{
 			x = 0;
-			y += 1;
+			if (Char_Size > 8)
+			{
+				y += 2;
+			}
+			else
+			{
+				y += 1;
+			}
 			skipping_line = 0; // Reset tracking, start drawing on new line
 
 			// Make sure y doesn't exceed line 7 (the max)
@@ -600,11 +607,10 @@ uint8_t OledShowString(uint8_t x, uint8_t y, const char *str, uint8_t Char_Size)
 			}
 
 			// Check if x boundary will be exceeded
-			if ((x + char_width + char_width) > 128)
+			if (x + char_width > 128)
 			{
-				OledShowChar(x, y, '~', Char_Size); // Print a tilde at truncation point
-				truncated = 1;                      // Record that truncation happened
-				skipping_line = 1;                  // Start ignoring characters until next '\n'
+				truncated = 1;		// Record that truncation happened
+				skipping_line = 1;	// Start ignoring characters until next '\n'
 			}
 			else
 			{
@@ -615,8 +621,8 @@ uint8_t OledShowString(uint8_t x, uint8_t y, const char *str, uint8_t Char_Size)
 		j++;
 	}
 
-	// Full string printed without truncating, clear trailing space
-	if (!skipping_line)
+	// If it fits, clear trailing space
+	if (!skipping_line && (x + char_width <= 128))
 	{
 		OledShowChar(x, y, ' ', Char_Size);
 	}
