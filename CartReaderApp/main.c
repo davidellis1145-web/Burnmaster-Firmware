@@ -97,11 +97,15 @@ static const char gbxMenuTestAll[] = "Full Test";
 static const char gbxMenuTestFast[] = "Quick Test";
 static const char gbxAbout[] = "About...";
 static const char gbxReset[] = "Reset";
+static const char gbxMenuItemDebug[] = "Debug Menu";
+static const char gbxDebug1[] = "Showstring fnt_sz 8";
+static const char gbxDebug2[] = "Showstring fnt_sz 16";
 
-static const char* const menuOptionsGBC[] = {gbxMenuItem1,gbxMenuTests,gbxAbout};
-static const char* const menuOptionsGBA[] = {gbxMenuItem2,gbxMenuTests,gbxAbout};
-static const char* const menuOptionsGBx[] = {gbxMenuItem1,gbxMenuItem2};
+static const char* const menuOptionsGBC[] = {gbxMenuItem1,gbxMenuTests,gbxAbout,gbxMenuItemDebug};
+static const char* const menuOptionsGBA[] = {gbxMenuItem2,gbxMenuTests,gbxAbout,gbxMenuItemDebug};
+static const char* const menuOptionsGBx[] = {gbxMenuItem1,gbxMenuItem2,gbxMenuItemDebug};
 static const char* const menuOptionsGBT[] = {gbxMenuTestFast,gbxMenuTestAll,gbxReset};
+static const char* const menuOptionsDebug[] = {gbxDebug1,gbxDebug2,gbxReset};
 
 
 void aboutScreen()
@@ -132,7 +136,7 @@ uint8_t gbxMenu()
 
 		// Create menu with title and options to choose from
 		// Wait for user choice to come back from the question box menu
-		gbType = questionBox_OLED("Game Boy Flash Master", menuOptionsGBA, 3, 1, 1, 0);
+		gbType = questionBox_OLED("Game Boy Flash Master", menuOptionsGBA, 4, 1, 1, 0);
 		switch (gbType)
 		{
 			case 0:	// Cancel btn clicked
@@ -147,6 +151,9 @@ uint8_t gbxMenu()
 			case 3:
 				aboutScreen();
 				break;
+			case 4:
+				gbxDebugScreen();
+				break;
 		}
 	}
 	else if(gbxtype == TYPE_GBC)
@@ -158,7 +165,7 @@ uint8_t gbxMenu()
 
 		// Create menu with title and options to choose from
 		// Wait for user choice to come back from the question box menu
-		gbType = questionBox_OLED("Game Boy Flash Master", menuOptionsGBC, 3, 1, 1, 0);
+		gbType = questionBox_OLED("Game Boy Flash Master", menuOptionsGBC, 4, 1, 1, 0);
 		switch (gbType)
 		{
 			case 0:	// Cancel btn clicked
@@ -173,11 +180,14 @@ uint8_t gbxMenu()
 			case 3:
 				aboutScreen();
 				break;
+			case 4:
+				gbxDebugScreen();
+				break;
 		}
 	}
 	else
 	{
-		gbType = questionBox_OLED("Game Boy Flash Master", menuOptionsGBx, 2, 1, 1, 1);
+		gbType = questionBox_OLED("Game Boy Flash Master", menuOptionsGBx, 3, 1, 1, 1);
 		switch (gbType)
 		{
 			case 0:	// Cancel btn clicked
@@ -188,6 +198,9 @@ uint8_t gbxMenu()
 				break;
 			case 2:
 				gbaScreen();
+				break;
+			case 3:
+				gbxDebugScreen();
 				break;
 		}
 	}
@@ -264,6 +277,56 @@ uint8_t gbaTestsMenu()
 }
 
 
+uint8_t gbxDebugMenu()		// Debug Menu for dev testing
+{
+	// Show warning
+	OledClear();
+	OledShowString(30,1,"**WARNING**",8);
+	OledShowString(0,3,"Entering debug menu",8);
+	OledShowString(0,4,"don't use important",8);
+	OledShowString(0,5,"carts, may corrupt.);
+	OledShowString(0,7,"Press OK Button...",8);
+	WaitOKBtn();
+	OledClear();
+
+	// Create menu with title and options to choose from
+	unsigned char gbxDebug;
+	gbxDebug = questionBox_OLED("**Debug Menu**", menuOptionsDebug, 3, 1, 1, 0);
+
+	// Wait for user choice to come back from the question box men
+	switch (gbxDebug)
+	{
+		case 0: // Cancel btn pressed
+			gbxScreen();
+			break;
+		case 1:
+			OledClear();
+			OledShowString(0,0,"This string is too long",8);
+			OledShowString(0,7,"Press OK...",8);
+			WaitOKBtn();
+			OledClear();
+			OledShowString(0,0,"This string is too long\nand has 2 newlines\nNewline two",8);
+			OledShowString(0,7,"Press ok...",8);
+			gbxDebugScreen();
+			break;
+		case 2:
+			OledShowString(0,0,"String too long",16);
+			OledShowString(0,7,"Press OK...",8);
+			WaitOKBtn();
+			OledClear();
+			OledShowString(0,0,"String too long\nNewline too long\nNewline",16);
+			OledShowString(0,7,"Press OK...",8);
+			WaitOKBtn();
+			gbxDebugScreen();
+			break;
+		case 3:
+			ResetSystem();
+			break;
+	}
+	return 0;
+}
+
+
 /**********************
   Menu to display
 **********************/
@@ -292,6 +355,16 @@ void gbaTestsScreen() // Cart tests for GBA
 	while(1)
 	{
 		uint8_t b = gbaTestsMenu();
+		if(b>0)break;
+	}
+}
+
+
+void gbxDebugScreen() // Debug menu loader
+{
+	while(1)
+	{
+		uint8_t b = gbxDebugMenu();
 		if(b>0)break;
 	}
 }
