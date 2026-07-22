@@ -284,7 +284,7 @@ uint8_t gbxDebugMenu()		// Debug Menu for dev testing
 	OledShowString(30,1,"**WARNING**",8);
 	OledShowString(0,3,"Entering debug menu",8);
 	OledShowString(0,4,"don't use important",8);
-	OledShowString(0,5,"carts, may corrupt.);
+	OledShowString(0,5,"carts, may corrupt.");
 	OledShowString(0,7,"Press OK Button...",8);
 	WaitOKBtn();
 	OledClear();
