@@ -100,12 +100,13 @@ static const char gbxReset[] = "Reset";
 static const char gbxMenuItemDebug[] = "Debug Menu";
 static const char gbxDebug1[] = "Showstring fnt_sz 8";
 static const char gbxDebug2[] = "Showstring fnt_sz 16";
+static const char gbxDebug3[] = "Showstring Y over-run";
 
 static const char* const menuOptionsGBC[] = {gbxMenuItem1,gbxMenuTests,gbxAbout,gbxMenuItemDebug};
 static const char* const menuOptionsGBA[] = {gbxMenuItem2,gbxMenuTests,gbxAbout,gbxMenuItemDebug};
 static const char* const menuOptionsGBx[] = {gbxMenuItem1,gbxMenuItem2,gbxMenuItemDebug};
 static const char* const menuOptionsGBT[] = {gbxMenuTestFast,gbxMenuTestAll,gbxReset};
-static const char* const menuOptionsDebug[] = {gbxDebug1,gbxDebug2,gbxReset};
+static const char* const menuOptionsDebug[] = {gbxDebug1,gbxDebug2,gbxDebug3,gbxReset};
 
 
 void aboutScreen()
@@ -291,7 +292,7 @@ uint8_t gbxDebugMenu()		// Debug Menu for dev testing
 
 	// Create menu with title and options to choose from
 	unsigned char gbxDebug;
-	gbxDebug = questionBox_OLED("**Debug Menu**", menuOptionsDebug, 3, 1, 1, 0);
+	gbxDebug = questionBox_OLED("**Debug Menu**", menuOptionsDebug, 4, 1, 1, 0);
 
 	// Wait for user choice to come back from the question box men
 	switch (gbxDebug)
@@ -305,12 +306,13 @@ uint8_t gbxDebugMenu()		// Debug Menu for dev testing
 			OledShowString(0,7,"Press OK...",8);
 			WaitOKBtn();
 			OledClear();
-			OledShowString(0,0,"This string is too long\nand has 2 newlines\nNewline two",8);
+			OledShowString(0,0,"This string is too long\nand ithas two newlines\nNewline two",8);
 			OledShowString(0,7,"Press OK...",8);
 			WaitOKBtn();
 			gbxDebugScreen();
 			break;
 		case 2:
+			OledClear();
 			OledShowString(0,0,"This string is too long",16);
 			OledShowString(0,7,"Press OK...",8);
 			WaitOKBtn();
@@ -321,6 +323,23 @@ uint8_t gbxDebugMenu()		// Debug Menu for dev testing
 			gbxDebugScreen();
 			break;
 		case 3:
+			OledClear();
+			OledShowString(0,0,"1",8);
+			OledShowString(0,1,"2",8);
+			OledShowString(0,2,"3",8);
+			OledShowString(0,3,"4",8);
+			OledShowString(0,4,"5",8);
+			OledShowString(0,5,"6",8);
+			OledShowString(0,6,"7",8);
+			OledShowString(0,7,"8....Press OK...",8);
+			OledShowString(0,8,"9",8);
+			WaitOKBtn();
+			OledClear();
+			OledShowString(0,0,"This line is just a bit long",8);
+			OledShowString(0,1,"This line is 21 chars\nwith a newline",8);
+			OledShowString(0,3,"And this has too many\nnewlines\n1\n2 Press OK...\n3\n4",8);
+			break;
+		case 4:
 			ResetSystem();
 			break;
 	}
