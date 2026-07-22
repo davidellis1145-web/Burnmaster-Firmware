@@ -26,7 +26,7 @@ void OledClear(void);
 // Char_Size: font size 16/8
 void OledShowChar(uint8_t x,uint8_t y,uint8_t chr,uint8_t Char_Size);
 // Display a string
-uint8_t OledShowString(uint8_t x,uint8_t y,char *str,uint8_t Char_Size);
+uint8_t OledShowString(uint8_t x,uint8_t y,const char *str,uint8_t Char_Size);
 // Display an image at specified location
 void OledShowPicData(uint8_t x,uint8_t y,uint8_t wdt,uint8_t hgt,uint8_t *pPicData);
 // Initialize display

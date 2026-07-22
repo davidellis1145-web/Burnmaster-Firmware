@@ -569,30 +569,59 @@ void OledShowChar(uint8_t x,uint8_t y,uint8_t chr,uint8_t Char_Size)
 
 
 // Display a string
-uint8_t OledShowString(uint8_t x,uint8_t y,char *str,uint8_t Char_Size)
+uint8_t OledShowString(uint8_t x, uint8_t y, const char *str, uint8_t Char_Size)
 {
 	unsigned char j=0;
+	uint8_t char_width = (Char_Size >> 1) + 2;
+	uint8_t truncated = 0;		// Tracks if any line in the string was truncated
+	uint8_t skipping_line = 0;	// Keeps track of when an overflowing line is being skipped
 
-	while (str[j]!='\0')
+	while (str[j] != '\0')
 	{
-		if(str[j] == '\n')
+		if (str[j] == '\n')
 		{
-			x=0;
-			y+=1;
-		}
-		else
-		{
-			OledShowChar(x,y,str[j],Char_Size);
-			x+=(Char_Size >> 1) + 2;
-			if(x>120)
+			x = 0;
+			y += 1;
+			skipping_line = 0; // Reset tracking, start drawing on new line
+
+			// Make sure y doesn't exceed line 7 (the max)
+			if (y > 7)
 			{
 				return 1;
 			}
 		}
-		j++; // Each movement constitutes 1 line, ranging from 0-7 (8px each line)
+		else
+		{
+			// Skip characters until we hit an '\n'
+			if (skipping_line)
+			{
+				j++;
+				continue;
+			}
+
+			// Check if x boundary will be exceeded
+			if ((x + char_width + char_width) > 128)
+			{
+				OledShowChar(x, y, '~', Char_Size); // Print a tilde at truncation point
+				truncated = 1;                      // Record that truncation happened
+				skipping_line = 1;                  // Start ignoring characters until next '\n'
+			}
+			else
+			{
+				OledShowChar(x, y, str[j], Char_Size);
+				x += char_width;
+			}
+		}
+		j++;
 	}
-	OledShowChar(x,y,' ',Char_Size);
-	return 0;
+
+	// Full string printed without truncating, clear trailing space
+	if (!skipping_line)
+	{
+		OledShowChar(x, y, ' ', Char_Size);
+	}
+
+	return truncated; // Returns 1 if any part of string was truncated, 0 if not
 }
 
 
@@ -732,7 +761,10 @@ void showPercent(uint32_t processed, uint32_t total, uint8_t x, uint8_t line)
 	static uint8_t oripst = 0;
 	uint8_t tpst = processed*100/total;
 
-	if(processed == 0)oripst = 0;
+	if(processed == 0)
+	{
+		oripst = 0;
+	}
 
 	if(tpst != oripst && tpst <= 100)
 	{
