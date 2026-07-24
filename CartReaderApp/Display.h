@@ -2,7 +2,7 @@
 
 #define I2C1_SLAVE_ADDRESS7		0x78
 #define SSD1306_ADDR			0x3c
-#define MAX_COLUMN				128
+#define MAX_COLUMN				127
 
 #define LED1	(1)
 #define LED_B	(2)
@@ -24,7 +24,7 @@ void OledClear(void);
 // Displays a character, or part of one, at specified position
 // x:0-127,y:0-7
 // Char_Size: font size 16/8
-void OledShowChar(uint8_t x,uint8_t y,uint8_t chr,uint8_t Char_Size);
+uint8_t OledShowChar(uint8_t x,uint8_t y,uint8_t chr,uint8_t Char_Size);
 // Display a string
 uint8_t OledShowString(uint8_t x,uint8_t y,const char *str,uint8_t Char_Size);
 // Display an image at specified location
