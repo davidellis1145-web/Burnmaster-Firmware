@@ -1649,6 +1649,7 @@ void testCFI_GB(uint16_t testBanks)
 			}
 		}
 		showPercent(1,1,72,5);
+		LED_BLUE_OFF;
 
 		if (wErrors == 0)
 		{

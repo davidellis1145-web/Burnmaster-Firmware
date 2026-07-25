@@ -134,7 +134,7 @@ uint8_t gbxMenu()
 		LED_GREEN_OFF;	// Make sure GB mode led is off
 		LED_BLUE_ON;	// Make sure GBA mode led is on
 		OledClear();
-		OledShowPicData(68,3,56,4,Icon_data_GBA); // Draws GBA icon
+		OledShowPicData(70,3,56,4,Icon_data_GBA); // Draws GBA icon
 
 		// Create menu with title and options to choose from
 		// Wait for user choice to come back from the question box menu
