@@ -21,6 +21,7 @@ void OledDisplayOn(void);
 void OledDisplayOff(void);
 // Clears entire screen, making it all black as if it was not on
 void OledClear(void);
+void OledClearLine(uint8_t y);
 // Displays a character, or part of one, at specified position
 // x:0-127,y:0-7
 // Char_Size: font size 16/8

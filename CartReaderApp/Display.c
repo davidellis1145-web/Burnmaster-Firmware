@@ -491,12 +491,12 @@ void OledSetPos(uint8_t x, uint8_t y)
 {
 	if (x > MAX_COLUMN || y > 7)
 	{
-		return; 
+		return;
 	}
 
 	// The following 3 registers are valid only in page addressing mode.
 
-	SSD1306_WriteCmd(0xb0 + y);					// Line address settings: 0xb0-0xb7
+	SSD1306_WriteCmd(0xb0 + y);					// Set page address (0-7)
 	SSD1306_WriteCmd(((x >> 4) & 0x0f) | 0x10);	// Column high address setting
 	SSD1306_WriteCmd(x & 0x0f);					// Column low address setting
 }
@@ -529,15 +529,36 @@ void OledClear(void)
 	for(i = 0; i < 8; i++)
 	{
 		SSD1306_WriteCmd(0xb0 + i);		// Set page address (0-7)
-		SSD1306_WriteCmd(0x00);			// Set lower column address
-		SSD1306_WriteCmd(0x10);			// Set higher column address
-		
-		// This sweeps through columns 0 to 127 exactly (totaling 128 writes)
-		for(n = 0; n <= MAX_COLUMN; n++) 
+		SSD1306_WriteCmd(0x00);			// Reset column low address
+		SSD1306_WriteCmd(0x10);			// Reset column high address
+
+		// Sweep through columns 0-127
+		for(n = 0; n <= MAX_COLUMN; n++)
 		{
 			SSD1306_WriteData(0x00);    // Clear every pixel byte
 		}
-	} 
+	}
+}
+
+
+void OledClearLine(uint8_t y)
+{
+	// Ensure y is within bounds
+	if (y > 7)
+	{
+		return;
+	}
+
+	// Point cursor to start of target row
+	SSD1306_WriteCmd(0xb0 + y);	// Set page address
+	SSD1306_WriteCmd(0x00);		// Reset column low address
+	SSD1306_WriteCmd(0x10);		// Reset column high address
+
+	// Sweep through columns 0-127
+	for (uint8_t n = 0; n <= MAX_COLUMN; n++)
+	{
+		SSD1306_WriteData(0x00);
+	}
 }
 
 
@@ -552,14 +573,14 @@ uint8_t OledShowChar(uint8_t x, uint8_t y, uint8_t chr, uint8_t Char_Size)
 
 	c = chr - ' ';
 
-	// Check if char fits horizontally
+	// Check if char fits horizontally, advance page if not
 	if (x + width > (MAX_COLUMN + 1))
 	{
 		x = 0;
 		y = y + height;
 	}
 
-	// Check if char fits vertically
+	// Check if char fits vertically, error if not
 	if (y + height > 8)
 	{
 		return 1; // Signal overflow error
@@ -568,12 +589,12 @@ uint8_t OledShowChar(uint8_t x, uint8_t y, uint8_t chr, uint8_t Char_Size)
 	// Draw the character
 	if (Char_Size == 16)
 	{
-		OledSetPos(x, y);
+		OledSetPos(x,y);
 		for (i = 0; i < 8; i++)
 		{
 			SSD1306_WriteData(F8X16[c * 16 + i]); // Upper half first
 		}
-		OledSetPos(x, y + 1);
+		OledSetPos(x,y + 1);
 		for (i = 0; i < 8; i++)
 		{
 			SSD1306_WriteData(F8X16[(c * 16) + 8 + i]); // Lower half second
@@ -598,20 +619,41 @@ uint8_t OledShowString(uint8_t x, uint8_t y, const char *str, uint8_t Char_Size)
 	uint8_t char_width = (Char_Size == 16) ? 8 : 6;
 	uint8_t height = (Char_Size == 16) ? 2 : 1;
 
+	// Clear the line before printing text
+	OledClearLine(y);
+	if (Char_Size == 16)
+	{
+		OledClearLine(y + 1);
+	}
+
 	while (str[j] != '\0')
 	{
 		if (str[j] == '\n')
 		{
 			x = 0;
 			y += height;
+
+			// Clear new line
+			OledClearLine(y);
+			if (Char_Size == 16)
+			{
+				OledClearLine(y + 1);
+			}
 		}
 		else
 		{
-			// check if character fits horizontally
+			// Check if character fits horizontally
 			if (x + char_width > (MAX_COLUMN + 1))
 			{
 				x = 0;
 				y += height;
+
+				// Wrap to next line and clear before printing remainder
+				OledClearLine(y);
+				if (Char_Size == 16)
+				{
+					OledClearLine(y + 1);
+				}
 			}
 
 			// Try to draw char and check vertical overflow status
@@ -625,7 +667,7 @@ uint8_t OledShowString(uint8_t x, uint8_t y, const char *str, uint8_t Char_Size)
 				OledShowChar(trunc_x + char_width,		trunc_y, '.', Char_Size);
 				OledShowChar(trunc_x + (char_width*2),	trunc_y, '.', Char_Size);
 
-				return 1; // Return 1 to indicate string was truncated
+				return 1; // Return 1 to indicate truncation
 			}
 			// No overflow
 			x += char_width;
@@ -640,13 +682,13 @@ uint8_t OledShowString(uint8_t x, uint8_t y, const char *str, uint8_t Char_Size)
 void OledShowPicData(uint8_t x, uint8_t y, uint8_t wdt, uint8_t hgt, uint8_t *pPicData)
 {
 	uint8_t i = 0, j = 0;
-	// Use 128 instead of 127 to match the 0-127 physical column bounds
+	// Uses 128 to match 0-127 indexed physical pixels
 	uint8_t real_wdt = (x + wdt > 128) ? (128 - x) : wdt;
 	uint8_t real_hgt = (y + hgt > 7)   ? (8 - y)   : hgt;
 
 	for (i = 0; i < real_hgt; i++)
 	{
-		OledSetPos(x, y + i);
+		OledSetPos(x,y + i);
 		for (j = 0; j < real_wdt; j++)
 		{
 			SSD1306_WriteData(pPicData[(i * wdt) + j]);
@@ -740,7 +782,7 @@ void draw_progressbar(uint32_t processed, uint32_t total, uint8_t line)
 	if (processed == 0)
 	{
 		previous = 0;
-		OledShowString(0, line, "[...................]", 8);
+		OledShowString(0,line,"[...................]",8);
 		return;
 	}
 

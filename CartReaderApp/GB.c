@@ -453,8 +453,8 @@ void setup_GB()
 void readROM_GB()
 {
 	if (strcmp(romName, "456789") == 0 ||
-        strcmp(checksumStr, "FFFF") == 0 ||
-        strcmp(checksumStr, "0000") == 0)
+		strcmp(checksumStr, "FFFF") == 0 ||
+		strcmp(checksumStr, "0000") == 0)
 	{
 		strcpy(romName, "ERROR");
 		OledShowString(0,0,"GAMEPAK ERROR",8);
@@ -642,8 +642,8 @@ boolean compare_checksum_GB()
 void readSRAM_GB()
 {
 	if ((strcmp(romName, "456789") == 0) ||
-        (strcmp(checksumStr, "FFFF") == 0) ||
-        (strcmp(checksumStr, "0000") == 0))
+		(strcmp(checksumStr, "FFFF") == 0) ||
+		(strcmp(checksumStr, "0000") == 0))
 	{
 		strcpy(romName, "ERROR");
 		OledShowString(0,0,"GAMEPAK ERROR",8);
