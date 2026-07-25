@@ -340,7 +340,7 @@ uint8_t gbxDebugMenu()		// Debug Menu for dev testing
 			OledShowString(0,1,"This line is 21 chars\nwith a newline",8);
 			OledShowString(0,3,"And this has too many\nnewlines\n1\n2 Press OK...\n3\n4",8);
 			WaitOKBtn();
-			gbxDebugScreeen();
+			gbxDebugScreen();
 			break;
 		case 4:
 			OledClear();
