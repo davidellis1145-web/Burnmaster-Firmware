@@ -669,6 +669,14 @@ uint8_t OledShowString(uint8_t x, uint8_t y, const char *str, uint8_t Char_Size)
 	uint8_t char_width = (Char_Size == 16) ? 8 : 6;
 	uint8_t height = (Char_Size == 16) ? 2 : 1;
 
+	if (Char_Size == 16)	// Testing clear line before printing string
+	{						// Probably going to mess up icons...
+		OledClearLine(y + 1);
+	}
+	else
+	{
+		OledClearLine(y);
+	}						// End of testing part
 	while (str[j] != '\0')
 	{
 		if (str[j] == '\n')
