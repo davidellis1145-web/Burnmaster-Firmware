@@ -593,7 +593,7 @@ void OledShowCharScroll(uint8_t x,uint8_t y,uint8_t chr,uint8_t Char_Size)
 
 
 // Display a string scroll testing
-uint8_t OledShowStringScroll(uint8_t x,uint8_t y,char *str,uint8_t Char_Size)
+uint8_t OledShowStringScroll(uint8_t x,uint8_t y,const char *str,uint8_t Char_Size)
 {
 	unsigned char j=0;
 
