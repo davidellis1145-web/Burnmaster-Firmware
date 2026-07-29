@@ -116,7 +116,7 @@ void aboutScreen()
 	OledShowString(0,0,"Game Boy",16);
 	OledShowPicData(80,0,48,6,Icon_data_DGE);
 	OledShowString(3,2,"Flash Master",8);
-	OledShowString(8,4,"v1.0.4a7",8);
+	OledShowString(8,4,"v1.0.4a8",8);
 	OledShowString(2,5,"Jul 24, 2026",8);
 	OledShowString(0,7,"Press OK Button...",8);
 	WaitOKBtn();
@@ -350,6 +350,7 @@ uint8_t gbxDebugMenu()		// Debug Menu for dev testing
 			OledClear();
 			OledShowPicData(80,2,48,6,Icon_data_DGE);
 			OledShowString(0,7,"Press OK Button...",8);
+			WaitOKBtn();
 			gbxDebugScreen();
 			break;
 		case 5:

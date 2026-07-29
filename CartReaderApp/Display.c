@@ -561,8 +561,8 @@ void OledClearLine(uint8_t y)
 	}
 }
 
-// Scroll testing...
-void OledShowCharScroll(uint8_t x,uint8_t y,uint8_t chr,uint8_t Char_Size)
+// ShowChar for QBoxShowString below
+void QBoxShowChar(uint8_t x,uint8_t y,uint8_t chr,uint8_t Char_Size)
 {
 	uint8_t c=0,i=0;
 
@@ -592,33 +592,25 @@ void OledShowCharScroll(uint8_t x,uint8_t y,uint8_t chr,uint8_t Char_Size)
 }
 
 
-// Display a string scroll testing
-uint8_t OledShowStringScroll(uint8_t x,uint8_t y,const char *str,uint8_t Char_Size)
+// Display string for QuestionBox (prevents wrapping so long strings scroll)
+uint8_t QBoxShowString(uint8_t x,uint8_t y,const char *str,uint8_t Char_Size)
 {
 	unsigned char j=0;
+	uint8_t char_width = (Char_Size == 16) ? 8 : 6;
 
 	while (str[j]!='\0')
 	{
-		if(str[j] == '\n')
+		QBoxShowChar(x,y,str[j],Char_Size);
+		x += char_width;
+		if(x > 120)
 		{
-			x=0;
-			y+=1;
+			return 1;
 		}
-		else
-		{
-			OledShowCharScroll(x,y,str[j],Char_Size);
-			x+=(Char_Size >> 1) + 2;
-			if(x>120)
-			{
-				return 1;
-			}
-		}
-		j++; // Each movement constitutes 1 line, ranging from 0-7 (8px each line)
+		j++;
 	}
-	OledShowCharScroll(x,y,' ',Char_Size);
 	return 0;
 }
-// EOT
+
 
 // Displays a character, or part of one, at specified position
 // x:0-127, y:0-7
