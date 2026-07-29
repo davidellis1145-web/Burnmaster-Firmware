@@ -561,6 +561,64 @@ void OledClearLine(uint8_t y)
 	}
 }
 
+// Scroll testing...
+void OledShowCharScroll(uint8_t x,uint8_t y,uint8_t chr,uint8_t Char_Size)
+{
+	uint8_t c=0,i=0;
+
+	c=chr-' '; // Check char position isn't too far right
+	if(Char_Size == 16)
+	{
+		OledSetPos(x,y);
+		for(i=0;i<8;i++)
+		{
+			SSD1306_WriteData(F8X16[c*16+i]); // Write upper half (8px) first
+		}
+
+		OledSetPos(x,y+1);
+		for(i=0;i<8;i++)
+		{
+			SSD1306_WriteData(F8X16[c*16+i+8]); // Write lower half (8px)
+		}
+	}
+	else
+	{
+		OledSetPos(x,y);
+		for(i=0;i<5;i++)
+		{
+			SSD1306_WriteData(F5x8[c*5+i]);
+		}
+	}
+}
+
+
+// Display a string scroll testing
+uint8_t OledShowStringScroll(uint8_t x,uint8_t y,char *str,uint8_t Char_Size)
+{
+	unsigned char j=0;
+
+	while (str[j]!='\0')
+	{
+		if(str[j] == '\n')
+		{
+			x=0;
+			y+=1;
+		}
+		else
+		{
+			OledShowCharScroll(x,y,str[j],Char_Size);
+			x+=(Char_Size >> 1) + 2;
+			if(x>120)
+			{
+				return 1;
+			}
+		}
+		j++; // Each movement constitutes 1 line, ranging from 0-7 (8px each line)
+	}
+	OledShowCharScroll(x,y,' ',Char_Size);
+	return 0;
+}
+// EOT
 
 // Displays a character, or part of one, at specified position
 // x:0-127, y:0-7

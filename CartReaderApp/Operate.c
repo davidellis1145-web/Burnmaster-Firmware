@@ -67,7 +67,7 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 	for (unsigned char i = 0; i < num_answers; i++)
 	{
 		memcpy(tanswer,answers[i],20);
-		OledShowString(6,i+1,tanswer,8);
+		OledShowStringScroll(6,i+1,tanswer,8);
 	}
 
 	// Start with the default choice
@@ -89,7 +89,7 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 			scroll_tick = scroll_tick + 1;
 			if((scroll_tick > 14) && (scroll_tick%3 == 1))
 			{
-				if(OledShowString(6,choice,answers[choice - 1] + scroll_start,8) > 0)
+				if(OledShowStringScroll(6,choice,answers[choice - 1] + scroll_start,8) > 0)
 				{
 					scroll_start++;
 				}
@@ -170,7 +170,7 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 		if(choice != choice_ori)
 		{
 			OledShowChar(0,choice_ori,' ',8);
-			OledShowString(6,choice_ori,answers[choice_ori-1],8);
+			OledShowStringScroll(6,choice_ori,answers[choice_ori-1],8);
 			OledShowChar(0,choice,'*',8);
 			choice_ori=choice;
 		}
