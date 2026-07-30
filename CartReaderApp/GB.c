@@ -604,7 +604,7 @@ uint16_t calc_checksum_GB (char* fileName, char* folder)
 // Compare checksum
 boolean compare_checksum_GB()
 {
-	OledShowString(0,3,"Calculating Checksum",8);
+	OledShowString(0,3,"Calculating Checksum ",8);
 
 	strcpy(fileName, romName);
 	strcat(fileName, ".gb");
@@ -1936,7 +1936,7 @@ uint8_t gbMenu()
 			break;
 		case 1:
 			// Flash ROM
-			// Launch filebrowser
+			// Launch file browser
 			fileBrowser("/","Select file:");
 			OledClear();
 			identifyCFI_GB();

@@ -497,7 +497,7 @@ void readROM_GBA()
 // Calculate the checksum of the dumped rom
 boolean compare_checksum_GBA()
 {
-	OledShowString(0,4,"Calculating Checksum",8);
+	OledShowString(0,4,"Calculating Checksum ",8);
 
 	strcpy(fileName, romName);
 	strcat(fileName, ".gba");
@@ -1008,7 +1008,7 @@ unsigned long verifyEEP_GBA(word eepSize)
 // Write EEPROM from file
 void writeEeprom_GBA(word eepSize)
 {
-	// Launch Filebrowser
+	// Launch file browser
 	filePath[0] = '\0';
 	fileBrowser("/","Select EEP file");
 
@@ -3023,8 +3023,7 @@ void setup_GBA()
 	OledShowString(0,3,tmsg,8);
 	if (strcmp(checksumStr, "") == 0)
 	{
-		sprintf(tmsg,"Checksum: Unknown\nVersion:  Unknown");
-		OledShowString(0,4,tmsg,8);
+		OledShowString(0,4,"Checksum: Unknown\nVersion:  Unknown",8);
 	}
 	else
 	{

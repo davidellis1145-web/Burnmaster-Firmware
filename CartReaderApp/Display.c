@@ -5,10 +5,10 @@
 #include "Display.h"
 
 /***************************************
-  I2C Oled sdd1306 Display functions
+  I2C Oled ssd1306 Display functions
 ***************************************/
 
-// Display size 128px x 64px
+// Display resolution: 128px x 64px
 
 /* Font library: ASCII 8x16 font. Data arrangement: left-to-right, top-to-bottom. Extraction method: vertical 8-point (lsb first). No inversion. Total 95 characters.
 Complete character set: !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~ */
@@ -566,7 +566,7 @@ void QBoxShowChar(uint8_t x,uint8_t y,uint8_t chr,uint8_t Char_Size)
 {
 	uint8_t c=0,i=0;
 
-	c=chr-' '; // Check char position isn't too far right
+	c=chr-' ';
 	if(Char_Size == 16)
 	{
 		OledSetPos(x,y);
@@ -669,14 +669,6 @@ uint8_t OledShowString(uint8_t x, uint8_t y, const char *str, uint8_t Char_Size)
 	uint8_t char_width = (Char_Size == 16) ? 8 : 6;
 	uint8_t height = (Char_Size == 16) ? 2 : 1;
 
-	if (Char_Size == 16)	// Testing clear line before printing string
-	{						// Probably going to mess up icons...
-		OledClearLine(y + 1);
-	}
-	else
-	{
-		OledClearLine(y);
-	}						// End of testing part
 	while (str[j] != '\0')
 	{
 		if (str[j] == '\n')
@@ -699,7 +691,7 @@ uint8_t OledShowString(uint8_t x, uint8_t y, const char *str, uint8_t Char_Size)
 				x = 0;
 				y += height;
 
-				// Wrap to next line and clear before printing remainder
+				// Wrap to next line and clear it before printing remainder
 				OledClearLine(y);
 				if (Char_Size == 16)
 				{

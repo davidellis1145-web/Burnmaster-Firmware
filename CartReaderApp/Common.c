@@ -14,15 +14,15 @@ char folder[36];
 // File browser
 char fileName[FILENAME_LENGTH];
 char filePath[FILEPATH_LENGTH];
-byte currPage;
-byte lastPage;
-byte numPages;
+word currPage;
+word lastPage;
+word numPages;
 boolean root = 0;
 
 // Common
 char romName[64];
 unsigned long sramSize = 0;
-int romType = 0;
+byte romType = 0; // Here int to byte
 int manufacturerid = 0;
 byte saveType;
 word romSize = 0;

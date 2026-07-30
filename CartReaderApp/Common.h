@@ -16,7 +16,7 @@
 #define false (0)
 
 #define FILENAME_LENGTH 64
-#define FILEPATH_LENGTH 128
+#define FILEPATH_LENGTH 256
 #define FILEOPTS_LENGTH 20
 
 extern int foldern;
@@ -25,9 +25,9 @@ extern FATFS fs;
 
 extern char fileName[FILENAME_LENGTH];
 extern char filePath[FILEPATH_LENGTH];
-extern byte currPage;
-extern byte lastPage;
-extern byte numPages;
+extern word currPage;
+extern word lastPage;
+extern word numPages;
 extern boolean root;
 extern boolean filebrowse;
 extern bool errorLvl;
@@ -40,7 +40,7 @@ extern unsigned long writeErrors;
 
 extern char romName[64];
 extern unsigned long sramSize;
-extern int romType;
+extern byte romType; // Here int to byte
 extern byte saveType;
 extern word romSize;
 extern word numBanks;

@@ -255,7 +255,7 @@ uint8_t my_mkdir(char * dir)
 
 
 /**********************
-  Filebrowser Module
+  File Browser Module
 **********************/
 char fileNames[128][100];
 char answer1[100];
@@ -267,89 +267,124 @@ char answer6[100];
 char answer7[100];
 char* tanswers[7] = {answer1,answer2,answer3,answer4,answer5,answer6,answer7};
 
-void fileBrowser(char * start_dir , const char * browserTitle)
+void fileBrowser(char * start_dir ,const char * browserTitle)
 {
 	int currFile = 0;
 	int menucnt = 0;
+
 	// Init Dir
-	strcpy(filePath,start_dir);
-	// Temporary char array for filename
-	char nameStr[128];
+	strncpy(filePath,start_dir,sizeof(filePath) - 1);
+	filePath[sizeof(filePath) - 1] = '\0';
 	DIR tdir;
 	FRESULT fret;
 	FILINFO finfo;
 	bool bnomore;
 	uint8_t mret;
 	uint8_t default_select;
+	bool dir_is_open = false;
 
 browserstart:
+	// Close the directory if it was left open
+	if (dir_is_open)
+	{
+		f_closedir(&tdir);
+		dir_is_open = false;
+	}
 
-	// Print title
 	OledClear();
 	OledShowString(0,0,(char *)browserTitle,8);
 
-	// Set currFile back to 0
 	currFile = 0;
 	currPage = 1;
 	lastPage = 1;
 	bnomore = false;
 
-	// Open filepath directory
 	if (f_opendir(&tdir,filePath) != FR_OK)
 	{
 		OledClear();
-		print_Error("SD Error", true);
+		print_Error("SD Error",true);
+		return; // Return immediately to avoid an invalid pointer
 	}
+	dir_is_open = true;
 	f_chdir(filePath);
 
 next_page:
-
 	menucnt = 0;
 	while(1)
 	{
 		fret = f_readdir(&tdir,&finfo);
-		if(fret == FR_OK)
+		if (fret == FR_OK)
 		{
-			// Reached end, or menu full
-			if(finfo.fname[0] == 0x00)
+			if (finfo.fname[0] == 0x00)
 			{
 				bnomore = true;
 				break;
 			}
 
-			strcpy(fileNames[currFile],finfo.fname);
-			strcpy(tanswers[menucnt],fileNames[currFile]);
-			currFile++;
-			menucnt++;
-			printf("\nfile:[%s]-[%s]",finfo.fname,finfo.altname);
+			// Protects against overflow in strings
+			if (currFile < 128)
+			{
+				strncpy(fileNames[currFile],finfo.fname,100 - 1);
+				fileNames[currFile][100 - 1] = '\0';
 
-			if(menucnt >= 7)
+				if (menucnt < 7)
+				{
+					strncpy(tanswers[menucnt],fileNames[currFile],100 - 1);
+					tanswers[menucnt][100 - 1] = '\0';
+				}
+
+				currFile++;
+				menucnt++;
+			}
+
+			printf("\nfile:[%s]-[%s]",finfo.fname,finfo.altname);
+			if (menucnt >= 7)
 			{
 				break;
 			}
 		}
 		else
+		{
 			break;
+		}
 	}
 
 	default_select = 1;
 
 next_page1:
+	mret = questionBox_OLED((char *)browserTitle,(const char **)tanswers,menucnt,default_select,0,1);
 
-	mret = questionBox_OLED((char *)browserTitle,(const char **)tanswers,menucnt,default_select,0, 1);
 	switch(mret)
 	{
 		case MENU_CANCEL:
 			{
-				for(int i = sizeof(filePath) - 1;i>0;i--)
+				int len = strlen(filePath);
+
+				// Check if we are already at the root directory
+				if (len == 0 || (len == 1 && (filePath[0] == '/' || filePath[0] == '\\')))
 				{
-					if(filePath[i] == '/'||filePath[i] == '\\')
+					if (dir_is_open)
+					{
+						f_closedir(&tdir); // Clean up FatFS directory handle before reboot
+					}
+					ResetSystem(); // Trigger the system reset
+				}
+
+				// Back-navigation logic if not at root
+				bool chopped = false;
+				for (int i = len - 1; i > 0; i--)
+				{
+					if (filePath[i] == '/' || filePath[i] == '\\')
 					{
 						filePath[i] = 0x00;
+						chopped = true;
 						break;
 					}
 				}
-				f_closedir(&tdir);
+				if (!chopped && len > 0)
+				{
+					filePath[0] = 0x00;
+				}
 				goto browserstart;
 			}
 			break;
@@ -361,83 +396,117 @@ next_page1:
 		case MENU_6:
 		case MENU_7:
 			{
-				FIL tf;
-				fret = f_open(&tf,tanswers[mret - 1],FA_OPEN_EXISTING);
-				if(fret != FR_OK)
+			int selected_idx = mret - 1;
+			FIL tf;
+
+			fret = f_open(&tf,tanswers[selected_idx],FA_OPEN_EXISTING);
+			if (fret != FR_OK)
+			{
+				// It's a directory. Append to filePath and continue
+				int current_len = strlen(filePath);
+				if (current_len < (int)sizeof(filePath) - (int)strlen(tanswers[selected_idx]) - 2)
 				{
-					strcat(filePath,"/");
-					strcat(filePath,tanswers[mret - 1]);
-					f_closedir(&tdir);
-					goto browserstart;
+					if (current_len > 0 && filePath[current_len - 1] != '/' && filePath[current_len - 1] != '\\')
+					{
+						strcat(filePath, "/");
+					}
+					strcat(filePath,tanswers[selected_idx]);
 				}
-				else
-				{
-					f_close(&tf);
-					strcat(filePath,"/");
-					strcat(filePath,tanswers[mret - 1]);
-					return;
-				}
+				goto browserstart;
 			}
-			break;
+			else
+			{
+				// It's a file. Append to path and return
+				f_close(&tf);
+				int current_len = strlen(filePath);
+				if (current_len < (int)sizeof(filePath) - (int)strlen(tanswers[selected_idx]) - 2)
+				{
+					if (current_len > 0 && filePath[current_len - 1] != '/' && filePath[current_len - 1] != '\\')
+					{
+						strcat(filePath, "/");
+					}
+					strcat(filePath,tanswers[selected_idx]);
+				}
+
+				if (dir_is_open)
+				{
+					f_closedir(&tdir);
+				}
+				return;
+			}
+		}
+		break;
+
 		case MENU_PGUP:
 		case MENU_UPUP:
 			{
-				if(currPage > 1)
+			if (currPage > 1)
+			{
+				currPage--;
+				for (int i = 0; i < 7; i++)
 				{
-					currPage--;
-					for(int i = 0;i<7;i++)
+					int file_idx = (currPage - 1) * 7 + i;
+					if (file_idx < currFile)
 					{
-						strcpy(tanswers[i],fileNames[(currPage - 1)*7 + i]);
+						strncpy(tanswers[i],fileNames[file_idx],100 - 1);
+						tanswers[i][100 - 1] = '\0';
 					}
-					bnomore = false;
-					menucnt = 7;
 				}
-
-				default_select = 1;
-				goto next_page1;
+				bnomore = false;
+				menucnt = 7;
 			}
-			break;
+			default_select = 1;
+			goto next_page1;
+		}
+		break;
+
 		case MENU_PGDN:
 		case MENU_DOWNDOWN:
 			{
-				if(bnomore)
-				{
-					default_select = menucnt;
-					goto next_page1;
-				}
-
-				currPage++;
-				if(currPage > lastPage)
-				{
-					lastPage++;
-					goto next_page;
-				}
-				else
-				{
-					menucnt=0;
-					bnomore = false;
-					for(int i=0;i<7;i++)
-					{
-						if((currPage - 1)*7 + i < currFile)
-						{
-							strcpy(tanswers[i],fileNames[(currPage - 1)*7 + i]);
-							menucnt++;
-						}
-						else
-						{
-							bnomore = true;
-							break;
-						}
-					}
-					default_select = 1;
-					goto next_page1;
-				}
+			if (bnomore)
+			{
+				default_select = menucnt;
+				goto next_page1;
 			}
-			break;
+			currPage++;
+			if (currPage > lastPage)
+			{
+				lastPage++;
+				goto next_page;
+			}
+			else
+			{
+				menucnt = 0;
+				bnomore = false;
+				for (int i = 0; i < 7; i++)
+				{
+					int file_idx = (currPage - 1) * 7 + i;
+					if (file_idx < currFile)
+					{
+						strncpy(tanswers[i],fileNames[file_idx],100 - 1);
+						tanswers[i][100 - 1] = '\0';
+						menucnt++;
+					}
+					else
+					{
+						bnomore = true;
+						break;
+					}
+				}
+				default_select = 1;
+				goto next_page1;
+			}
+		}
+		break;
+
 		default:
 			{
-				print_Error("File Err...",1);
+			if (dir_is_open)
+			{
+				f_closedir(&tdir);
 			}
-			break;
+			print_Error("File Err...", 1);
+		}
+		break;
 	}
 }
