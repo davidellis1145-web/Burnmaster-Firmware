@@ -22,7 +22,7 @@ boolean root = 0;
 // Common
 char romName[64];
 unsigned long sramSize = 0;
-byte romType = 0; // Here int to byte
+int romType = 0;
 int manufacturerid = 0;
 byte saveType;
 word romSize = 0;

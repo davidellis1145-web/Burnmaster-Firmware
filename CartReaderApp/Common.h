@@ -40,7 +40,7 @@ extern unsigned long writeErrors;
 
 extern char romName[64];
 extern unsigned long sramSize;
-extern byte romType; // Here int to byte
+extern int romType;
 extern byte saveType;
 extern word romSize;
 extern word numBanks;
