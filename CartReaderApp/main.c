@@ -348,8 +348,8 @@ uint8_t gbxDebugMenu()		// Debug Menu for dev testing
 			OledShowString(0,7,"Press OK...",8);
 			WaitOKBtn();
 			OledClear();
-			OledShowPicData(80,2,48,6,Icon_data_DGE);
-			OledShowString(0,7,"Press OK Button...",8);
+			OledShowPicData(80,4,48,6,Icon_data_DGE);
+			OledShowString(0,7,"Press OK...",8);
 			WaitOKBtn();
 			gbxDebugScreen();
 			break;

@@ -497,7 +497,7 @@ void readROM_GBA()
 // Calculate the checksum of the dumped rom
 boolean compare_checksum_GBA()
 {
-	OledShowString(0,4,"Calculating Checksum ",8);
+	OledShowString(0,4,"Calculating Checksum",8);
 
 	strcpy(fileName, romName);
 	strcat(fileName, ".gba");
@@ -2794,7 +2794,7 @@ void flashRepro_GBA()
 				print_Error("verify ERROR!", true);
 			}
 			use_tick = (getSystick() - use_tick)/1055;
-			sprintf(tmsg,"Time Elapsed: %d(s)",use_tick);
+			sprintf(tmsg,"Completed in: %d(s)",use_tick);
 			OledShowString(10,6,tmsg,8);
 		}
 		else

@@ -604,7 +604,7 @@ uint16_t calc_checksum_GB (char* fileName, char* folder)
 // Compare checksum
 boolean compare_checksum_GB()
 {
-	OledShowString(0,3,"Calculating Checksum ",8);
+	OledShowString(0,3,"Calculating Checksum",8);
 
 	strcpy(fileName, romName);
 	strcat(fileName, ".gb");
@@ -1422,7 +1422,7 @@ bool writeCFI_GB()
 		if (writeErrors == 0)
 		{
 			use_tick = (getSystick() - use_tick)/1055;
-			sprintf(msgbuf,"Time Elapsed: %d(s)",use_tick);
+			sprintf(msgbuf,"Completed in: %d(s)",use_tick);
 			OledShowString(10,6,msgbuf,8);
 		}
 		else

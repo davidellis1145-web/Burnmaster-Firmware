@@ -562,52 +562,38 @@ void OledClearLine(uint8_t y)
 }
 
 // ShowChar for QBoxShowString below
-void QBoxShowChar(uint8_t x,uint8_t y,uint8_t chr,uint8_t Char_Size)
+void QBoxShowChar(uint8_t x,uint8_t y,uint8_t chr)
 {
 	uint8_t c=0,i=0;
-
 	c=chr-' ';
-	if(Char_Size == 16)
+	
+	OledSetPos(x,y);
+	for (i = 0; i < 5; i++)
 	{
-		OledSetPos(x,y);
-		for(i=0;i<8;i++)
-		{
-			SSD1306_WriteData(F8X16[c*16+i]); // Write upper half (8px) first
-		}
-
-		OledSetPos(x,y+1);
-		for(i=0;i<8;i++)
-		{
-			SSD1306_WriteData(F8X16[c*16+i+8]); // Write lower half (8px)
-		}
+		SSD1306_WriteData(F5x8[c * 5 + i]);
 	}
-	else
-	{
-		OledSetPos(x,y);
-		for(i=0;i<5;i++)
-		{
-			SSD1306_WriteData(F5x8[c*5+i]);
-		}
-	}
+	SSD1306_WriteData(0x00); // Print 1px 'space' for proper letter spacing
 }
 
 
+
 // Display string for QuestionBox (prevents wrapping so long strings scroll)
-uint8_t QBoxShowString(uint8_t x,uint8_t y,const char *str,uint8_t Char_Size)
+uint8_t QBoxShowString(uint8_t x,uint8_t y,const char *str)
 {
 	unsigned char j=0;
-	uint8_t char_width = (Char_Size == 16) ? 8 : 6;
-
+	
 	while (str[j]!='\0')
 	{
-		QBoxShowChar(x,y,str[j],Char_Size);
-		x += char_width;
-		if(x > 120)
+		if(x + 6 > 128)
 		{
 			return 1;
 		}
+		
+		QBoxShowChar(x,y,str[j]);
+		x += 6;
 		j++;
 	}
+	OledShowChar(x,y,' ',Char_Size);
 	return 0;
 }
 
@@ -657,6 +643,7 @@ uint8_t OledShowChar(uint8_t x, uint8_t y, uint8_t chr, uint8_t Char_Size)
 		{
 			SSD1306_WriteData(F5x8[c * 5 + i]);
 		}
+	SSD1306_WriteData(0x00); // Print 1px 'space' for proper letter spacing
 	}
 	return 0; // Success
 }
@@ -717,6 +704,7 @@ uint8_t OledShowString(uint8_t x, uint8_t y, const char *str, uint8_t Char_Size)
 		}
 		j++;
 	}
+	OledShowChar(x,y,' ',Char_Size);
 	return 0;
 }
 
@@ -839,7 +827,7 @@ void draw_progressbar(uint32_t processed, uint32_t total, uint8_t line)
 			if (i >= steps)
 			{
 				// Pause to notice full bar
-				delay(1500);
+				delay(1000);
 			}
 			else
 			{
