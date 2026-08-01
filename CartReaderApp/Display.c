@@ -593,7 +593,7 @@ uint8_t QBoxShowString(uint8_t x,uint8_t y,const char *str)
 		x += 6;
 		j++;
 	}
-	OledShowChar(x,y,' ',Char_Size);
+	OledShowChar(x,y,' ');
 	return 0;
 }
 
