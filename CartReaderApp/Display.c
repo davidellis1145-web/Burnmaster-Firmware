@@ -489,7 +489,7 @@ void SSD1306_WriteData(uint8_t var)
 // Coordinate settings: where to display
 void OledSetPos(uint8_t x, uint8_t y)
 {
-	if (x > MAX_COLUMN || y > 7)
+	if (x > MAX_COLUMN || y > 7)  // Remove?
 	{
 		return;
 	}

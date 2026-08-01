@@ -62,12 +62,12 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 	if(clrSrc > 0)OledClear();
 
 	// Print menu
-	QBoxShowString(0,0,question,8);
+	QBoxShowString(0,0,question);
 	char tanswer[21] = {0};
 	for (unsigned char i = 0; i < num_answers; i++)
 	{
 		memcpy(tanswer,answers[i],20);
-		QBoxShowString(6,i+1,tanswer,8);
+		QBoxShowString(6,i+1,tanswer);
 	}
 
 	// Start with the default choice
@@ -75,7 +75,7 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 	unsigned char choice_ori = default_choice;
 
 	// Draw selection bullet
-	QBoxShowChar(0,choice,'*',8);
+	QBoxShowChar(0,choice,'*');
 	uint8_t currentColor = 0;
 	uint32_t scroll_tick = 0;
 	uint8_t scroll_start = 0;
@@ -89,7 +89,7 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 			scroll_tick = scroll_tick + 1;
 			if((scroll_tick > 14) && (scroll_tick%3 == 1))
 			{
-				if(QBoxShowString(6,choice,answers[choice - 1] + scroll_start,8) > 0)
+				if(QBoxShowString(6,choice,answers[choice - 1] + scroll_start) > 0)
 				{
 					scroll_start++;
 				}
@@ -169,9 +169,9 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 		// Show menu selected
 		if(choice != choice_ori)
 		{
-			QBoxShowChar(0,choice_ori,' ',8);
-			QBoxShowString(6,choice_ori,answers[choice_ori-1],8);
-			QBoxShowChar(0,choice,'*',8);
+			QBoxShowChar(0,choice_ori,' ');
+			QBoxShowString(6,choice_ori,answers[choice_ori-1]);
+			QBoxShowChar(0,choice,'*');
 			choice_ori=choice;
 		}
 	}
