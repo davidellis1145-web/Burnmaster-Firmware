@@ -704,7 +704,7 @@ uint8_t OledShowString(uint8_t x, uint8_t y, const char *str, uint8_t Char_Size)
 		}
 		j++;
 	}
-	OledShowChar(x,y,' ',Char_Size);
+	OledShowChar(x,y,' ');
 	return 0;
 }
 
