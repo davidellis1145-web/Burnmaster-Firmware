@@ -577,7 +577,7 @@ void QBoxShowChar(uint8_t x,uint8_t y,uint8_t chr)
 	
 	if (y > 7)
 	{
-		return 1;
+		return;
 	}
 
 	OledSetPos(x,y);
