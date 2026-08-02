@@ -489,12 +489,12 @@ void SSD1306_WriteData(uint8_t var)
 // Coordinate settings: where to display
 void OledSetPos(uint8_t x, uint8_t y)
 {
-	if (x > MAX_COLUMN || y > 7)  // Remove?
+	if (x > MAX_COLUMN || y > 7)  // Hardware level (actual pixel boundaries) safety check
 	{
 		return;
 	}
 
-	// The following 3 registers are valid only in page addressing mode.
+	// The following 3 registers are for page addressing mode.
 
 	SSD1306_WriteCmd(0xb0 + y);					// Set page address (0-7)
 	SSD1306_WriteCmd(((x >> 4) & 0x0f) | 0x10);	// Column high address setting
@@ -520,10 +520,38 @@ void OledDisplayOff(void)
 }
 
 
-// Clears entire screen, making it all black as if it was not on
+void OledClearLine(uint8_t y)
+{
+	// Ensure y is within bounds
+	if (y > 7)
+	{
+		return;
+	}
+
+	// Point cursor to start of target row
+	OledSetPos(0,y);			// Does what the 3 below do I think
+	/*SSD1306_WriteCmd(0xb0 + y);	// Set page address
+	SSD1306_WriteCmd(0x00);		// Reset column low address
+	SSD1306_WriteCmd(0x10);		// Reset column high address*/
+
+	// Sweep through columns 0-127
+	for (uint8_t n = 0; n <= MAX_COLUMN; n++)
+	{
+		SSD1306_WriteData(0x00);
+	}
+}
+
+
+// Clears entire screen, turning off all pixels
 void OledClear(void)
 {
-	uint8_t i;
+	// Loop through all 8 pages
+	for (uint8_t y = 0; y < 8; y++)
+	{
+		OledClearLine(y);
+	}
+}
+	/*uint8_t i;
 	uint16_t n;
 
 	for(i = 0; i < 8; i++)
@@ -538,35 +566,20 @@ void OledClear(void)
 			SSD1306_WriteData(0x00);    // Clear every pixel byte
 		}
 	}
-}
+}*/
 
-
-void OledClearLine(uint8_t y)
-{
-	// Ensure y is within bounds
-	if (y > 7)
-	{
-		return;
-	}
-
-	// Point cursor to start of target row
-	SSD1306_WriteCmd(0xb0 + y);	// Set page address
-	SSD1306_WriteCmd(0x00);		// Reset column low address
-	SSD1306_WriteCmd(0x10);		// Reset column high address
-
-	// Sweep through columns 0-127
-	for (uint8_t n = 0; n <= MAX_COLUMN; n++)
-	{
-		SSD1306_WriteData(0x00);
-	}
-}
 
 // ShowChar for QBoxShowString below
 void QBoxShowChar(uint8_t x,uint8_t y,uint8_t chr)
 {
-	uint8_t c=0,i=0;
-	c=chr-' ';
+	uint8_t c = 0, i = 0;
+	c = chr - ' ';
 	
+	if (y > 7)
+	{
+		return 1;
+	}
+
 	OledSetPos(x,y);
 	for (i = 0; i < 5; i++)
 	{
@@ -578,13 +591,14 @@ void QBoxShowChar(uint8_t x,uint8_t y,uint8_t chr)
 
 
 // Display string for QuestionBox (prevents wrapping so long strings scroll)
+// Don't use '\n' with this. It shouldn't be needed anyway.
 uint8_t QBoxShowString(uint8_t x,uint8_t y,const char *str)
 {
-	unsigned char j=0;
+	unsigned char j = 0;
 	
-	while (str[j]!='\0')
+	while (str[j] != '\0')
 	{
-		if(x + 6 > 128)
+		if(x > 121 || y > 7)
 		{
 			return 1;
 		}
@@ -593,7 +607,7 @@ uint8_t QBoxShowString(uint8_t x,uint8_t y,const char *str)
 		x += 6;
 		j++;
 	}
-	OledShowChar(x,y,' ');
+	QBoxShowChar(x,y,' ');
 	return 0;
 }
 
@@ -643,9 +657,9 @@ uint8_t OledShowChar(uint8_t x, uint8_t y, uint8_t chr, uint8_t Char_Size)
 		{
 			SSD1306_WriteData(F5x8[c * 5 + i]);
 		}
-	SSD1306_WriteData(0x00); // Print 1px 'space' for proper letter spacing
+	SSD1306_WriteData(0x00); // Make sure space between characters is clear
 	}
-	return 0; // Success
+	return 0;
 }
 
 
@@ -656,38 +670,19 @@ uint8_t OledShowString(uint8_t x, uint8_t y, const char *str, uint8_t Char_Size)
 	uint8_t char_width = (Char_Size == 16) ? 8 : 6;
 	uint8_t height = (Char_Size == 16) ? 2 : 1;
 
+	if (y + height > 8)
+	{
+		return 1; // Won't fit
+	}
+
 	while (str[j] != '\0')
 	{
-		if (str[j] == '\n')
+		if (str[j] == '\n' || (x + char_width > (MAX_COLUMN + 1)))
 		{
 			x = 0;
 			y += height;
 
-			// Clear new line
-			OledClearLine(y);
-			if (Char_Size == 16)
-			{
-				OledClearLine(y + 1);
-			}
-		}
-		else
-		{
-			// Check if character fits horizontally
-			if (x + char_width > (MAX_COLUMN + 1))
-			{
-				x = 0;
-				y += height;
-
-				// Wrap to next line and clear it before printing remainder
-				OledClearLine(y);
-				if (Char_Size == 16)
-				{
-					OledClearLine(y + 1);
-				}
-			}
-
-			// Try to draw char and check vertical overflow status
-			if (OledShowChar(x,y, str[j], Char_Size) != 0) // Overflow
+			if (y + height > 8)
 			{
 				// Draw truncation indicator
 				uint8_t trunc_x = (MAX_COLUMN + 1) - (3 * char_width);
@@ -699,12 +694,30 @@ uint8_t OledShowString(uint8_t x, uint8_t y, const char *str, uint8_t Char_Size)
 
 				return 1; // Return 1 to indicate truncation
 			}
-			// No overflow
+
+			// Clear new line(s)
+			OledClearLine(y);
+			if (Char_Size == 16)
+			{
+				OledClearLine(y + 1);
+			}
+		}
+
+		// Print remainder of string
+		if (str[j] != '\n')
+		{
+			if (OledShowChar(x,y, str[j], Char_Size) != 0)
+			{
+				return 1;
+			}
 			x += char_width;
 		}
 		j++;
 	}
-	OledShowChar(x,y,' ');
+	if (x + char_width <= (MAX_COLUMN + 1))
+	{
+		OledShowChar(x,y,' ',Char_Size);
+	}
 	return 0;
 }
 
@@ -712,8 +725,29 @@ uint8_t OledShowString(uint8_t x, uint8_t y, const char *str, uint8_t Char_Size)
 // Display an image at specified location
 void OledShowPicData(uint8_t x, uint8_t y, uint8_t wdt, uint8_t hgt, uint8_t *pPicData)
 {
-	uint8_t i = 0, j = 0;
-	// Uses 128 to match 0-127 indexed physical pixels
+	if (x > MAX_COLUMN || y > 7)
+	{
+		return;
+	}
+	// Uses 128 to match 0-127 index (128 physical pixels)
+	uint8_t real_wdt = (x + wdt > 128) ? (128 - x) : wdt;
+	uint8_t real_hgt = (y + hgt > 8)   ? (8 - y)   : hgt;
+
+	for (uint8_t i = 0; i <real_hgt; i++)
+	{
+		OledSetPos(x,y + i);
+
+		// Calculate memory addres of current line
+		uint16_t array_row_offset = (uint16_t)i * wdt;
+
+		for (uint8_t j = 0; j < real_wdt; j++)
+		{
+			SSD1306_WriteData(pPicData[array_row_offset + j]);
+		}
+	}
+
+	/*uint8_t i = 0, j = 0;
+	// Uses 128 to match 0-127 index (128 physical pixels)
 	uint8_t real_wdt = (x + wdt > 128) ? (128 - x) : wdt;
 	uint8_t real_hgt = (y + hgt > 7)   ? (8 - y)   : hgt;
 
@@ -724,7 +758,7 @@ void OledShowPicData(uint8_t x, uint8_t y, uint8_t wdt, uint8_t hgt, uint8_t *pP
 		{
 			SSD1306_WriteData(pPicData[(i * wdt) + j]);
 		}
-	}
+	}*/
 }
 
 
@@ -784,18 +818,7 @@ void print_Error(char *errorMessage, uint8_t forceReset)
 	{
 		OledShowString(0,7,"Press OK To Reset...",8);
 		WaitOKBtn();
-
-		if (ignoreError == 0)
-		{
-			ResetSystem();
-		}
-		else
-		{
-			ignoreError = 0;
-			OledClear();
-			OledShowString(0,2,"Error Overwrite",8);
-			delay(2000);
-		}
+		ResetSystem();
 	}
 }
 
