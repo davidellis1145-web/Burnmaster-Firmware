@@ -162,7 +162,7 @@ uint8_t gbxMenu()
 		LED_BLUE_OFF;	// Make sure GBA mode led is off
 		LED_GREEN_ON;	// Make sure GB mode led is on
 		OledClear();
-		/* OledShowPicData(98,2,29,6,Icon_data_GBC);	// Draws GB icon */
+		OledShowPicData(97,2,30,6,Icon_data_GBC);	// Draws GB icon
 
 		// Create menu with title and options to choose from
 		// Wait for user choice to come back from the question box menu
@@ -185,7 +185,6 @@ uint8_t gbxMenu()
 				gbxDebugScreen();
 				break;
 		}
-		OledShowPicData(98,2,29,6,Icon_data_GBC);	// Draws GB icon   (What's this red button do?)
 	}
 	else
 	{
@@ -293,7 +292,7 @@ uint8_t gbxDebugMenu()		// Debug Menu for dev testing
 
 	// Create menu with title and options to choose from
 	unsigned char gbxDebug;
-	gbxDebug = questionBox_OLED("**Debug Menu**", menuOptionsDebug, 4, 1, 1, 0);
+	gbxDebug = questionBox_OLED("**Debug Menu**", menuOptionsDebug, 5, 1, 1, 0);
 
 	// Wait for user choice to come back from the question box men
 	switch (gbxDebug)

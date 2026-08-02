@@ -56,10 +56,10 @@ void WaitOKBtn()
 
 
 // Display a question box with selectable answers. Make sure default choice is in (0, num_answers]
-unsigned char questionBox_OLED(char * question, const char* const answers[7], int num_answers, int default_choice, uint8_t rollselect, uint8_t clrSrc)
+unsigned char questionBox_OLED(char * question, const char* const answers[7], int num_answers, int default_choice, uint8_t rollselect, uint8_t clrScr)
 {
 	// Clear the screen
-	if(clrSrc > 0)OledClear();
+	if(clrScr > 0)OledClear();
 
 	// Print menu
 	QBoxShowString(0,0,question);
@@ -166,7 +166,7 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 			break;
 		}
 
-		// Show menu selected
+		// Show menu item selected
 		if(choice != choice_ori)
 		{
 			QBoxShowChar(0,choice_ori,' ');
@@ -292,7 +292,8 @@ browserstart:
 	}
 
 	OledClear();
-	OledShowString(0,0,(char *)browserTitle,8);
+	//OledShowString(0,0,(char *)browserTitle,8);
+	QBoxShowString(0,0,(char *)browserTitle);
 
 	currFile = 0;
 	currPage = 1;

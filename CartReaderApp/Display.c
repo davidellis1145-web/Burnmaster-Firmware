@@ -714,10 +714,10 @@ uint8_t OledShowString(uint8_t x, uint8_t y, const char *str, uint8_t Char_Size)
 		}
 		j++;
 	}
-	if (x + char_width <= (MAX_COLUMN + 1))
+	/*if (x + char_width <= (MAX_COLUMN + 1))   // testing again
 	{
 		OledShowChar(x,y,' ',Char_Size);
-	}
+	}*/
 	return 0;
 }
 
