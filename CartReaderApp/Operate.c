@@ -55,28 +55,29 @@ void WaitOKBtn()
 }
 
 
-// Display a question box with selectable answers. Make sure default choice is in (0, num_answers]
-unsigned char questionBox_OLED(char * question,const char* const answers[7],int num_answers,int default_choice,uint8_t rollselect,uint8_t clrScr)
+
+// Created with AI for quick debugging, reviewed by humans and will be hand written
+// without AI assistance for final implementation 
+unsigned char questionBox_OLED(char * question, const char* const answers[7], int num_answers, int default_choice, uint8_t rollselect, uint8_t clrScr)
 {
 	if(clrScr > 0) OledClear();
-
-	QBoxShowString(0,0,question);
+	
+	QBoxShowString(0, 0, question);
 	char tanswer[21] = {0};
-
+	
 	for (unsigned char i = 0; i < num_answers; i++)
 	{
 		memcpy(tanswer, answers[i], 20);
-		tanswer[20] = '\0'; // Ensure absolute null-termination
-		QBoxShowString(6,i + 1,tanswer);
+		QBoxShowString(6, i + 1, tanswer);
 	}
-
+	
 	unsigned char choice = default_choice;
 	unsigned char choice_ori = default_choice;
-	QBoxShowChar(0,choice,'*');
-
+	QBoxShowChar(0, choice, '*');
+	
 	uint32_t scroll_tick = 0;
 	uint8_t scroll_start = 0;
-
+	
 	while (1)
 	{
 		int b = checkButton();
@@ -85,14 +86,15 @@ unsigned char questionBox_OLED(char * question,const char* const answers[7],int 
 			scroll_tick = scroll_tick + 1;
 			if((scroll_tick > 14) && (scroll_tick % 3 == 1))
 			{
-				// 1. Wipe the current row row entirely before shifting text
-				OledClearLine(choice);
-
-				// 2. Re-draw the choice indicator star since the line clear erased it
-				QBoxShowChar(0,choice,'*');
-
-				// 3. Print the shifted string string wrapper
-				if (QBoxShowString(6,choice,answers[choice - 1] + scroll_start) > 0)
+				// Clear only text columns (6-127) for this row page
+				OledSetPos(6, choice);
+				for(uint8_t n = 6; n < 128; n++)
+				{
+					SSD1306_WriteData(0); 
+				}
+				
+				// Redraw string over cleared bounding box
+				if (QBoxShowString(6, choice, answers[choice - 1] + scroll_start) > 0)
 				{
 					scroll_start++;
 				}
@@ -104,7 +106,7 @@ unsigned char questionBox_OLED(char * question,const char* const answers[7],int 
 			scroll_tick = 0;
 			scroll_start = 0;
 		}
-
+		
 		if(b == BTNLEFT)
 		{
 			if(rollselect){} else { choice = MENU_PGUP; break; }
@@ -138,20 +140,27 @@ unsigned char questionBox_OLED(char * question,const char* const answers[7],int 
 		{
 			break;
 		}
-
+		
 		if(choice != choice_ori)
 		{
-			// Reset old row: clear line completely to destroy trailing scroll fragments
-			OledClearLine(choice_ori);
-			QBoxShowString(6,choice_ori,answers[choice_ori - 1]);
-
-			// Set up new row
-			QBoxShowChar(0,choice,'*');
+			// Erase old text area only (Columns 6-127)
+			// Will still erase gba/gb icons...
+			OledSetPos(6, choice_ori);
+			for(uint8_t n = 6; n < 128; n++)
+			{
+				SSD1306_WriteData(0);
+			}
+			QBoxShowString(6, choice_ori, answers[choice_ori - 1]);
+			
+			// Move indicator cleanly without rewriting text
+			QBoxShowChar(0, choice_ori, ' ');
+			QBoxShowChar(0, choice, '*');
 			choice_ori = choice;
 		}
 	}
 	return choice;
 }
+
 /*unsigned char questionBox_OLED(char * question, const char* const answers[7], int num_answers, int default_choice, uint8_t rollselect, uint8_t clrScr)
 {
 	// Clear the screen
