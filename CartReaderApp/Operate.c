@@ -55,124 +55,19 @@ void WaitOKBtn()
 }
 
 
-
-// Created with AI for quick debugging, reviewed by humans and will be hand written
-// without AI assistance for final implementation 
+// Display a question box with selectable answers. Make sure default choice is in (0, num_answers]
 unsigned char questionBox_OLED(char * question, const char* const answers[7], int num_answers, int default_choice, uint8_t rollselect, uint8_t clrScr)
-{
-	if(clrScr > 0) OledClear();
-	
-	QBoxShowString(0, 0, question);
-	char tanswer[21] = {0};
-	
-	for (unsigned char i = 0; i < num_answers; i++)
-	{
-		memcpy(tanswer, answers[i], 20);
-		QBoxShowString(6, i + 1, tanswer);
-	}
-	
-	unsigned char choice = default_choice;
-	unsigned char choice_ori = default_choice;
-	QBoxShowChar(0, choice, '*');
-	
-	uint32_t scroll_tick = 0;
-	uint8_t scroll_start = 0;
-	
-	while (1)
-	{
-		int b = checkButton();
-		if(b == BTNNONE)
-		{
-			scroll_tick = scroll_tick + 1;
-			if((scroll_tick > 14) && (scroll_tick % 3 == 1))
-			{
-				// Clear only text columns (6-127) for this row page
-				OledSetPos(6, choice);
-				for(uint8_t n = 6; n < 128; n++)
-				{
-					SSD1306_WriteData(0); 
-				}
-				
-				// Redraw string over cleared bounding box
-				if (QBoxShowString(6, choice, answers[choice - 1] + scroll_start) > 0)
-				{
-					scroll_start++;
-				}
-			}
-		}
-		else
-		{
-			printf("getKey-%d\n", b);
-			scroll_tick = 0;
-			scroll_start = 0;
-		}
-		
-		if(b == BTNLEFT)
-		{
-			if(rollselect){} else { choice = MENU_PGUP; break; }
-		}
-		else if (b == BTNRIGHT)
-		{
-			if(rollselect){} else { choice = MENU_PGDN; break; }
-		}
-		else if (b == BTNUP)
-		{
-			choice--;
-			if(choice <= 0)
-			{
-				if(rollselect) { choice = num_answers; } else { choice = MENU_UPUP; break; }
-			}
-		}
-		else if (b == BTNDOWN)
-		{
-			choice++;
-			if(choice > num_answers)
-			{
-				if(rollselect) { choice = 1; } else { choice = MENU_DOWNDOWN; break; }
-			}
-		}
-		else if (b == BTNCANCEL)
-		{
-			choice = MENU_CANCEL;
-			break;
-		}
-		else if (b == BTNOK)
-		{
-			break;
-		}
-		
-		if(choice != choice_ori)
-		{
-			// Erase old text area only (Columns 6-127)
-			// Will still erase gba/gb icons...
-			OledSetPos(6, choice_ori);
-			for(uint8_t n = 6; n < 128; n++)
-			{
-				SSD1306_WriteData(0);
-			}
-			QBoxShowString(6, choice_ori, answers[choice_ori - 1]);
-			
-			// Move indicator cleanly without rewriting text
-			QBoxShowChar(0, choice_ori, ' ');
-			QBoxShowChar(0, choice, '*');
-			choice_ori = choice;
-		}
-	}
-	return choice;
-}
-
-/*unsigned char questionBox_OLED(char * question, const char* const answers[7], int num_answers, int default_choice, uint8_t rollselect, uint8_t clrScr)
 {
 	// Clear the screen
 	if(clrScr > 0)OledClear();
 
 	// Print menu
-	QBoxShowString(0,0,question);
+	OledShowString(0,0,question,8);
 	char tanswer[21] = {0};
 	for (unsigned char i = 0; i < num_answers; i++)
 	{
 		memcpy(tanswer,answers[i],20);
-		QBoxShowString(6,i+1,tanswer);
+		OledShowString(6,i+1,tanswer,8);
 	}
 
 	// Start with the default choice
@@ -180,7 +75,7 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 	unsigned char choice_ori = default_choice;
 
 	// Draw selection bullet
-	QBoxShowChar(0,choice,'*');
+	OledShowChar(0,choice,'*',8);
 	uint8_t currentColor = 0;
 	uint32_t scroll_tick = 0;
 	uint8_t scroll_start = 0;
@@ -194,7 +89,7 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 			scroll_tick = scroll_tick + 1;
 			if((scroll_tick > 14) && (scroll_tick%3 == 1))
 			{
-				if(QBoxShowString(6,choice,answers[choice - 1] + scroll_start) > 0)
+				if(OledShowString(6,choice,answers[choice - 1] + scroll_start) > 0,8)
 				{
 					scroll_start++;
 				}
@@ -274,16 +169,16 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 		// Show menu item selected
 		if(choice != choice_ori)
 		{
-			QBoxShowChar(0,choice_ori,' ');
-			QBoxShowString(6,choice_ori,answers[choice_ori-1]);
-			QBoxShowChar(0,choice,'*');
+			OledShowChar(0,choice_ori,' ',8);
+			OledShowString(6,choice_ori,answers[choice_ori-1],8);
+			OledShowChar(0,choice,'*',8);
 			choice_ori=choice;
 		}
 	}
 
 	// Pass on user choice
 	return choice;
-}*/
+}
 
 
 uint8_t my_mkdir(char * dir)
@@ -397,9 +292,8 @@ browserstart:
 	}
 
 	OledClear();
-	//OledShowString(0,0,(char *)browserTitle,8);
-	QBoxShowString(0,0,(char *)browserTitle);
-
+	OledShowString(0,0,(char *)browserTitle,8);
+	
 	currFile = 0;
 	currPage = 1;
 	lastPage = 1;
