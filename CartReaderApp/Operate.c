@@ -56,7 +56,103 @@ void WaitOKBtn()
 
 
 // Display a question box with selectable answers. Make sure default choice is in (0, num_answers]
-unsigned char questionBox_OLED(char * question, const char* const answers[7], int num_answers, int default_choice, uint8_t rollselect, uint8_t clrScr)
+unsigned char questionBox_OLED(char * question,const char* const answers[7],int num_answers,int default_choice,uint8_t rollselect,uint8_t clrScr)
+{
+	if(clrScr > 0) OledClear();
+
+	QBoxShowString(0,0,question);
+	char tanswer[21] = {0};
+
+	for (unsigned char i = 0; i < num_answers; i++)
+	{
+		memcpy(tanswer, answers[i], 20);
+		tanswer[20] = '\0'; // Ensure absolute null-termination
+		QBoxShowString(6,i + 1,tanswer);
+	}
+
+	unsigned char choice = default_choice;
+	unsigned char choice_ori = default_choice;
+	QBoxShowChar(0,choice,'*');
+
+	uint32_t scroll_tick = 0;
+	uint8_t scroll_start = 0;
+
+	while (1)
+	{
+		int b = checkButton();
+		if(b == BTNNONE)
+		{
+			scroll_tick = scroll_tick + 1;
+			if((scroll_tick > 14) && (scroll_tick % 3 == 1))
+			{
+				// 1. Wipe the current row row entirely before shifting text
+				OledClearLine(choice);
+
+				// 2. Re-draw the choice indicator star since the line clear erased it
+				QBoxShowChar(0,choice,'*');
+
+				// 3. Print the shifted string string wrapper
+				if (QBoxShowString(6,choice,answers[choice - 1] + scroll_start) > 0)
+				{
+					scroll_start++;
+				}
+			}
+		}
+		else
+		{
+			printf("getKey-%d\n", b);
+			scroll_tick = 0;
+			scroll_start = 0;
+		}
+
+		if(b == BTNLEFT)
+		{
+			if(rollselect){} else { choice = MENU_PGUP; break; }
+		}
+		else if (b == BTNRIGHT)
+		{
+			if(rollselect){} else { choice = MENU_PGDN; break; }
+		}
+		else if (b == BTNUP)
+		{
+			choice--;
+			if(choice <= 0)
+			{
+				if(rollselect) { choice = num_answers; } else { choice = MENU_UPUP; break; }
+			}
+		}
+		else if (b == BTNDOWN)
+		{
+			choice++;
+			if(choice > num_answers)
+			{
+				if(rollselect) { choice = 1; } else { choice = MENU_DOWNDOWN; break; }
+			}
+		}
+		else if (b == BTNCANCEL)
+		{
+			choice = MENU_CANCEL;
+			break;
+		}
+		else if (b == BTNOK)
+		{
+			break;
+		}
+
+		if(choice != choice_ori)
+		{
+			// Reset old row: clear line completely to destroy trailing scroll fragments
+			OledClearLine(choice_ori);
+			QBoxShowString(6,choice_ori,answers[choice_ori - 1]);
+
+			// Set up new row
+			QBoxShowChar(0,choice,'*');
+			choice_ori = choice;
+		}
+	}
+	return choice;
+}
+/*unsigned char questionBox_OLED(char * question, const char* const answers[7], int num_answers, int default_choice, uint8_t rollselect, uint8_t clrScr)
 {
 	// Clear the screen
 	if(clrScr > 0)OledClear();
@@ -178,7 +274,7 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 
 	// Pass on user choice
 	return choice;
-}
+}*/
 
 
 uint8_t my_mkdir(char * dir)
