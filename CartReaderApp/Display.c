@@ -495,7 +495,6 @@ void OledSetPos(uint8_t x, uint8_t y)
 	}
 
 	// The following 3 registers are for page addressing mode.
-
 	SSD1306_WriteCmd(0xb0 + y);					// Set page address (0-7)
 	SSD1306_WriteCmd(((x >> 4) & 0x0f) | 0x10);	// Column high address setting
 	SSD1306_WriteCmd(x & 0x0f);					// Column low address setting
@@ -528,13 +527,10 @@ void OledClearLine(uint8_t y)
 		return;
 	}
 
-	// Point cursor to start of target row
-	OledSetPos(0,y);			// Does what the 3 below do I think
-	/*SSD1306_WriteCmd(0xb0 + y);	// Set page address
-	SSD1306_WriteCmd(0x00);		// Reset column low address
-	SSD1306_WriteCmd(0x10);		// Reset column high address*/
-
-	// Sweep through columns 0-127
+	// Point cursor to start of target row and sweep through columns 0-127
+	SSD1306_Write_Cmd(0xB0 + y);
+	SSD1306_Write_Cmd(0x00);
+	SSD1306_Write_Cmd(0x10);
 	for (uint8_t n = 0; n <= MAX_COLUMN; n++)
 	{
 		SSD1306_WriteData(0x00);
@@ -545,28 +541,29 @@ void OledClearLine(uint8_t y)
 // Clears entire screen, turning off all pixels
 void OledClear(void)
 {
-	// Loop through all 8 pages
-	for (uint8_t y = 0; y < 8; y++)
+	// Temporarily switch to Horizontal Addressing Mode
+	SSD1306_WriteCmd(0x20); // Memory Addressing Mode Command
+	SSD1306_WriteCmd(0x00); // 0x00 = Horizontal Mode
+
+	// Set the column and page bounds to cover the full screen
+	SSD1306_WriteCmd(0x21); // Column Address Command
+	SSD1306_WriteCmd(0x00); // Start Column 0
+	SSD1306_WriteCmd(0x7F);  // End Column 127
+
+	SSD1306_WriteCmd(0x22); // Page Address Command
+	SSD1306_WriteCmd(0x00); // Start Page 0
+	SSD1306_WriteCmd(0x07); // End Page 7
+
+	// Send zeros (8 pages * 128 columns = 1024 bytes)
+	for (uint16_t i = 0; i < 1024; i++)
 	{
-		OledClearLine(y);
+		SSD1306_WriteData(0x00);
 	}
+
+	// Switch back to Page Addressing Mode
+	SSD1306_WriteCmd(0x20); // Memmory Addressing Mode Command
+	SSD1306_WriteCmd(0x02); // 0x02 = Page Addressing Mode
 }
-	/*uint8_t i;
-	uint16_t n;
-
-	for(i = 0; i < 8; i++)
-	{
-		SSD1306_WriteCmd(0xb0 + i);		// Set page address (0-7)
-		SSD1306_WriteCmd(0x00);			// Reset column low address
-		SSD1306_WriteCmd(0x10);			// Reset column high address
-
-		// Sweep through columns 0-127
-		for(n = 0; n <= MAX_COLUMN; n++)
-		{
-			SSD1306_WriteData(0x00);    // Clear every pixel byte
-		}
-	}
-}*/
 
 
 // ShowChar for QBoxShowString below
@@ -592,13 +589,25 @@ void QBoxShowChar(uint8_t x,uint8_t y,uint8_t chr)
 
 // Display string for QuestionBox (prevents wrapping so long strings scroll)
 // Don't use '\n' with this. It shouldn't be needed anyway.
-uint8_t QBoxShowString(uint8_t x,uint8_t y,const char *str)
+uint8_t QBoxShowString(uint8_t x,uint8_t y,const char *str,uint8_t scroll_offset)
 {
 	unsigned char j = 0;
+	uint8_t skipped_visible = 0;
 	
 	while (str[j] != '\0')
 	{
-		if(x > 121 || y > 7)
+		if (str[j] == '\n')
+		{
+			j++;
+			continue;
+		}
+		if (skipped_visible < scroll_offset)
+		{
+			skipped_visible++;
+			j++;
+			continue;
+		}
+		if(x > 122 || y > 7)
 		{
 			return 1;
 		}
@@ -623,6 +632,11 @@ uint8_t OledShowChar(uint8_t x, uint8_t y, uint8_t chr, uint8_t Char_Size)
 
 	c = chr - ' ';
 
+	// Protec from uint8_t over-run (shouldn't happen, but hey...)
+	if (x > 200 || y > 200)
+	{
+		return 1;
+	}
 	// Check if char fits horizontally, advance page if not
 	if (x + width > (MAX_COLUMN + 1))
 	{
@@ -657,7 +671,7 @@ uint8_t OledShowChar(uint8_t x, uint8_t y, uint8_t chr, uint8_t Char_Size)
 		{
 			SSD1306_WriteData(F5x8[c * 5 + i]);
 		}
-	SSD1306_WriteData(0x00); // Make sure space between characters is clear
+		SSD1306_WriteData(0x00); // Make sure space between characters is clear
 	}
 	return 0;
 }
@@ -703,7 +717,6 @@ uint8_t OledShowString(uint8_t x, uint8_t y, const char *str, uint8_t Char_Size)
 			}
 		}
 
-		// Print remainder of string
 		if (str[j] != '\n')
 		{
 			if (OledShowChar(x,y, str[j], Char_Size) != 0)
@@ -714,10 +727,6 @@ uint8_t OledShowString(uint8_t x, uint8_t y, const char *str, uint8_t Char_Size)
 		}
 		j++;
 	}
-	/*if (x + char_width <= (MAX_COLUMN + 1))   // testing again
-	{
-		OledShowChar(x,y,' ',Char_Size);
-	}*/
 	return 0;
 }
 
@@ -730,10 +739,10 @@ void OledShowPicData(uint8_t x, uint8_t y, uint8_t wdt, uint8_t hgt, uint8_t *pP
 		return;
 	}
 	// Uses 128 to match 0-127 index (128 physical pixels)
-	uint8_t real_wdt = (x + wdt > 128) ? (128 - x) : wdt;
-	uint8_t real_hgt = (y + hgt > 8)   ? (8 - y)   : hgt;
+	uint8_t real_wdt = (x + wdt > (MAX_COLUMN + 1) ? (MAX_COLUMN + 1) - x) : wdt;
+	uint8_t real_hgt = (y + hgt > 8) ? (8 - y) : hgt;
 
-	for (uint8_t i = 0; i <real_hgt; i++)
+	for (uint8_t i = 0; i < real_hgt; i++)
 	{
 		OledSetPos(x,y + i);
 
@@ -745,20 +754,6 @@ void OledShowPicData(uint8_t x, uint8_t y, uint8_t wdt, uint8_t hgt, uint8_t *pP
 			SSD1306_WriteData(pPicData[array_row_offset + j]);
 		}
 	}
-
-	/*uint8_t i = 0, j = 0;
-	// Uses 128 to match 0-127 index (128 physical pixels)
-	uint8_t real_wdt = (x + wdt > 128) ? (128 - x) : wdt;
-	uint8_t real_hgt = (y + hgt > 7)   ? (8 - y)   : hgt;
-
-	for (i = 0; i < real_hgt; i++)
-	{
-		OledSetPos(x,y + i);
-		for (j = 0; j < real_wdt; j++)
-		{
-			SSD1306_WriteData(pPicData[(i * wdt) + j]);
-		}
-	}*/
 }
 
 
@@ -766,7 +761,7 @@ void OledInit(void)
 {
 	I2cInit();
 
-	// After SSD1306 is reset, default addressing is page addressing mode.
+	// After SSD1306 is powered on, default addressing is page addressing mode.
 
 	SSD1306_WriteCmd(0xAE); // Display off
 
@@ -849,8 +844,10 @@ void draw_progressbar(uint32_t processed, uint32_t total, uint8_t line)
 		{
 			if (i >= steps)
 			{
-				// Pause to notice full bar
-				delay(1000);
+				// Pause to notice full bar, then clear.
+				delay(800);
+				OledClearLine(line);
+				delay(100);
 			}
 			else
 			{

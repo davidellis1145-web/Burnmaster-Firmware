@@ -67,9 +67,14 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 	for (unsigned char i = 0; i < num_answers; i++)
 	{
 		memcpy(tanswer,answers[i],20);
-		OledShowString(6,i+1,tanswer,8);
+		QBoxShowString(6,i+1,tanswer,0);
 	}
 
+	// Ensure default can't drop to 0
+	if (default_choice < 1)
+	{
+		default_choice = 1;
+	}
 	// Start with the default choice
 	unsigned char choice = default_choice;
 	unsigned char choice_ori = default_choice;
@@ -87,9 +92,9 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 		if(b==BTNNONE)
 		{
 			scroll_tick = scroll_tick + 1;
-			if((scroll_tick > 14) && (scroll_tick%3 == 1))
+			if((scroll_tick > 14) && (scroll_tick%3 == 1)
 			{
-				if(OledShowString(6,choice,answers[choice - 1] + scroll_start,8) > 0)
+				if(QBoxShowString(6,choice,answers[choice - 1],scroll_start) > 0)
 				{
 					scroll_start++;
 				}
@@ -127,9 +132,9 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 		else if (b == BTNUP)
 		{
 			choice--;
-			if(choice <= 0)
+			if (choice < 1)
 			{
-				if(rollselect)
+				if (rollselect)
 				{
 					choice = num_answers;
 				}
@@ -143,9 +148,9 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 		else if (b == BTNDOWN)
 		{
 			choice++;
-			if(choice > num_answers)
+			if (choice > num_answers)
 			{
-				if(rollselect)
+				if (rollselect)
 				{
 					choice = 1;
 				}
@@ -170,7 +175,7 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 		if(choice != choice_ori)
 		{
 			OledShowChar(0,choice_ori,' ',8);
-			OledShowString(6,choice_ori,answers[choice_ori-1],8);
+			QBoxShowString(6,choice_ori,answers[choice_ori-1],0);
 			OledShowChar(0,choice,'*',8);
 			choice_ori=choice;
 		}
@@ -315,29 +320,27 @@ next_page:
 		fret = f_readdir(&tdir,&finfo);
 		if (fret == FR_OK)
 		{
-			if (finfo.fname[0] == 0x00)
+			if ((finfo.fname[0] == 0x00) ||
+				(currFile >= 128)) // Protects against overflow in strings
 			{
 				bnomore = true;
 				break;
 			}
+			
+			strncpy(fileNames[currFile],finfo.fname,100 - 1);
+			fileNames[currFile][100 - 1] = '\0';
 
-			// Protects against overflow in strings
-			if (currFile < 128)
+			if (menucnt < 7)
 			{
-				strncpy(fileNames[currFile],finfo.fname,100 - 1);
-				fileNames[currFile][100 - 1] = '\0';
-
-				if (menucnt < 7)
-				{
-					strncpy(tanswers[menucnt],fileNames[currFile],100 - 1);
-					tanswers[menucnt][100 - 1] = '\0';
-				}
-
-				currFile++;
-				menucnt++;
+				strncpy(tanswers[menucnt],fileNames[currFile],100 - 1);
+				tanswers[menucnt][100 - 1] = '\0';
 			}
 
+			currFile++;
+			menucnt++;
+			
 			printf("\nfile:[%s]-[%s]",finfo.fname,finfo.altname);
+			
 			if (menucnt >= 7)
 			{
 				break;
@@ -440,7 +443,7 @@ next_page1:
 		case MENU_PGUP:
 		case MENU_UPUP:
 			{
-			if (currPage > 1)
+			if ( currPage > 1)
 			{
 				currPage--;
 				for (int i = 0; i < 7; i++)
@@ -455,7 +458,7 @@ next_page1:
 				bnomore = false;
 				menucnt = 7;
 			}
-			default_select = 1;
+			default_select = 7;
 			goto next_page1;
 		}
 		break;
