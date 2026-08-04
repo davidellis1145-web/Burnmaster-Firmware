@@ -92,7 +92,7 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 		if(b==BTNNONE)
 		{
 			scroll_tick = scroll_tick + 1;
-			if((scroll_tick > 14) && (scroll_tick%3 == 1)
+			if((scroll_tick > 14) && (scroll_tick%3 == 1))
 			{
 				if(QBoxShowString(6,choice,answers[choice - 1],scroll_start) > 0)
 				{

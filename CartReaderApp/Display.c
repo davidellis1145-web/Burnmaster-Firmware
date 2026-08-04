@@ -528,9 +528,9 @@ void OledClearLine(uint8_t y)
 	}
 
 	// Point cursor to start of target row and sweep through columns 0-127
-	SSD1306_Write_Cmd(0xB0 + y);
-	SSD1306_Write_Cmd(0x00);
-	SSD1306_Write_Cmd(0x10);
+	SSD1306_WriteCmd(0xB0 + y);
+	SSD1306_WriteCmd(0x00);
+	SSD1306_WriteCmd(0x10);
 	for (uint8_t n = 0; n <= MAX_COLUMN; n++)
 	{
 		SSD1306_WriteData(0x00);
