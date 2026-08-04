@@ -739,7 +739,7 @@ void OledShowPicData(uint8_t x, uint8_t y, uint8_t wdt, uint8_t hgt, uint8_t *pP
 		return;
 	}
 	// Uses 128 to match 0-127 index (128 physical pixels)
-	uint8_t real_wdt = (x + wdt > (MAX_COLUMN + 1) ? (MAX_COLUMN + 1) - x) : wdt;
+	uint8_t real_wdt = (x + wdt > MAX_COLUMN + 1) ? (MAX_COLUMN + 1 - x) : wdt;
 	uint8_t real_hgt = (y + hgt > 8) ? (8 - y) : hgt;
 
 	for (uint8_t i = 0; i < real_hgt; i++)
