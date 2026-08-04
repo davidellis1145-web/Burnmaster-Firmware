@@ -31,7 +31,7 @@ uint8_t OledShowString(uint8_t x,uint8_t y,const char *str,uint8_t Char_Size);
 // ShowChar for QBoxShowString
 void QBoxShowChar(uint8_t x,uint8_t y,uint8_t chr);
 // ShowString for QuestionBox (prevents wrapping for side scroll)
-uint8_t QBoxShowString(uint8_t x,uint8_t y,const char *str,uint8_t scroll_offset)
+uint8_t QBoxShowString(uint8_t x,uint8_t y,const char *str,uint8_t scroll_offset);
 // Display an image at specified location
 void OledShowPicData(uint8_t x,uint8_t y,uint8_t wdt,uint8_t hgt,uint8_t *pPicData);
 // Initialize display
