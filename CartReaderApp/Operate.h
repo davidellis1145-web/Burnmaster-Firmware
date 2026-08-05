@@ -8,7 +8,7 @@
 #define BTNCANCEL (16)
 #define BTNOK (32)
 
-#define MENU_CANCEL (255) // Changed from 0 to avoid potential conflicts
+#define MENU_CANCEL (155) // Changed from 0 to avoid potential conflicts
 #define MENU_1 (1)
 #define MENU_2 (2)
 #define MENU_3 (3)

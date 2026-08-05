@@ -65,10 +65,10 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 	OledShowString(0, 0, question, 8);
 
 	// Prevent empty or out-of-bounds menu configurations
-	if (num_answers < 1)
+	/*if (num_answers < 1)
 	{
 		return MENU_CANCEL;
-	}
+	}*/
 	if (default_choice < 1)
 	{
 		default_choice = 1;
@@ -86,7 +86,7 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 		QBoxShowString(6, i + 1, tanswer, 0);
 	}
 
-	// Start with the default choise
+	// Start with the default choice
 	unsigned char choice = default_choice;
 	unsigned char choice_ori = default_choice;
 
@@ -102,14 +102,14 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 		int b = checkButton();
 		if(b == BTNNONE)
 		{
-			scroll_tick++;
+			/*scroll_tick++;
 			if((scroll_tick > 14) && (scroll_tick % 3 == 1))
 			{
 				if(QBoxShowString(6, choice, answers[choice - 1], scroll_start) > 0)
 				{
 					scroll_start++;
 				}
-			}
+			}*/
 		}
 		else
 		{
@@ -181,8 +181,9 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 		// Move '*' to new selection
 		if(choice != choice_ori)
 		{
-			// Clear old row text pixels so text fragments do not stick around
-			OledClearLine(choice_ori);
+			OledShowChar(0, choice_ori, ' ',8);
+			/*// Clear old row text pixels so text fragments do not stick around
+			OledClearLine(choice_ori);*/
 			QBoxShowString(6, choice_ori, answers[choice_ori - 1], 0);
 			OledShowChar(0, choice, '*', 8);
 			choice_ori = choice;
@@ -368,7 +369,7 @@ next_page1:
 				{
 					f_closedir(&tdir);
 				}
-				ResetSystem(); // Pressed cancel at root dir (I want out!)
+				//ResetSystem(); // Pressed cancel at root dir (I want out!)
 			}
 			// Back-nav logic if not at root
 			bool chopped = false;
@@ -464,7 +465,7 @@ next_page1:
 			}
 			else
 			{
-				default_select = 1; // Stay on item 1 if already on page 1
+				default_select = 1; // Select item 1 if already on page 1
 			}
 			goto next_page1;
 		}
