@@ -27,7 +27,7 @@ uint8_t checkButton()
 	uint8_t keycode = keyState();
 	delay(44);
 
-	if(gpio_input_bit_get(GPIOB,GPIO_PIN_1) == RESET)
+	if(gpio_input_bit_get(GPIOB, GPIO_PIN_1) == RESET)
 	{
 		LED_RED_ON;
 	}
@@ -58,30 +58,41 @@ void WaitOKBtn()
 // Display a question box with selectable answers. Make sure default choice is in (0, num_answers]
 unsigned char questionBox_OLED(char * question, const char* const answers[7], int num_answers, int default_choice, uint8_t rollselect, uint8_t clrScr)
 {
-	// Clear the screen
-	if(clrScr > 0)OledClear();
-
-	// Print menu
-	OledShowString(0,0,question,8);
-	char tanswer[21] = {0};
-	for (unsigned char i = 0; i < num_answers; i++)
+	if(clrScr > 0)
 	{
-		memcpy(tanswer,answers[i],20);
-		QBoxShowString(6,i+1,tanswer,0);
+		OledClear();
 	}
+	OledShowString(0, 0, question, 8);
 
-	// Ensure default can't drop to 0
+	// Prevent empty or out-of-bounds menu configurations
+	if (num_answers < 1)
+	{
+		return MENU_CANCEL;
+	}
 	if (default_choice < 1)
 	{
 		default_choice = 1;
 	}
-	// Start with the default choice
+	if (default_choice > num_answers)
+	{
+		default_choice = num_answers;
+	}
+
+	char tanswer[21] = {0};
+	for (unsigned char i = 0; i < num_answers; i++)
+	{
+		strncpy(tanswer, answers[i], 20);
+		tanswer[20] = '\0'; // Forced null terminator
+		QBoxShowString(6, i + 1, tanswer, 0);
+	}
+
+	// Start with the default choise
 	unsigned char choice = default_choice;
 	unsigned char choice_ori = default_choice;
 
 	// Draw selection bullet
-	OledShowChar(0,choice,'*',8);
-	uint8_t currentColor = 0;
+	OledShowChar(0, choice, '*', 8);
+
 	uint32_t scroll_tick = 0;
 	uint8_t scroll_start = 0;
 
@@ -89,12 +100,12 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 	while (1)
 	{
 		int b = checkButton();
-		if(b==BTNNONE)
+		if(b == BTNNONE)
 		{
-			scroll_tick = scroll_tick + 1;
-			if((scroll_tick > 14) && (scroll_tick%3 == 1))
+			scroll_tick++;
+			if((scroll_tick > 14) && (scroll_tick % 3 == 1))
 			{
-				if(QBoxShowString(6,choice,answers[choice - 1],scroll_start) > 0)
+				if(QBoxShowString(6, choice, answers[choice - 1], scroll_start) > 0)
 				{
 					scroll_start++;
 				}
@@ -102,37 +113,29 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 		}
 		else
 		{
-			printf("getKey-%d\n",b);
+			printf("getKey-%d\n", b);
 			scroll_tick = 0;
 			scroll_start = 0;
 		}
-		if(b==BTNLEFT)
 
+		// Direct return logic keeps bad data away from choice loop
+		if(b == BTNLEFT)
 		{
-			if(rollselect)
+			if(!rollselect)
 			{
-			}
-			else
-			{
-				choice = MENU_PGUP;
-				break;
+				return MENU_PGUP;
 			}
 		}
 		else if (b == BTNRIGHT)
 		{
-			if(rollselect)
+			if(!rollselect)
 			{
-			}
-			else
-			{
-				choice = MENU_PGDN;
-				break;
+				return MENU_PGDN;
 			}
 		}
 		else if (b == BTNUP)
 		{
-			choice--;
-			if (choice < 1)
+			if (choice <= 1)
 			{
 				if (rollselect)
 				{
@@ -140,15 +143,17 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 				}
 				else
 				{
-					choice = MENU_UPUP;
-					break;
+					return MENU_UPUP;
 				}
+			}
+			else
+			{
+				choice--;
 			}
 		}
 		else if (b == BTNDOWN)
 		{
-			choice++;
-			if (choice > num_answers)
+			if (choice >= num_answers)
 			{
 				if (rollselect)
 				{
@@ -156,33 +161,33 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 				}
 				else
 				{
-					choice = MENU_DOWNDOWN;
-					break;
+					return MENU_DOWNDOWN;
 				}
+			}
+			else
+			{
+				choice++;
 			}
 		}
 		else if (b == BTNCANCEL)
 		{
-			choice = MENU_CANCEL;
-			break;
+			return MENU_CANCEL;
 		}
 		else if (b == BTNOK)
 		{
-			break;
+			return choice;
 		}
 
-		// Show menu item selected
+		// Move '*' to new selection
 		if(choice != choice_ori)
 		{
-			OledShowChar(0,choice_ori,' ',8);
-			QBoxShowString(6,choice_ori,answers[choice_ori-1],0);
-			OledShowChar(0,choice,'*',8);
-			choice_ori=choice;
+			// Clear old row text pixels so text fragments do not stick around
+			OledClearLine(choice_ori);
+			QBoxShowString(6, choice_ori, answers[choice_ori - 1], 0);
+			OledShowChar(0, choice, '*', 8);
+			choice_ori = choice;
 		}
 	}
-
-	// Pass on user choice
-	return choice;
 }
 
 
@@ -216,13 +221,13 @@ uint8_t my_mkdir(char * dir)
 		FRESULT W_Dresult = f_opendir(&W_Ddir, RootPath); // Try open directory
 		if(W_Dresult == FR_OK)
 		{
-			printf("Exist[%s]\r\n",RootPath);
+			printf("Exist[%s]\r\n", RootPath);
 			f_closedir(&W_Ddir);
 			break;
 		}
 		else
 		{
-			printf("Err - %d[%s]\r\n",W_Dresult, RootPath);
+			printf("Err - %d[%s]\r\n", W_Dresult, RootPath);
 			if(W_Dresult == FR_NO_PATH)
 			{
 				opendir_err = 1;
@@ -250,7 +255,7 @@ uint8_t my_mkdir(char * dir)
 				bret = true;
 			}
 			else
-				printf(">> Err - %d [%s]\r\n",W_Dresult, RootPath);
+				printf(">> Err - %d [%s]\r\n", W_Dresult, RootPath);
 		}
 	}
 	else
@@ -270,22 +275,21 @@ char answer4[100];
 char answer5[100];
 char answer6[100];
 char answer7[100];
-char* tanswers[7] = {answer1,answer2,answer3,answer4,answer5,answer6,answer7};
+char* tanswers[7] = {answer1, answer2, answer3, answer4, answer5, answer6, answer7};
 
-void fileBrowser(char * start_dir ,const char * browserTitle)
+void fileBrowser(char * start_dir, const char * browserTitle)
 {
 	int currFile = 0;
 	int menucnt = 0;
-
-	// Init Dir
-	strncpy(filePath,start_dir,sizeof(filePath) - 1);
+	strncpy(filePath, start_dir, sizeof(filePath) - 1);
 	filePath[sizeof(filePath) - 1] = '\0';
+
 	DIR tdir;
 	FRESULT fret;
 	FILINFO finfo;
 	bool bnomore;
 	uint8_t mret;
-	uint8_t default_select;
+	uint8_t default_select = 1; // Set selection to item 1 on init
 	bool dir_is_open = false;
 
 browserstart:
@@ -295,19 +299,18 @@ browserstart:
 		f_closedir(&tdir);
 		dir_is_open = false;
 	}
-
 	OledClear();
-	OledShowString(0,0,(char *)browserTitle,8);
-	
+	OledShowString(0, 0, (char *)browserTitle, 8);
+
 	currFile = 0;
 	currPage = 1;
 	lastPage = 1;
 	bnomore = false;
 
-	if (f_opendir(&tdir,filePath) != FR_OK)
+	if (f_opendir(&tdir, filePath) != FR_OK)
 	{
 		OledClear();
-		print_Error("SD Error",true);
+		print_Error("SD Error", true);
 		return; // Return immediately to avoid an invalid pointer
 	}
 	dir_is_open = true;
@@ -317,30 +320,28 @@ next_page:
 	menucnt = 0;
 	while(1)
 	{
-		fret = f_readdir(&tdir,&finfo);
+		fret = f_readdir(&tdir, &finfo);
 		if (fret == FR_OK)
 		{
-			if ((finfo.fname[0] == 0x00) ||
-				(currFile >= 128)) // Protects against overflow in strings
+			// End of files or reached file limit
+			if ((finfo.fname[0] == 0x00) || (currFile >= 128))
 			{
 				bnomore = true;
 				break;
 			}
-			
-			strncpy(fileNames[currFile],finfo.fname,100 - 1);
+
+			strncpy(fileNames[currFile], finfo.fname, 100 - 1);
 			fileNames[currFile][100 - 1] = '\0';
 
 			if (menucnt < 7)
 			{
-				strncpy(tanswers[menucnt],fileNames[currFile],100 - 1);
+				strncpy(tanswers[menucnt], fileNames[currFile], 100 - 1);
 				tanswers[menucnt][100 - 1] = '\0';
 			}
-
 			currFile++;
 			menucnt++;
-			
-			printf("\nfile:[%s]-[%s]",finfo.fname,finfo.altname);
-			
+			printf("\nfile:[%s]-[%s]", finfo.fname, finfo.altname);
+
 			if (menucnt >= 7)
 			{
 				break;
@@ -352,45 +353,43 @@ next_page:
 		}
 	}
 
-	default_select = 1;
-
 next_page1:
-	mret = questionBox_OLED((char *)browserTitle,(const char **)tanswers,menucnt,default_select,0,1);
-
+	mret = questionBox_OLED((char *)browserTitle, (const char **)tanswers, menucnt, default_select, 0, 1);
 	switch(mret)
 	{
 		case MENU_CANCEL:
+		{
+			int len = strlen(filePath);
+
+			// Check if we are already at the root dir
+			if (len == 0 || (len == 1 && (filePath[0] == '/' || filePath[0] == '\\')))
 			{
-				int len = strlen(filePath);
-
-				// Check if we are already at the root directory
-				if (len == 0 || (len == 1 && (filePath[0] == '/' || filePath[0] == '\\')))
+				if (dir_is_open)
 				{
-					if (dir_is_open)
-					{
-						f_closedir(&tdir); // Clean up FatFS directory handle before reboot
-					}
-					ResetSystem(); // Trigger the system reset
+					f_closedir(&tdir);
 				}
-
-				// Back-navigation logic if not at root
-				bool chopped = false;
-				for (int i = len - 1; i > 0; i--)
-				{
-					if (filePath[i] == '/' || filePath[i] == '\\')
-					{
-						filePath[i] = 0x00;
-						chopped = true;
-						break;
-					}
-				}
-				if (!chopped && len > 0)
-				{
-					filePath[0] = 0x00;
-				}
-				goto browserstart;
+				ResetSystem(); // Pressed cancel at root dir (I want out!)
 			}
-			break;
+			// Back-nav logic if not at root
+			bool chopped = false;
+			for (int i = len - 1; i > 0; i--)
+			{
+				if (filePath[i] == '/' || filePath[i] == '\\')
+				{
+					filePath[i] = 0x00;
+					chopped = true;
+					break;
+				}
+			}
+			if (!chopped && len > 0)
+			{
+				filePath[0] = 0x00;
+			}
+			default_select = 1; // Move selector to top when navigating backwards
+			goto browserstart;
+		}
+		break;
+
 		case MENU_1:
 		case MENU_2:
 		case MENU_3:
@@ -398,11 +397,10 @@ next_page1:
 		case MENU_5:
 		case MENU_6:
 		case MENU_7:
-			{
-			int selected_idx = mret - 1;
+		{
+			int selected_idx = mret - 1; // 0-based index conversion
 			FIL tf;
-
-			fret = f_open(&tf,tanswers[selected_idx],FA_OPEN_EXISTING);
+			fret = f_open(&tf, tanswers[selected_idx], FA_OPEN_EXISTING);
 			if (fret != FR_OK)
 			{
 				// It's a directory. Append to filePath and continue
@@ -411,26 +409,30 @@ next_page1:
 				{
 					if (current_len > 0 && filePath[current_len - 1] != '/' && filePath[current_len - 1] != '\\')
 					{
-						strcat(filePath, "/");
+						int remaining = sizeof(filePath) - strlen(filePath) - 1;
+						strncat(filePath, "/", remaining);
 					}
-					strcat(filePath,tanswers[selected_idx]);
+					int remaining = sizeof(filePath) - strlen(filePath) - 1;
+					strncat(filePath, tanswers[selected_idx], remaining);
 				}
+				default_select = 1;
 				goto browserstart;
 			}
 			else
 			{
-				// It's a file. Append to path and return
+				// It's a file. Append to filePath and return
 				f_close(&tf);
 				int current_len = strlen(filePath);
 				if (current_len < (int)sizeof(filePath) - (int)strlen(tanswers[selected_idx]) - 2)
 				{
 					if (current_len > 0 && filePath[current_len - 1] != '/' && filePath[current_len - 1] != '\\')
 					{
-						strcat(filePath, "/");
+						int remaining = sizeof(filePath) - strlen(filePath) - 1;
+						strncat(filePath, "/", remaining);
 					}
-					strcat(filePath,tanswers[selected_idx]);
+					int remaining = sizeof(filePath) - strlen(filePath) - 1;
+					strncat(filePath, tanswers[selected_idx], remaining);
 				}
-
 				if (dir_is_open)
 				{
 					f_closedir(&tdir);
@@ -442,30 +444,35 @@ next_page1:
 
 		case MENU_PGUP:
 		case MENU_UPUP:
-			{
-			if ( currPage > 1)
+		{
+			if (currPage > 1)
 			{
 				currPage--;
+				menucnt = 0;
 				for (int i = 0; i < 7; i++)
 				{
 					int file_idx = (currPage - 1) * 7 + i;
 					if (file_idx < currFile)
 					{
-						strncpy(tanswers[i],fileNames[file_idx],100 - 1);
+						strncpy(tanswers[i], fileNames[file_idx], 100 - 1);
 						tanswers[i][100 - 1] = '\0';
+						menucnt++;
 					}
 				}
 				bnomore = false;
-				menucnt = 7;
+				default_select = menucnt; // Highlight last actual item of preceding page
 			}
-			default_select = 7;
+			else
+			{
+				default_select = 1; // Stay on item 1 if already on page 1
+			}
 			goto next_page1;
 		}
 		break;
 
 		case MENU_PGDN:
 		case MENU_DOWNDOWN:
-			{
+		{
 			if (bnomore)
 			{
 				default_select = menucnt;
@@ -475,6 +482,7 @@ next_page1:
 			if (currPage > lastPage)
 			{
 				lastPage++;
+				default_select = 1;
 				goto next_page;
 			}
 			else
@@ -486,7 +494,7 @@ next_page1:
 					int file_idx = (currPage - 1) * 7 + i;
 					if (file_idx < currFile)
 					{
-						strncpy(tanswers[i],fileNames[file_idx],100 - 1);
+						strncpy(tanswers[i], fileNames[file_idx], 100 - 1);
 						tanswers[i][100 - 1] = '\0';
 						menucnt++;
 					}
@@ -503,7 +511,7 @@ next_page1:
 		break;
 
 		default:
-			{
+		{
 			if (dir_is_open)
 			{
 				f_closedir(&tdir);

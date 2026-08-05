@@ -116,7 +116,7 @@ void aboutScreen()
 	OledShowPicData(80,0,48,6,Icon_data_DGE);
 	OledShowString(3,2,"Flash Master",8);
 	OledShowString(8,4,"v1.0.4-a.9",8);
-	OledShowString(2,5,"Jul 24, 2026",8);
+	OledShowString(2,5,"Aug 4, 2026",8);
 	OledShowString(0,7,"Press OK Button...",8);
 	WaitOKBtn();
 }
@@ -314,11 +314,11 @@ uint8_t gbxDebugMenu()		// Debug Menu for dev testing
 		case 2:
 			OledClear();
 			OledShowString(0,0,"This string is too long",16);
-			OledShowString(0,7,"Press OK...",8);
+			OledShowString(0,7,"Press OK...",16);
 			WaitOKBtn();
 			OledClear();
 			OledShowString(0,0,"This string is too long\nThis Newline is too long\nNewline",16);
-			OledShowString(0,7,"Press OK...",8);
+			OledShowString(0,7,"Press OK...",16);
 			WaitOKBtn();
 			gbxDebugScreen();
 			break;
@@ -332,12 +332,12 @@ uint8_t gbxDebugMenu()		// Debug Menu for dev testing
 			OledShowString(0,5,"6",8);
 			OledShowString(0,6,"7",8);
 			OledShowString(0,7,"8....Press OK button",8);
-			OledShowString(0,8,"9",8);
+			OledShowString(0,8,"out of bounds",8);
 			WaitOKBtn();
 			OledClear();
 			OledShowString(0,0,"This line is just a bit long",8);
 			OledShowString(0,1,"This line is 21 chars\nwith a newline",8);
-			OledShowString(0,3,"And this has too many\nnewlines\n1\n2 Press OK...\n3\n4",8);
+			OledShowString(0,3,"And this has too many\nnewlines\n5\n6 Press OK...\n7\noverflow",8);
 			WaitOKBtn();
 			gbxDebugScreen();
 			break;
@@ -635,3 +635,4 @@ int main(void)
 	SysClockFree();
 	exit(EXIT_SUCCESS);
 }
+
