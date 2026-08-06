@@ -616,7 +616,6 @@ uint8_t QBoxShowString(uint8_t x,uint8_t y,const char *str,uint8_t scroll_offset
 		x += 6;
 		j++;
 	}
-	//QBoxShowChar(x,y,' ');
 	return 0;
 }
 

@@ -294,7 +294,11 @@ browserstart:
 		f_closedir(&tdir);
 		dir_is_open = false;
 	}
-	OledClear();
+	for (uint8_t y = 1; y < 8; y++)
+	{
+		OledClearLine(y);
+	}
+
 	OledShowString(0, 0, (char *)browserTitle, 8);
 
 	currFile = 0;
@@ -312,7 +316,13 @@ browserstart:
 	f_chdir(filePath);
 
 next_page:
+
 	menucnt = 0;
+	for (uint8_t y = 1; y < 8; y++)
+	{
+		OledClearLine(y);
+	}
+
 	while(1)
 	{
 		fret = f_readdir(&tdir, &finfo);
@@ -349,23 +359,25 @@ next_page:
 	}
 
 next_page1:
-	mret = questionBox_OLED((char *)browserTitle, (const char **)tanswers, menucnt, default_select, 0, 1);
+	mret = questionBox_OLED((char *)browserTitle, (const char **)tanswers, menucnt, default_select, 0, 0);
 	switch(mret)
 	{
 		case MENU_CANCEL:
 		{
 			int len = strlen(filePath);
 
-			// Check if we are already at the root dir
+			// Check if we are at root dir
 			if (len == 0 || (len == 1 && (filePath[0] == '/' || filePath[0] == '\\')))
 			{
 				if (dir_is_open)
 				{
 					f_closedir(&tdir);
+					dir_is_open = false;
 				}
-				//ResetSystem(); // Pressed cancel at root dir (I want out!)
+				ResetSystem();
 			}
-			// Back-nav logic if not at root
+			
+			// Back-nav logic, strip last directory layer
 			bool chopped = false;
 			for (int i = len - 1; i > 0; i--)
 			{
@@ -444,6 +456,12 @@ next_page1:
 			{
 				currPage--;
 				menucnt = 0;
+
+				for (uint8_t y = 1; y < 8; y++)
+				{
+					OledClearLine(y);
+				}
+
 				for (int i = 0; i < 7; i++)
 				{
 					int file_idx = (currPage - 1) * 7 + i;
@@ -484,6 +502,12 @@ next_page1:
 			{
 				menucnt = 0;
 				bnomore = false;
+
+				for (uint8_t y = 1; y < 8; y++)
+				{
+					OledClearLine(y);
+				}
+
 				for (int i = 0; i < 7; i++)
 				{
 					int file_idx = (currPage - 1) * 7 + i;

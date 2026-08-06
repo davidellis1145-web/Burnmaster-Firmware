@@ -298,7 +298,7 @@ uint8_t gbxDebugMenu()		// Debug Menu for dev testing
 	switch (gbxDebug)
 	{
 		case 0: // Cancel btn pressed
-			gbxScreen();
+			ResetSystem();
 			break;
 		case 1:
 			OledClear();
@@ -635,4 +635,3 @@ int main(void)
 	SysClockFree();
 	exit(EXIT_SUCCESS);
 }
-
