@@ -65,13 +65,9 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 	OledShowString(0, 0, question, 8);
 
 	// Prevent empty or out-of-bounds menu configurations
-	/*if (num_answers < 1)
-	{
-		return MENU_CANCEL;
-	}*/
 	if (default_choice < 1)
 	{
-		default_choice = 1;
+		default_choice = 2;
 	}
 	if (default_choice > num_answers)
 	{
@@ -102,14 +98,14 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 		int b = checkButton();
 		if(b == BTNNONE)
 		{
-			/*scroll_tick++;
+			scroll_tick++;
 			if((scroll_tick > 14) && (scroll_tick % 3 == 1))
 			{
 				if(QBoxShowString(6, choice, answers[choice - 1], scroll_start) > 0)
 				{
 					scroll_start++;
 				}
-			}*/
+			}
 		}
 		else
 		{
@@ -157,7 +153,7 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 			{
 				if (rollselect)
 				{
-					choice = 1;
+					choice = 2;
 				}
 				else
 				{
@@ -179,15 +175,13 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 		}
 
 		// Move '*' to new selection
-		if(choice != choice_ori)
+		/*if(choice != choice_ori)
 		{
 			OledShowChar(0, choice_ori, ' ',8);
-			/*// Clear old row text pixels so text fragments do not stick around
-			OledClearLine(choice_ori);*/
 			QBoxShowString(6, choice_ori, answers[choice_ori - 1], 0);
 			OledShowChar(0, choice, '*', 8);
 			choice_ori = choice;
-		}
+		}*/
 	}
 }
 
@@ -290,7 +284,7 @@ void fileBrowser(char * start_dir, const char * browserTitle)
 	FILINFO finfo;
 	bool bnomore;
 	uint8_t mret;
-	uint8_t default_select = 1; // Set selection to item 1 on init
+	uint8_t default_select = 2; // Set selection to item 1 on init
 	bool dir_is_open = false;
 
 browserstart:
@@ -386,7 +380,7 @@ next_page1:
 			{
 				filePath[0] = 0x00;
 			}
-			default_select = 1; // Move selector to top when navigating backwards
+			default_select = 2; // Move selector to top when navigating backwards
 			goto browserstart;
 		}
 		break;
@@ -416,7 +410,7 @@ next_page1:
 					int remaining = sizeof(filePath) - strlen(filePath) - 1;
 					strncat(filePath, tanswers[selected_idx], remaining);
 				}
-				default_select = 1;
+				default_select = 2;
 				goto browserstart;
 			}
 			else
@@ -465,7 +459,7 @@ next_page1:
 			}
 			else
 			{
-				default_select = 1; // Select item 1 if already on page 1
+				default_select = 2; // Select item 1 if already on page 1
 			}
 			goto next_page1;
 		}
@@ -483,7 +477,7 @@ next_page1:
 			if (currPage > lastPage)
 			{
 				lastPage++;
-				default_select = 1;
+				default_select = 2;
 				goto next_page;
 			}
 			else
@@ -505,7 +499,7 @@ next_page1:
 						break;
 					}
 				}
-				default_select = 1;
+				default_select = 2;
 				goto next_page1;
 			}
 		}
