@@ -457,7 +457,7 @@ next_page1:
 						int remaining = sizeof(filePath) - strlen(filePath) - 1;
 						strncat(filePath, "/", remaining);
 					}
-					Int remaining = sizeof(filePath) - strlen(filePath) - 1;
+					int remaining = sizeof(filePath) - strlen(filePath) - 1;
 					strncat(filePath, tanswers[selected_idx], remaining);
 				}
 				default_select = 1;
@@ -480,7 +480,7 @@ next_page1:
 						int remaining = sizeof(filePath) - strlen(filePath) - 1;
 						strncat(filePath, "/", remaining);
 					}
-					Int remaining = sizeof(filePath) - strlen(filePath) - 1;
+					int remaining = sizeof(filePath) - strlen(filePath) - 1;
 					strncat(filePath, tanswers[selected_idx], remaining);
 				}
 				if (dir_is_open)
