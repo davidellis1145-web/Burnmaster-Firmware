@@ -452,13 +452,12 @@ next_page1:
 						int remaining = sizeof(filePath) - strlen(filePath) - 1;
 						strncat(filePath, "/", remaining);
 					}
-					else if (filePath[current_len - 1] != '/' && filePath[filePath[current_len -1]] != '\\')
+					else if (filePath[current_len - 1] != '/' && filePath[filePath[current_len - 1]] != '\\')
 					{
 						int remaining = sizeof(filePath) - strlen(filePath) - 1;
-						strncat(filePath, "/", remaining);strncat(filePath, "/", remaining);
+						strncat(filePath, "/", remaining);
 					}
-
-					int remaining = sizeof(filePath) - strlen(filePath) - 1;
+					Int remaining = sizeof(filePath) - strlen(filePath) - 1;
 					strncat(filePath, tanswers[selected_idx], remaining);
 				}
 				default_select = 1;
@@ -469,12 +468,19 @@ next_page1:
 				// It's a file. Append to filePath and return
 				f_close(&tf);
 				int current_len = strlen(filePath);
-				if (current_len > 0 && filePath[current_len - 1] != '/' && filePath[current_len - 1] != '\\')
+				if (current_len < (int)sizeof(filePath) - (int)strlen(tanswers[selected_idx]) - 2)
+				{
+					if (current_len == 0)
 					{
 						int remaining = sizeof(filePath) - strlen(filePath) - 1;
 						strncat(filePath, "/", remaining);
 					}
-					int remaining = sizeof(filePath) - strlen(filePath) - 1;
+					else if (filePath[current_len - 1] != '/' && filePath[filePath[current_len - 1]] != '\\')
+					{
+						int remaining = sizeof(filePath) - strlen(filePath) - 1;
+						strncat(filePath, "/", remaining);
+					}
+					Int remaining = sizeof(filePath) - strlen(filePath) - 1;
 					strncat(filePath, tanswers[selected_idx], remaining);
 				}
 				if (dir_is_open)
