@@ -452,7 +452,7 @@ next_page1:
 						int remaining = sizeof(filePath) - strlen(filePath) - 1;
 						strncat(filePath, "/", remaining);
 					}
-					else if (filePath[current_len - 1] != '/' && filePath[filePath[filePath[current_len -1]] != '\\')
+					else if (filePath[current_len - 1] != '/' && filePath[filePath[current_len -1]] != '\\')
 					{
 						int remaining = sizeof(filePath) - strlen(filePath) - 1;
 						strncat(filePath, "/", remaining);strncat(filePath, "/", remaining);
