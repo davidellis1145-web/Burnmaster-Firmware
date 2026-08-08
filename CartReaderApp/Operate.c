@@ -64,7 +64,7 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 	}
 	OledShowString(0, 0, question, 8);
 
-	// Prevent empty or out-of-bounds menu configurations
+	// Prevent empty or out-of-bounds default_choice
 	if (default_choice < 1)
 	{
 		default_choice = 1;
@@ -80,10 +80,18 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 		strncpy(tanswer, answers[i], 20);
 		tanswer[20] = '\0'; // Forced null terminator
 		QBoxShowString(6, i + 1, tanswer, 0);
-	}
+		//OledShowChar(0, i + 1, ' ', 8);	// Testing Make sure no leftover '*'s remain
+	}										// Runs every time questionBox is called...
 
 	// Start with the default choice
 	unsigned char choice = default_choice;
+	if (default_choice > 1)
+	{
+		for (unsigned char i = 0; i < num_answers; i++)
+		{
+			OledShowChar(0, i + 1, ' ', 8); // Testing Make sure no leftor '*'s remain
+		}									// Maybe this will keep it from runny EVERY time...
+	}
 	unsigned char choice_ori = default_choice;
 
 	// Draw selection bullet
@@ -272,12 +280,21 @@ char answer6[100];
 char answer7[100];
 char* tanswers[7] = {answer1, answer2, answer3, answer4, answer5, answer6, answer7};
 
+
 void fileBrowser(char * start_dir, const char * browserTitle)
 {
 	int currFile = 0;
 	int menucnt = 0;
-	strncpy(filePath, start_dir, sizeof(filePath) - 1);
-	filePath[sizeof(filePath) - 1] = '\0';
+
+	if (start_dir[0] == '/' && start_dir[1] == '\0')
+	{
+		filePath[0] = '\0';
+	}
+	else
+	{
+		strncpy(filePath, start_dir, sizeof(filePath) - 1);
+		filePath[sizeof(filePath) - 1] = '\0';
+	}
 
 	DIR tdir;
 	FRESULT fret;
@@ -298,6 +315,7 @@ browserstart:
 	{
 		OledClearLine(y);
 	}
+	bool cleared = true;
 
 	OledShowString(0, 0, (char *)browserTitle, 8);
 
@@ -306,22 +324,37 @@ browserstart:
 	lastPage = 1;
 	bnomore = false;
 
-	if (f_opendir(&tdir, filePath) != FR_OK)
+	// testing...
+	const char* dir_to_open = (strlen(filePath) == 0) ? "/" : filePath;
+
+	if (f_opendir(&tdir, dir_to_open) != FR_OK)
+	{
+		OledClear();
+		print_Error("SD Error", true);
+		return;
+	}
+
+	/*if (f_opendir(&tdir, filePath) != FR_OK)
 	{
 		OledClear();
 		print_Error("SD Error", true);
 		return; // Return immediately to avoid an invalid pointer
-	}
+	}*/
 	dir_is_open = true;
-	f_chdir(filePath);
+	f_chdir(dir_to_open);
+	//f_chdir(filePath);
 
 next_page:
 
 	menucnt = 0;
-	for (uint8_t y = 1; y < 8; y++)
+	if (!cleared)
 	{
-		OledClearLine(y);
+		for (uint8_t y = 1; y < 8; y++)
+		{
+			OledClearLine(y);
+		}
 	}
+	cleared = false;
 
 	while(1)
 	{
@@ -414,11 +447,17 @@ next_page1:
 				int current_len = strlen(filePath);
 				if (current_len < (int)sizeof(filePath) - (int)strlen(tanswers[selected_idx]) - 2)
 				{
-					if (current_len > 0 && filePath[current_len - 1] != '/' && filePath[current_len - 1] != '\\')
+					if (current_len == 0)
 					{
 						int remaining = sizeof(filePath) - strlen(filePath) - 1;
 						strncat(filePath, "/", remaining);
 					}
+					else if (filePath[current_len - 1] != '/' && filePath[filePath[filePath[current_len -1]] != '\\')
+					{
+						int remaining = sizeof(filePath) - strlen(filePath) - 1;
+						strncat(filePath, "/", remaining);strncat(filePath, "/", remaining);
+					}
+
 					int remaining = sizeof(filePath) - strlen(filePath) - 1;
 					strncat(filePath, tanswers[selected_idx], remaining);
 				}
@@ -430,9 +469,7 @@ next_page1:
 				// It's a file. Append to filePath and return
 				f_close(&tf);
 				int current_len = strlen(filePath);
-				if (current_len < (int)sizeof(filePath) - (int)strlen(tanswers[selected_idx]) - 2)
-				{
-					if (current_len > 0 && filePath[current_len - 1] != '/' && filePath[current_len - 1] != '\\')
+				if (current_len > 0 && filePath[current_len - 1] != '/' && filePath[current_len - 1] != '\\')
 					{
 						int remaining = sizeof(filePath) - strlen(filePath) - 1;
 						strncat(filePath, "/", remaining);
