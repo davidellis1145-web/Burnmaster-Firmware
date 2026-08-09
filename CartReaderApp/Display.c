@@ -688,7 +688,11 @@ uint8_t OledShowString(uint8_t x, uint8_t y, const char *str, uint8_t Char_Size)
 		return 1; // Won't fit
 	}
 
-	if (wrapped) // testing wrap flag so new string clears line if previous was wrapped
+	if (!wrapped) // debugging
+	{
+		OledClear();
+	}
+	else if (wrapped) // testing wrap flag so new string clears line if previous was wrapped
 	{
 		OledClearLine(y);
 		bool wrapped = false;
