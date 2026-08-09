@@ -80,18 +80,19 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 		strncpy(tanswer, answers[i], 20);
 		tanswer[20] = '\0'; // Forced null terminator
 		QBoxShowString(6, i + 1, tanswer, 0);
-		//OledShowChar(0, i + 1, ' ', 8);	// Testing Make sure no leftover '*'s remain
-	}										// Runs every time questionBox is called...
+	}
 
 	// Start with the default choice
 	unsigned char choice = default_choice;
-	if (default_choice > 1)
+	if ((default_choice > 1 && currPage > 1) || (currPage == 1 && default_choice == 1)) 
 	{
-		for (unsigned char i = 0; i < num_answers; i++)
+		uint8_t clr_lines = (currPage > 1) ? 0 : 1;
+		for (uint8_t i = clr_lines; i < num_answers; i++)
 		{
 			OledShowChar(0, i + 1, ' ', 8); // Testing Make sure no leftor '*'s remain
-		}									// Maybe this will keep it from runny EVERY time...
+		}
 	}
+	
 	unsigned char choice_ori = default_choice;
 
 	// Draw selection bullet
@@ -303,6 +304,7 @@ void fileBrowser(char * start_dir, const char * browserTitle)
 	uint8_t mret;
 	uint8_t default_select = 1; // Set selection to item 1 on init
 	bool dir_is_open = false;
+	bool prnt_title  = false;
 
 browserstart:
 	// Close the directory if it was left open
@@ -317,7 +319,12 @@ browserstart:
 	}
 	bool cleared = true;
 
-	OledShowString(0, 0, (char *)browserTitle, 8);
+	if (!prnt_title)
+	{
+		OledClearLine(0);
+		OledShowString(0, 0, (char *)browserTitle, 8);
+		prnt_title = true;
+	}
 
 	currFile = 0;
 	currPage = 1;
@@ -333,17 +340,10 @@ browserstart:
 		print_Error("SD Error", true);
 		return;
 	}
-
-	/*if (f_opendir(&tdir, filePath) != FR_OK)
-	{
-		OledClear();
-		print_Error("SD Error", true);
-		return; // Return immediately to avoid an invalid pointer
-	}*/
+	
 	dir_is_open = true;
 	f_chdir(dir_to_open);
-	//f_chdir(filePath);
-
+	
 next_page:
 
 	menucnt = 0;
@@ -487,6 +487,7 @@ next_page1:
 				{
 					f_closedir(&tdir);
 				}
+				prnt_title = false;
 				return;
 			}
 		}
@@ -582,4 +583,5 @@ next_page1:
 		}
 		break;
 	}
+	prnt_title = false;
 }

@@ -688,6 +688,12 @@ uint8_t OledShowString(uint8_t x, uint8_t y, const char *str, uint8_t Char_Size)
 		return 1; // Won't fit
 	}
 
+	if (wrapped) // testing wrap flag so new string clears line if previous was wrapped
+	{
+		OledClearLine(y);
+		bool wrapped = false;
+	} // EOT
+
 	while (str[j] != '\0')
 	{
 		if (str[j] == '\n' || (x + char_width > (MAX_COLUMN + 1)))
@@ -708,6 +714,7 @@ uint8_t OledShowString(uint8_t x, uint8_t y, const char *str, uint8_t Char_Size)
 				return 1; // Return 1 to indicate truncation
 			}
 
+			bool wrapped = true; // testing wrap flag
 			// Clear new line(s)
 			OledClearLine(y);
 			if (Char_Size == 16)

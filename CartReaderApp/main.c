@@ -2,14 +2,21 @@
 *					 SEGGER Microcontroller GmbH					 *
 *						 The Embedded Experts						 *
 **********************************************************************
--------------------------- END-OF-HEADER -----------------------------
 
 **********************************************************************
+*	Based on Sanni's cartreader firmware.							 *
+*	 (https://github.com/sanni/cartreader)							 *
+*																	 *
+*	  Modified by FunnyPlaying and others.							 *
+*	  Final modifications by: David Ellis.							 *
+*	   (https://github.com/davidellis1145-web)						 *
+*--------------------------------------------------------------------*
 * Special thanks to;												 *
 *					 Martin Refseth (HDR)							 *
 *					 Slade1972										 *
 *					 Dart-Alex										 *
-*					 BennyFischer				...And FunnyPlaying	 *
+*					 BennyFischer									 *
+*					 Mom						...And FunnyPlaying  *
 *********************************************************************/
 
 #include <gd32f10x.h>
@@ -116,7 +123,7 @@ void aboutScreen()
 	OledShowPicData(80,0,48,6,Icon_data_DGE);
 	OledShowString(3,2,"Flash Master",8);
 	OledShowString(8,4,"v1.0.4-a.9",8);
-	OledShowString(2,5,"Aug 7, 2026",8);
+	OledShowString(2,5,"Aug 8, 2026",8);
 	OledShowString(0,7,"Press OK Button...",8);
 	WaitOKBtn();
 }
@@ -227,8 +234,7 @@ uint8_t gbTestsMenu()
 	switch (gbCTest)
 	{
 		case 0: // Cancel btn pressed
-			return 1;
-			//gbxScreen(); testing
+			ResetSystem();
 			break;
 		case 1:
 			TestMemGB(true);
@@ -263,8 +269,7 @@ uint8_t gbaTestsMenu()
 	switch (gbaCTest)
 	{
 		case 0: // Cancel btn pressed
-			return 1;
-			//gbxScreen(); testing
+			ResetSystem();
 			break;
 		case 1:
 			TestMemGBA(true);
@@ -296,12 +301,11 @@ uint8_t gbxDebugMenu()		// Debug Menu for dev testing
 	unsigned char gbxDebug;
 	gbxDebug = questionBox_OLED("**Debug Menu**", menuOptionsDebug, 5, 1, 1, 1);
 
-	// Wait for user choice to come back from the question box men
+	// Wait for user choice to come back from the question box menu
 	switch (gbxDebug)
 	{
 		case 0: // Cancel btn pressed
-			return 1;
-			//ResetSystem(); testing
+			ResetSystem();
 			break;
 		case 1:
 			OledClear();
@@ -629,7 +633,6 @@ int main(void)
 	PriInit();
 	LEDSInit();
 	OledInit();
-	//OledClear(); testing
 	KeyBrdInit();
 	SDCardInit();
 	delay(200);

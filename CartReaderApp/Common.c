@@ -31,6 +31,7 @@ char checksumStr[5];
 bool errorLvl = 0;
 boolean ignoreError = 0;
 char flashid[5];
+bool wrapped = false; // testing wrapped
 
 // Variable to count errors
 unsigned long writeErrors;

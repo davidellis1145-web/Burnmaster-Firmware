@@ -34,6 +34,7 @@ extern bool errorLvl;
 extern boolean ignoreError;
 extern char flashid[5];
 extern int manufacturerid;
+extern bool wrapped; // testing wrapped
 
 // Variable to count errors
 extern unsigned long writeErrors;
