@@ -429,10 +429,10 @@ void getCartInfo_GBA()
 		// Compare checksum
 		if (strcmp(calcChecksumStr, checksumStr) != 0)
 		{
-			OledShowString(0,0,"Result: ",8);
-			OledShowString(0,60,calcChecksumStr,8);
+			OledShowString(0, 0, "Result: ", 8);
+			OledShowString(48, 0, calcChecksumStr, 8);
 			print_Error("Checksum Error!", false);
-			OledShowString(0,7,"Press OK Button...",8);
+			OledShowString(0, 7, "Press OK Button...", 8);
 			WaitOKBtn();
 		}
 	}
@@ -2322,13 +2322,13 @@ void writeMX29GL128E_GBA_1(FIL * ptf)
 
 void writeSpansion_GBA(FIL * ptf)
 {
-	for (unsigned long currSector = 0; currSector < fileSize; currSector += 0x20000) // Was 0x20000
+	for (unsigned long currSector = 0; currSector < fileSize; currSector += 0x20000)
 	{
 		// Blink led
 		LED_GREEN_BLINK;
 		showPercent(currSector,fileSize,68,3);
 		// Write to flashrom
-		for (unsigned long currSdBuffer = 0; currSdBuffer < 0x20000; currSdBuffer += 512) // Was 0x20000
+		for (unsigned long currSdBuffer = 0; currSdBuffer < 0x20000; currSdBuffer += 512)
 		{
 			// Fill SD buffer
 			UINT rdt;
@@ -2710,7 +2710,21 @@ void flashRepro_GBA()
 
 			// Write flashrom
 			OledShowString(10,3,"Writing...",8);
-			OledShowString(0,4,filePath,8);
+			
+			// lock to no more than one line wrap
+			int pathLen = strlen(filePath);
+			if (pathLen >= 43)
+			{
+				char backupChar = filePath[39];
+				filePath[39] = '\0';
+				OledShowString(0, 4, filePath, 8);
+				OledShowString(0, 108, "...", 8);
+				filePath[39] = backupChar;
+			}
+			else
+			{
+				OledShowString(0,4,filePath,8);
+			}
 
 			if ((strcmp(flashid, "8802") == 0) || (strcmp(flashid, "8816") == 0))
 			{
@@ -2755,6 +2769,7 @@ void flashRepro_GBA()
 			f_close(&tf);
 
 			// Verify
+			OledClearLine(5); // Incase 'folder' string wrapped
 			OledShowString(10,5,"Verifying...",8);
 
 			if (strcmp(flashid, "8802") == 0)
@@ -2795,7 +2810,7 @@ void flashRepro_GBA()
 			}
 			use_tick = (getSystick() - use_tick)/1055;
 			sprintf(tmsg,"Completed in: %d(s)",use_tick);
-			OledShowString(10,6,tmsg,8);
+			OledShowString(8,6,tmsg,8);
 		}
 		else
 		{
@@ -3098,9 +3113,7 @@ uint8_t gbaMenu()
 	switch (retMenu)
 	{
 		case MENU_CANCEL:
-			{
-				bret = 1;
-			}
+			bret = 1;
 			break;
 		case MENU_1:
 			flashRepro_GBA();
@@ -3119,6 +3132,9 @@ uint8_t gbaMenu()
 						// Wait for user choice to come back from the question box menu
 						switch (GBARomMenu)
 						{
+							case 0:
+								bret = 1;
+								break;
 							case 1:
 								// 1MB
 								cartSize = 0x100000;
@@ -3183,6 +3199,9 @@ uint8_t gbaMenu()
 				// Wait for user choice to come back from the question box menu
 				switch (GBASaveMenu)
 				{
+					case 0:
+						bret = 1;
+						break;
 					case 1:
 						// 4K EEPROM
 						saveType = 1;
@@ -3260,6 +3279,9 @@ uint8_t gbaMenu()
 				// Wait for user choice to come back from the question box menu
 				switch (GBASavesMenu)
 				{
+					case 0:
+						bret = 1;
+						break;
 					case 1:
 						// 4K EEPROM
 						saveType = 1;
@@ -3418,12 +3440,13 @@ uint8_t gbaMenu()
 
 	case MENU_5:
 		{
-			// Create submenu with title and 7 options to choose from
 			unsigned char GBASaveMenu = questionBox_OLED("Select save type:", saveOptionsGBA, 6, 1, 1, 1);
 
-			// Wait for user choice to come back from the question box menu
 			switch (GBASaveMenu)
 			{
+				case 0:
+					bret = 1;
+					break;
 				case 1:
 					// 4K EEPROM
 					forceSaveType = 1;

@@ -123,7 +123,7 @@ void aboutScreen()
 	OledShowPicData(80,0,48,6,Icon_data_DGE);
 	OledShowString(3,2,"Flash Master",8);
 	OledShowString(8,4,"v1.0.4-a.9",8);
-	OledShowString(2,5,"Aug 8, 2026",8);
+	OledShowString(2,5,"Aug 10, 2026",8);
 	OledShowString(0,7,"Press OK Button...",8);
 	WaitOKBtn();
 }
@@ -132,6 +132,7 @@ void aboutScreen()
 // Start menu for both GB and GBA (main menu)
 uint8_t gbxMenu()
 {
+	uint8_t bret = 0;
 	uint8_t gbxtype = GetGBType();
 	unsigned char gbType;
 
@@ -148,7 +149,7 @@ uint8_t gbxMenu()
 		switch (gbType)
 		{
 			case 0:	// Cancel btn clicked
-				gbxScreen();
+				bret = 1;
 				break;
 			case 1:
 				gbaScreen();
@@ -177,7 +178,7 @@ uint8_t gbxMenu()
 		switch (gbType)
 		{
 			case 0:	// Cancel btn clicked
-				gbxScreen();
+				bret = 1;
 				break;
 			case 1:
 				gbScreen();
@@ -199,7 +200,7 @@ uint8_t gbxMenu()
 		switch (gbType)
 		{
 			case 0:	// Cancel btn clicked
-				gbxScreen();
+				bret = 1;
 				break;
 			case 1:
 				gbScreen();
@@ -212,7 +213,7 @@ uint8_t gbxMenu()
 				break;
 		}
 	}
-	return 0;
+	return bret;
 }
 
 
@@ -226,7 +227,9 @@ uint8_t gbTestsMenu()
 	OledShowString(0,7,"Press OK Button...",8);
 	WaitOKBtn();
 	OledClear();
-
+	
+	uint8_t bret = 0;
+	
 	// Create menu with title and options to choose from
 	unsigned char gbCTest;
 	gbCTest = questionBox_OLED("GB(C) Cart Tests", menuOptionsGBT, 3, 1, 1, 1);
@@ -234,7 +237,7 @@ uint8_t gbTestsMenu()
 	switch (gbCTest)
 	{
 		case 0: // Cancel btn pressed
-			ResetSystem();
+			bret = 1;
 			break;
 		case 1:
 			TestMemGB(true);
@@ -246,7 +249,7 @@ uint8_t gbTestsMenu()
 			ResetSystem();
 			break;
 	}
-	return 0;
+	return bret;
 }
 
 
@@ -261,6 +264,8 @@ uint8_t gbaTestsMenu()
 	WaitOKBtn();
 	OledClear();
 
+	uint8_t bret = 0;
+
 	// Create menu with title and options to choose from
 	unsigned char gbaCTest;
 	gbaCTest = questionBox_OLED("GBA Cart Tests", menuOptionsGBT, 3, 1, 1, 1);
@@ -269,7 +274,7 @@ uint8_t gbaTestsMenu()
 	switch (gbaCTest)
 	{
 		case 0: // Cancel btn pressed
-			ResetSystem();
+			bret = 1;
 			break;
 		case 1:
 			TestMemGBA(true);
@@ -281,7 +286,7 @@ uint8_t gbaTestsMenu()
 			ResetSystem();
 			break;
 	}
-	return 0;
+	return bret;
 }
 
 
@@ -297,6 +302,8 @@ uint8_t gbxDebugMenu()		// Debug Menu for dev testing
 	WaitOKBtn();
 	OledClear();
 
+	uint8_t bret = 0;
+
 	// Create menu with title and options to choose from
 	unsigned char gbxDebug;
 	gbxDebug = questionBox_OLED("**Debug Menu**", menuOptionsDebug, 5, 1, 1, 1);
@@ -305,7 +312,7 @@ uint8_t gbxDebugMenu()		// Debug Menu for dev testing
 	switch (gbxDebug)
 	{
 		case 0: // Cancel btn pressed
-			ResetSystem();
+			bret = 1;
 			break;
 		case 1:
 			OledClear();
@@ -363,7 +370,7 @@ uint8_t gbxDebugMenu()		// Debug Menu for dev testing
 			ResetSystem();
 			break;
 	}
-	return 0;
+	return bret;
 }
 
 

@@ -688,14 +688,14 @@ uint8_t OledShowString(uint8_t x, uint8_t y, const char *str, uint8_t Char_Size)
 		return 1; // Won't fit
 	}
 
-	if (wrapped) // testing wrap flag so new string clears line if previous was wrapped
+	if (wrapped)
 	{
 		OledClearLine(y);
 		if (Char_Size == 16)
 		{
 			OledClearLine(y + 1);
 		}
-	} // EOT
+	}
 	wrapped = false;
 	
 	while (str[j] != '\0')
@@ -874,18 +874,26 @@ void showPercent(uint32_t processed, uint32_t total, uint8_t x, uint8_t line)
 {
 	char szt[16] = {0};
 	static uint8_t oripst = 0;
+	
+	if (total == 0)
+	{
+		return;
+	}
+
 	uint8_t tpst = processed*100/total;
 
 	if(processed == 0)
 	{
 		oripst = 0;
+		OledShowString(x,line, "    ", 8);
+		OledShowString(x,line, "0%", 8);
 	}
 
 	if(tpst != oripst && tpst <= 100)
 	{
 		oripst = tpst;
 		sprintf(szt,"%d%%",tpst);
-		OledShowString(x,line,"   ",8);
+		OledShowString(x,line,"    ",8);
 		OledShowString(x,line,szt,8);
 	}
 }

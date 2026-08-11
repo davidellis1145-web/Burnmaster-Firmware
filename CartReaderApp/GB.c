@@ -1423,7 +1423,7 @@ bool writeCFI_GB()
 		{
 			use_tick = (getSystick() - use_tick)/1055;
 			sprintf(msgbuf,"Completed in: %d(s)",use_tick);
-			OledShowString(10,6,msgbuf,8);
+			OledShowString(8,6,msgbuf,8);
 		}
 		else
 		{

@@ -382,11 +382,25 @@ next_page:
 
 			if (menucnt >= 7)
 			{
+				// Peek ahead to see if this is truly the last file in the folder
+				long current_offset = tdir.dptr; // Save current directory pointer state
+				FILINFO peek_finfo;
+				
+				if (f_readdir(&tdir, &peek_finfo) == FR_OK)
+				{
+					if (peek_finfo.fname[0] == 0x00 || currFile >= 128)
+					{
+						bnomore = true; // No more files remaining!
+					}
+					
+					tdir.dptr = current_offset; 
+				}
 				break;
 			}
 		}
 		else
 		{
+			bnomore = true;
 			break;
 		}
 	}
@@ -399,20 +413,21 @@ next_page1:
 		{
 			int len = strlen(filePath);
 
+			if (dir_is_open)
+			{
+				f_closedir(&tdir);
+				dir_is_open = false;
+			}
 			// Check if we are at root dir
 			if (len == 0 || (len == 1 && (filePath[0] == '/' || filePath[0] == '\\')))
 			{
-				if (dir_is_open)
-				{
-					f_closedir(&tdir);
-					dir_is_open = false;
-				}
 				ResetSystem();
+				return;
 			}
 			
 			// Back-nav logic, strip last directory layer
 			bool chopped = false;
-			for (int i = len - 1; i > 0; i--)
+			for (int i = len - 1; i >= 0; i--)
 			{
 				if (filePath[i] == '/' || filePath[i] == '\\')
 				{
@@ -421,7 +436,7 @@ next_page1:
 					break;
 				}
 			}
-			if (!chopped && len > 0)
+			if (!chopped || strlen(filePath) == 0)
 			{
 				filePath[0] = 0x00;
 			}
