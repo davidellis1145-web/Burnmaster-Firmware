@@ -148,7 +148,7 @@ uint8_t gbxMenu()
 		gbType = questionBox_OLED("Game Boy Flash Master", menuOptionsGBA, 4, 1, 1, 0, 1);
 		switch (gbType)
 		{
-			case 0:	// Cancel btn clicked
+			case MENU_CANCEL: // Cancel btn clicked
 				bret = 1;
 				break;
 			case 1:
@@ -177,7 +177,7 @@ uint8_t gbxMenu()
 		gbType = questionBox_OLED("Game Boy Flash Master", menuOptionsGBC, 4, 1, 1, 0, 1);
 		switch (gbType)
 		{
-			case 0:	// Cancel btn clicked
+			case MENU_CANCEL:	// Cancel btn clicked
 				bret = 1;
 				break;
 			case 1:
@@ -199,7 +199,7 @@ uint8_t gbxMenu()
 		gbType = questionBox_OLED("Game Boy Flash Master", menuOptionsGBx, 3, 1, 1, 1, 0);
 		switch (gbType)
 		{
-			case 0:	// Cancel btn clicked
+			case MENU_CANCEL:	// Cancel btn clicked
 				bret = 1;
 				break;
 			case 1:
@@ -240,7 +240,7 @@ uint8_t gbTestsMenu(uint8_t skipWarning)
 	// Wait for user choice to come back from the question box menu
 	switch (gbCTest)
 	{
-		case 0: // Cancel btn pressed
+		case MENU_CANCEL: // Cancel btn pressed
 			bret = 1;
 			break;
 		case 1:
@@ -281,7 +281,7 @@ uint8_t gbaTestsMenu(uint8_t skipWarning)
 	// Wait for user choice to come back from the question box men
 	switch (gbaCTest)
 	{
-		case 0: // Cancel btn pressed
+		case MENU_CANCEL: // Cancel btn pressed
 			bret = 1;
 			break;
 		case 1:
@@ -321,7 +321,7 @@ uint8_t gbxDebugMenu(uint8_t skipWarning)	// Debug Menu for dev testing
 	// Wait for user choice to come back from the question box menu
 	switch (gbxDebug)
 	{
-		case 0: // Cancel btn pressed
+		case MENU_CANCEL: // Cancel btn pressed
 			bret = 1;
 			break;
 		case 1:

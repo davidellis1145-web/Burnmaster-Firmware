@@ -1931,7 +1931,7 @@ uint8_t gbMenu()
 	// Wait for user choice to come back from the question box menu
 	switch (gbMenu)
 	{
-		case 0: // Cancel btn clicked
+		case MENU_CANCEL: // Cancel btn clicked
 			bret = 1;
 			break;
 		case 1:

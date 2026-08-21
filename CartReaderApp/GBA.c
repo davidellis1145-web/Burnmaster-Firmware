@@ -3133,7 +3133,7 @@ uint8_t gbaMenu()
 						// Wait for user choice to come back from the question box menu
 						switch (GBARomMenu)
 						{
-							case 0:
+							case MENU_CANCEL:
 								bret = 1;
 								break;
 							case 1:
@@ -3200,7 +3200,7 @@ uint8_t gbaMenu()
 				// Wait for user choice to come back from the question box menu
 				switch (GBASaveMenu)
 				{
-					case 0:
+					case MENU_CANCEL:
 						bret = 1;
 						break;
 					case 1:
@@ -3280,7 +3280,7 @@ uint8_t gbaMenu()
 				// Wait for user choice to come back from the question box menu
 				switch (GBASavesMenu)
 				{
-					case 0:
+					case MENU_CANCEL:
 						bret = 1;
 						break;
 					case 1:
@@ -3445,7 +3445,7 @@ uint8_t gbaMenu()
 
 			switch (GBASaveMenu)
 			{
-				case 0:
+				case MENU_CANCEL:
 					bret = 1;
 					break;
 				case 1:
