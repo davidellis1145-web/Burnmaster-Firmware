@@ -217,19 +217,23 @@ uint8_t gbxMenu()
 }
 
 
-uint8_t gbTestsMenu()
+uint8_t gbTestsMenu(uint8_t skipWarning)
 {
-	// Show warning
-	OledClear();
-	OledShowString(30,1,"**WARNING**",8);
-	OledShowString(3,3,"The following tests",8);
-	OledShowString(2,4,"will erase the cart!",8);
-	OledShowString(0,7,"Press OK Button...",8);
-	WaitOKBtn();
+	// Only show warning if skipWarning is 0
+	if (!skipWarning)
+	{
+		OledClear();
+		OledShowString(30,1,"**WARNING**",8);
+		OledShowString(3,3,"The following tests",8);
+		OledShowString(2,4,"will erase the cart!",8);
+		OledShowString(0,7,"Press OK Button...",8);
+		WaitOKBtn();
+	}
+
 	OledClear();
 	
 	uint8_t bret = 0;
-	
+
 	// Create menu with title and options to choose from
 	unsigned char gbCTest;
 	gbCTest = questionBox_OLED("GB(C) Cart Tests", menuOptionsGBT, 3, 1, 1, 1);
@@ -253,17 +257,21 @@ uint8_t gbTestsMenu()
 }
 
 
-uint8_t gbaTestsMenu()
+uint8_t gbaTestsMenu(uint8_t skipWarning)
 {
-	// Show warning
-	OledClear();
-	OledShowString(30,1,"**WARNING**",8);
-	OledShowString(3,3,"The following tests",8);
-	OledShowString(2,4,"will erase the cart!",8);
-	OledShowString(0,7,"Press OK Button...",8);
-	WaitOKBtn();
-	OledClear();
+	// Only show warning if skipWarning is 0
+	if (!skipWarning)
+	{
+		OledClear();
+		OledShowString(30,1,"**WARNING**",8);
+		OledShowString(3,3,"The following tests",8);
+		OledShowString(2,4,"will erase the cart!",8);
+		OledShowString(0,7,"Press OK Button...",8);
+		WaitOKBtn();
+	}
 
+	OledClear();
+	
 	uint8_t bret = 0;
 
 	// Create menu with title and options to choose from
@@ -290,18 +298,20 @@ uint8_t gbaTestsMenu()
 }
 
 
-uint8_t gbxDebugMenu()		// Debug Menu for dev testing
+uint8_t gbxDebugMenu(uint8_t skipWarning)	// Debug Menu for dev testing
 {
-	// Show warning
-	OledClear();
-	OledShowString(30,1,"**WARNING**",8);
-	OledShowString(0,3,"Entering debug menu",8);
-	OledShowString(0,4,"don't use important",8);
-	OledShowString(0,5,"carts, may corrupt.",8);
-	OledShowString(0,7,"Press OK Button...",8);
-	WaitOKBtn();
-	OledClear();
+	if (!skipWarning) // Only show warning if skipWarning is 0
+	{
+		OledClear();
+		OledShowString(30,1,"**WARNING**",8);
+		OledShowString(0,3,"Entering debug menu",8);
+		OledShowString(0,4,"don't use important",8);
+		OledShowString(0,5,"carts, may corrupt.",8);
+		OledShowString(0,7,"Press OK Button...",8);
+		WaitOKBtn();
+	}
 
+	OledClear();
 	uint8_t bret = 0;
 
 	// Create menu with title and options to choose from
@@ -323,7 +333,6 @@ uint8_t gbxDebugMenu()		// Debug Menu for dev testing
 			OledShowString(0,0,"This string is too long\nand it has two newlines\nNewline two",8);
 			OledShowString(0,7,"Press OK...",8);
 			WaitOKBtn();
-			gbxDebugScreen();
 			break;
 		case 2:
 			OledClear();
@@ -334,7 +343,6 @@ uint8_t gbxDebugMenu()		// Debug Menu for dev testing
 			OledShowString(0,0,"This string is too long\nThis Newline is too long\nNewline",16);
 			OledShowString(0,7,"Press OK...",16);
 			WaitOKBtn();
-			gbxDebugScreen();
 			break;
 		case 3:
 			OledClear();
@@ -353,7 +361,6 @@ uint8_t gbxDebugMenu()		// Debug Menu for dev testing
 			OledShowString(0,1,"This line is 21 chars\nwith a newline",8);
 			OledShowString(0,3,"And this has too many\nnewlines\n5\n6 Press OK...\n7\noverflow",8);
 			WaitOKBtn();
-			gbxDebugScreen();
 			break;
 		case 4:
 			OledClear();
@@ -364,7 +371,6 @@ uint8_t gbxDebugMenu()		// Debug Menu for dev testing
 			OledShowPicData(80,4,48,6,Icon_data_DGE);
 			OledShowString(0,7,"Press OK...",8);
 			WaitOKBtn();
-			gbxDebugScreen();
 			break;
 		case 5:
 			ResetSystem();
@@ -389,42 +395,50 @@ void gbxScreen() // Main menu
 
 void gbTestsScreen() // Cart tests for GB(C)
 {
+	uint8_t skip = 0; // Don't skip on first run
 	while(1)
 	{
-		uint8_t b = gbTestsMenu();
+		uint8_t b = gbTestsMenu(skip);
 		if (b > 0)
 		{
-			ResetSystem();
 			break;
 		}
+		// Case 1+... set skip to 1 so it won't show on next loop
+		skip = 1;
 	}
 }
 
 
 void gbaTestsScreen() // Cart tests for GBA
 {
+	uint8_t skip = 0; // Don't skip on first run
 	while(1)
 	{
-		uint8_t b = gbaTestsMenu();
+		uint8_t b = gbaTestsMenu(skip);
 		if (b > 0)
 		{
 			ResetSystem();
 			break;
 		}
+		// Case 1+... set skip to 1 so it won't show on next loop
+		skip = 1;
 	}
 }
 
 
 void gbxDebugScreen() // Debug menu loader
 {
+	uint8_t skip = 0; // Don't skip on first run
 	while(1)
 	{
-		uint8_t b = gbxDebugMenu();
+		uint8_t b = gbxDebugMenu(skip);
 		if (b > 0)
 		{
 			ResetSystem();
 			break;
 		}
+		// Case 1+... set skip to 1 so it won't show on next loop
+		skip = 1;
 	}
 }
 

@@ -74,6 +74,7 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 		default_choice = num_answers;
 	}
 
+	// Draw valid answers for this page
 	char tanswer[21] = {0};
 	for (unsigned char i = 0; i < num_answers; i++)
 	{
@@ -82,20 +83,23 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 		QBoxShowString(6, i + 1, tanswer, 0);
 	}
 
-	// Start with the default choice
-	unsigned char choice = default_choice;
-	if ((default_choice > 1 && currPage > 1) || (currPage == 1 && default_choice == 1)) 
+	// Blank out any remaining menu list lines
+	// This prevents text artifacts from previous pages if this page has fewer items.
+	for (unsigned char i = num_answers; i < 7; i++)
 	{
-		uint8_t clr_lines = (currPage > 1) ? 0 : 1;
-		for (uint8_t i = clr_lines; i < num_answers; i++)
-		{
-			OledShowChar(0, i + 1, ' ', 8); // Testing Make sure no leftor '*'s remain
-		}
+		OledClearLine(i + 1);
 	}
-	
+
+	// Explicitly clear cursor column (x=0) for all rows on entry
+	for (uint8_t i = 1; i <= 7; i++)
+	{
+		OledShowChar(0, i, ' ', 8);
+	}
+
+	unsigned char choice = default_choice;
 	unsigned char choice_ori = default_choice;
 
-	// Draw selection bullet
+	// Draw initial selection bullet
 	OledShowChar(0, choice, '*', 8);
 
 	uint32_t scroll_tick = 0;
@@ -186,9 +190,18 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 		// Move '*' to new selection
 		if(choice != choice_ori)
 		{
-			OledShowChar(0, choice_ori, ' ',8);
+			// Erase old bullet
+			OledShowChar(0, choice_ori, ' ', 8);
+
+			// Reset ticker layout immediately for the item we just left
 			QBoxShowString(6, choice_ori, answers[choice_ori - 1], 0);
+
+			// Draw new bullet
 			OledShowChar(0, choice, '*', 8);
+
+			// Draw new line at un-scrolled starting position
+			QBoxShowString(6, choice, answers[choice - 1], 0);
+
 			choice_ori = choice;
 		}
 	}
@@ -326,12 +339,14 @@ browserstart:
 		prnt_title = true;
 	}
 
+	// Safely clear out our string cache to prevent cross-directory text pollution
+	memset(fileNames, 0, sizeof(fileNames));
+
 	currFile = 0;
 	currPage = 1;
 	lastPage = 1;
 	bnomore = false;
 
-	// testing...
 	const char* dir_to_open = (strlen(filePath) == 0) ? "/" : filePath;
 
 	if (f_opendir(&tdir, dir_to_open) != FR_OK)
@@ -340,10 +355,10 @@ browserstart:
 		print_Error("SD Error", true);
 		return;
 	}
-	
+
 	dir_is_open = true;
 	f_chdir(dir_to_open);
-	
+
 next_page:
 
 	menucnt = 0;
@@ -356,13 +371,19 @@ next_page:
 	}
 	cleared = false;
 
-	while(1) // Testing...
+	// Reset display answers buffers completely before loading new strings
+	for (int i = 0; i < 7; i++)
+	{
+		tanswers[i][0] = '\0';
+	}
+
+	while(1)
 	{
 		fret = f_readdir(&tdir, &finfo);
 		if (fret == FR_OK)
 		{
-			// End of files or reached file limit
-			if ((finfo.fname[0] == 0x00) || (currFile >= 128))
+			// Check ONLY for end of directory
+			if (finfo.fname[0] == 0x00)
 			{
 				bnomore = true;
 				break;
@@ -376,13 +397,34 @@ next_page:
 				strncpy(tanswers[menucnt], fileNames[currFile], 100 - 1);
 				tanswers[menucnt][100 - 1] = '\0';
 			}
+			printf("\nfile:[%s]-[%s]", finfo.fname, finfo.altname);
 			currFile++;
 			menucnt++;
-			printf("\nfile:[%s]-[%s]", finfo.fname, finfo.altname);
 
-			if (menucnt >= 7)
+			// Check for file limit reached
+			if (currFile >= 128)
 			{
 				bnomore = true;
+				break;
+			}
+
+			// Peek ahead to see if end of dir reached, or goto next page
+			if (menucnt >= 7)
+			{
+				// Save entire state of dir structure preserving LFNs
+				DIR backup_tdir = tdir;
+				FILINFO peek_finfo;
+
+				if (f_readdir(&tdir, &peek_finfo) == FR_OK)
+				{
+					if (peek_finfo.fname[0] == 0x00)
+					{
+						bnomore = true; // No more files!
+					}
+				}
+
+				// Restore dir structure
+				tdir = backup_tdir;
 				break;
 			}
 		}
@@ -412,7 +454,7 @@ next_page1:
 				ResetSystem();
 				return;
 			}
-			
+
 			// Back-nav logic, strip last directory layer
 			bool chopped = false;
 			for (int i = len - 1; i >= 0; i--)
@@ -455,7 +497,7 @@ next_page1:
 						int remaining = sizeof(filePath) - strlen(filePath) - 1;
 						strncat(filePath, "/", remaining);
 					}
-					else if (filePath[current_len - 1] != '/' && filePath[filePath[current_len - 1]] != '\\')
+					else if (filePath[current_len - 1] != '/' && filePath[current_len - 1] != '\\')
 					{
 						int remaining = sizeof(filePath) - strlen(filePath) - 1;
 						strncat(filePath, "/", remaining);
@@ -478,7 +520,7 @@ next_page1:
 						int remaining = sizeof(filePath) - strlen(filePath) - 1;
 						strncat(filePath, "/", remaining);
 					}
-					else if (filePath[current_len - 1] != '/' && filePath[filePath[current_len - 1]] != '\\')
+					else if (filePath[current_len - 1] != '/' && filePath[current_len - 1] != '\\')
 					{
 						int remaining = sizeof(filePath) - strlen(filePath) - 1;
 						strncat(filePath, "/", remaining);
@@ -507,6 +549,12 @@ next_page1:
 				for (uint8_t y = 1; y < 8; y++)
 				{
 					OledClearLine(y);
+				}
+
+				// Reset layout arrays before back-copying
+				for (int i = 0; i < 7; i++)
+				{
+					tanswers[i][0] = '\0';
 				}
 
 				for (int i = 0; i < 7; i++)
@@ -555,6 +603,12 @@ next_page1:
 					OledClearLine(y);
 				}
 
+				// Erase past text tracks from buffer before filling strings
+				for (int i = 0; i < 7; i++)
+				{
+					tanswers[i][0] = '\0';
+				}
+
 				for (int i = 0; i < 7; i++)
 				{
 					int file_idx = (currPage - 1) * 7 + i;
@@ -567,7 +621,6 @@ next_page1:
 					else
 					{
 						bnomore = true;
-						break;
 					}
 				}
 				default_select = 1;
