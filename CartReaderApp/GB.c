@@ -1937,7 +1937,7 @@ uint8_t gbMenu()
 		case 1:
 			// Flash ROM
 			// Launch file browser
-			if (fileBrowser("/","Select file:") == 0;)
+			if (fileBrowser("/","Select file:") == 0)
 			{
 				break;
 			}
@@ -1976,7 +1976,7 @@ uint8_t gbMenu()
 				// Change working dir to root
 				f_chdir("/");
 				filePath[0] = '\0';
-				if (fileBrowser("/","Select sav file") == 0);
+				if (fileBrowser("/","Select sav file") == 0)
 				{
 					break;
 				}

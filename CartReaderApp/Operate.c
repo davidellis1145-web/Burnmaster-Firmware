@@ -643,4 +643,5 @@ next_page1:
 		break;
 	}
 	prnt_title = false;
+	return 0;
 }
