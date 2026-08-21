@@ -127,6 +127,8 @@ void delay(int n)
 
 void ResetSystem()
 {
+	OledClear();	// #Testing, try to keep screen from spazzing on system reset
+	delay(10);		// just for fun
 	__set_FAULTMASK(1); // Disable global interrupts
 	NVIC_SystemReset(); // Request Restart
 }

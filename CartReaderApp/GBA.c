@@ -2718,6 +2718,7 @@ void flashRepro_GBA()
 				char backupChar = filePath[39];
 				filePath[39] = '\0';
 				OledShowString(0, 4, filePath, 8);
+				wrapped = false;
 				OledShowString(0, 108, "...", 8);
 				filePath[39] = backupChar;
 			}

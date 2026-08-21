@@ -631,7 +631,7 @@ uint8_t OledShowChar(uint8_t x, uint8_t y, uint8_t chr, uint8_t Char_Size)
 
 	c = chr - ' ';
 
-	// Protec from uint8_t over-run (shouldn't happen, but hey...)
+	// Protect from uint8_t over-run (shouldn't happen, but hey...)
 	if (x > 200 || y > 200)
 	{
 		return 1;
@@ -836,6 +836,11 @@ void draw_progressbar(uint32_t processed, uint32_t total, uint8_t line)
 	uint8_t current, i;
 	static uint8_t previous;
 	uint8_t steps = 20;
+
+	if (total == 0)
+	{
+		return;
+	}
 
 	// Initialize bar at 0%
 	if (processed == 0)

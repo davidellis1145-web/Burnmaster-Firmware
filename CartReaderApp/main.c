@@ -292,6 +292,10 @@ uint8_t gbaTestsMenu()
 
 uint8_t gbxDebugMenu()		// Debug Menu for dev testing
 {
+	if (bret > 0)
+	{
+		ResetSystem();
+	}
 	// Show warning
 	OledClear();
 	OledShowString(30,1,"**WARNING**",8);

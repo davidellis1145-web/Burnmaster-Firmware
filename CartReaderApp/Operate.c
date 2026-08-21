@@ -356,7 +356,7 @@ next_page:
 	}
 	cleared = false;
 
-	while(1)
+	while(1) // Testing...
 	{
 		fret = f_readdir(&tdir, &finfo);
 		if (fret == FR_OK)
@@ -382,19 +382,7 @@ next_page:
 
 			if (menucnt >= 7)
 			{
-				// Peek ahead to see if this is truly the last file in the folder
-				long current_offset = tdir.dptr; // Save current directory pointer state
-				FILINFO peek_finfo;
-				
-				if (f_readdir(&tdir, &peek_finfo) == FR_OK)
-				{
-					if (peek_finfo.fname[0] == 0x00 || currFile >= 128)
-					{
-						bnomore = true; // No more files remaining!
-					}
-					
-					tdir.dptr = current_offset; 
-				}
+				bnomore = true;
 				break;
 			}
 		}
