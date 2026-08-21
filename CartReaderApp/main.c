@@ -292,10 +292,6 @@ uint8_t gbaTestsMenu()
 
 uint8_t gbxDebugMenu()		// Debug Menu for dev testing
 {
-	if (bret > 0)
-	{
-		ResetSystem();
-	}
 	// Show warning
 	OledClear();
 	OledShowString(30,1,"**WARNING**",8);
@@ -396,7 +392,11 @@ void gbTestsScreen() // Cart tests for GB(C)
 	while(1)
 	{
 		uint8_t b = gbTestsMenu();
-		if(b>0)break;
+		if (b > 0)
+		{
+			ResetSystem();
+			break;
+		}
 	}
 }
 
@@ -406,7 +406,11 @@ void gbaTestsScreen() // Cart tests for GBA
 	while(1)
 	{
 		uint8_t b = gbaTestsMenu();
-		if(b>0)break;
+		if (b > 0)
+		{
+			ResetSystem();
+			break;
+		}
 	}
 }
 
@@ -416,7 +420,11 @@ void gbxDebugScreen() // Debug menu loader
 	while(1)
 	{
 		uint8_t b = gbxDebugMenu();
-		if(b>0)break;
+		if (b > 0)
+		{
+			ResetSystem();
+			break;
+		}
 	}
 }
 
