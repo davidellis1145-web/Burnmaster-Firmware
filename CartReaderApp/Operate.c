@@ -56,7 +56,7 @@ void WaitOKBtn()
 
 
 // Display a question box with selectable answers. Make sure default choice is in (0, num_answers]
-unsigned char questionBox_OLED(char * question, const char* const answers[7], int num_answers, int default_choice, uint8_t rollselect, uint8_t clrScr)
+unsigned char questionBox_OLED(char * question, const char* const answers[7], int num_answers, int default_choice, uint8_t rollselect, uint8_t clrScr, uint8_t hasPicData)
 {
 	if(clrScr > 0)
 	{
@@ -83,11 +83,14 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 		QBoxShowString(6, i + 1, tanswer, 0);
 	}
 
-	// Blank out any remaining menu list lines
-	// This prevents text artifacts from previous pages if this page has fewer items.
-	for (unsigned char i = num_answers; i < 7; i++)
+	if (!hasPicData)
 	{
-		OledClearLine(i + 1);
+		// Blank out any remaining menu list lines
+		// This prevents text artifacts from previous pages if this page has fewer items.
+		for (unsigned char i = num_answers; i < 7; i++)
+		{
+			OledClearLine(i + 1);
+		}
 	}
 
 	// Explicitly clear cursor column (x=0) for all rows on entry
@@ -436,7 +439,7 @@ next_page:
 	}
 
 next_page1:
-	mret = questionBox_OLED((char *)browserTitle, (const char **)tanswers, menucnt, default_select, 0, 0);
+	mret = questionBox_OLED((char *)browserTitle, (const char **)tanswers, menucnt, default_select, 0, 0, 0);
 	switch(mret)
 	{
 		case MENU_CANCEL:

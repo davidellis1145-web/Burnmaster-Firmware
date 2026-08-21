@@ -1922,11 +1922,14 @@ static const char* const menuOptionsGB[] = {GBMenuItem1, GBMenuItem2, GBMenuItem
 
 uint8_t gbMenu()
 {
-	uint8_t bret = 0;
+	// Testing bret stuff
+	uint8_t bret;	  // <-- remove this line
+	// uint8_t bret = 0; <-- un-comment and restore this line
+	// EoT 
 	LED_BLUE_OFF; // Make sure blue led is off after blinking (probably redundant)
 
 	// Create menu with title and options to choose from
-	unsigned char gbMenu = questionBox_OLED("GB(C) Main Menu", menuOptionsGB, 5, 1, 1, 1);
+	unsigned char gbMenu = questionBox_OLED("GB(C) Main Menu", menuOptionsGB, 5, 1, 1, 1, 0);
 
 	// Wait for user choice to come back from the question box menu
 	switch (gbMenu)
@@ -1999,6 +2002,11 @@ uint8_t gbMenu()
 			break;
 	}
 
+	// Testing bret stuff
+	if (bret != 1)
+	{
+		bret = 0;
+	} // EoT
 	if(bret == 0)
 	{
 		OledShowString(0,7,"Press OK Button...",8);

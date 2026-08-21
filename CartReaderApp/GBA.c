@@ -3105,9 +3105,12 @@ static const char* const saveOptionsGBA[] = {GBASaveItem1, GBASaveItem2, GBASave
 uint8_t gbaMenu()
 {
 	// Create menu with title and options to choose from
-	uint8_t bret = 0;
+	// Testing bret stuff
+	uint8_t bret;	  // <-- remove this line
+	// uint8_t bret = 0; <-- un-comment and restore this line
+	// EoT
 	LED_GREEN_OFF; // Make sure green led is off after blinking
-	unsigned char retMenu = questionBox_OLED("GBA Main Menu", menuOptionsGBA, 6, 1, 1, 1);
+	unsigned char retMenu = questionBox_OLED("GBA Main Menu", menuOptionsGBA, 6, 1, 1, 1, 0);
 	char tmsg[32] = {0};
 
 	// Wait for user choice to come back from the question box menu
@@ -3129,7 +3132,7 @@ uint8_t gbaMenu()
 				case 0:
 					// Create submenu with title and 4 options to choose from
 					{
-						unsigned char GBARomMenu = questionBox_OLED("Select ROM size", romOptionsGBA, 6, 1, 1, 1);
+						unsigned char GBARomMenu = questionBox_OLED("Select ROM size", romOptionsGBA, 6, 1, 1, 1, 0);
 						// Wait for user choice to come back from the question box menu
 						switch (GBARomMenu)
 						{
@@ -3196,7 +3199,7 @@ uint8_t gbaMenu()
 			if (saveType == 0)
 			{
 				// Create submenu with title and 6 options to choose from
-				unsigned char GBASaveMenu = questionBox_OLED("Select save type:", saveOptionsGBA, 6, 1, 1, 1);
+				unsigned char GBASaveMenu = questionBox_OLED("Select save type:", saveOptionsGBA, 6, 1, 1, 1, 0);
 				// Wait for user choice to come back from the question box menu
 				switch (GBASaveMenu)
 				{
@@ -3276,7 +3279,7 @@ uint8_t gbaMenu()
 			if (saveType == 0)
 			{
 				// Create submenu with title and 6 options to choose from
-				unsigned char GBASavesMenu = questionBox_OLED("Select save type:", saveOptionsGBA, 6, 1, 1, 1);
+				unsigned char GBASavesMenu = questionBox_OLED("Select save type:", saveOptionsGBA, 6, 1, 1, 1, 0);
 				// Wait for user choice to come back from the question box menu
 				switch (GBASavesMenu)
 				{
@@ -3441,7 +3444,7 @@ uint8_t gbaMenu()
 
 	case MENU_5:
 		{
-			unsigned char GBASaveMenu = questionBox_OLED("Select save type:", saveOptionsGBA, 6, 1, 1, 1);
+			unsigned char GBASaveMenu = questionBox_OLED("Select save type:", saveOptionsGBA, 6, 1, 1, 1, 0);
 
 			switch (GBASaveMenu)
 			{
@@ -3479,6 +3482,11 @@ uint8_t gbaMenu()
 		ResetSystem();
 		break;
 	}
+	// Testing bret stuff
+	if (bret != 1)
+	{
+		bret = 0;
+	} // EoT
 	return bret;
 }
 

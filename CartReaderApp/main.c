@@ -132,7 +132,10 @@ void aboutScreen()
 // Start menu for both GB and GBA (main menu)
 uint8_t gbxMenu()
 {
-	uint8_t bret = 0;
+	// Testing bret stuff
+	uint8_t bret;	  // <-- remove this line
+	// uint8_t bret = 0; <-- un-comment and restore this line
+	// EoT  
 	uint8_t gbxtype = GetGBType();
 	unsigned char gbType;
 
@@ -141,14 +144,11 @@ uint8_t gbxMenu()
 		LED_GREEN_OFF;	// Make sure GB mode led is off
 		LED_BLUE_ON;	// Make sure GBA mode led is on
 		OledClear();
-		
+		OledShowPicData(70,3,56,4,Icon_data_GBA); // Draws GBA icon
+
 		// Create menu with title and options to choose from
 		// Wait for user choice to come back from the question box menu
-		gbType = questionBox_OLED("Game Boy Flash Master", menuOptionsGBA, 4, 1, 1, 0);
-		
-		// Draw GBA icon here to avoid questionBox_OLED clearing it 
-		OledShowPicData(70,3,56,4,Icon_data_GBA);
-		
+		gbType = questionBox_OLED("Game Boy Flash Master", menuOptionsGBA, 4, 1, 1, 0, 1);
 		switch (gbType)
 		{
 			case 0:	// Cancel btn clicked
@@ -173,14 +173,11 @@ uint8_t gbxMenu()
 		LED_BLUE_OFF;	// Make sure GBA mode led is off
 		LED_GREEN_ON;	// Make sure GB mode led is on
 		OledClear();
-		
+		OledShowPicData(97,2,30,6,Icon_data_GBC);	// Draws GB icon
+
 		// Create menu with title and options to choose from
 		// Wait for user choice to come back from the question box menu
-		gbType = questionBox_OLED("Game Boy Flash Master", menuOptionsGBC, 4, 1, 1, 0);
-		
-		// Draw GBC icon here to avoid QuestionBox_OLED clearing it
-		OledShowPicData(97,2,30,6,Icon_data_GBC);
-		
+		gbType = questionBox_OLED("Game Boy Flash Master", menuOptionsGBC, 4, 1, 1, 0, 1);
 		switch (gbType)
 		{
 			case 0:	// Cancel btn clicked
@@ -202,7 +199,7 @@ uint8_t gbxMenu()
 	}
 	else
 	{
-		gbType = questionBox_OLED("Game Boy Flash Master", menuOptionsGBx, 3, 1, 1, 1);
+		gbType = questionBox_OLED("Game Boy Flash Master", menuOptionsGBx, 3, 1, 1, 1, 0);
 		switch (gbType)
 		{
 			case 0:	// Cancel btn clicked
@@ -219,6 +216,11 @@ uint8_t gbxMenu()
 				break;
 		}
 	}
+	// Testing bret stuff
+	if (bret != 1)
+	{
+		bret = 0;
+	} // EoT
 	return bret;
 }
 
@@ -238,11 +240,14 @@ uint8_t gbTestsMenu(uint8_t skipWarning)
 
 	OledClear();
 	
-	uint8_t bret = 0;
+	// Testing bret stuff
+	uint8_t bret;	  // <-- remove this line
+	// uint8_t bret = 0; <-- un-comment and restore this line
+	// EoT 
 
 	// Create menu with title and options to choose from
 	unsigned char gbCTest;
-	gbCTest = questionBox_OLED("GB(C) Cart Tests", menuOptionsGBT, 3, 1, 1, 1);
+	gbCTest = questionBox_OLED("GB(C) Cart Tests", menuOptionsGBT, 3, 1, 1, 1, 0);
 	// Wait for user choice to come back from the question box menu
 	switch (gbCTest)
 	{
@@ -259,6 +264,11 @@ uint8_t gbTestsMenu(uint8_t skipWarning)
 			ResetSystem();
 			break;
 	}
+	// Testing bret stuff
+	if (bret != 1)
+	{
+		bret = 0;
+	} // EoT
 	return bret;
 }
 
@@ -278,11 +288,14 @@ uint8_t gbaTestsMenu(uint8_t skipWarning)
 
 	OledClear();
 	
-	uint8_t bret = 0;
+	// Testing bret stuff
+	uint8_t bret;	  // <-- remove this line
+	// uint8_t bret = 0; <-- un-comment and restore this line
+	// EoT
 
 	// Create menu with title and options to choose from
 	unsigned char gbaCTest;
-	gbaCTest = questionBox_OLED("GBA Cart Tests", menuOptionsGBT, 3, 1, 1, 1);
+	gbaCTest = questionBox_OLED("GBA Cart Tests", menuOptionsGBT, 3, 1, 1, 1, 0);
 
 	// Wait for user choice to come back from the question box men
 	switch (gbaCTest)
@@ -300,6 +313,11 @@ uint8_t gbaTestsMenu(uint8_t skipWarning)
 			ResetSystem();
 			break;
 	}
+	// Testing bret stuff
+	if (bret != 1)
+	{
+		bret = 0;
+	} // EoT
 	return bret;
 }
 
@@ -318,11 +336,14 @@ uint8_t gbxDebugMenu(uint8_t skipWarning)	// Debug Menu for dev testing
 	}
 
 	OledClear();
-	uint8_t bret = 0;
+	// Testing bret stuff
+	uint8_t bret;	  // <-- remove this line
+	// uint8_t bret = 0; <-- un-comment and restore this line
+	// EoT
 
 	// Create menu with title and options to choose from
 	unsigned char gbxDebug;
-	gbxDebug = questionBox_OLED("**Debug Menu**", menuOptionsDebug, 5, 1, 1, 1);
+	gbxDebug = questionBox_OLED("**Debug Menu**", menuOptionsDebug, 5, 1, 1, 1, 0);
 
 	// Wait for user choice to come back from the question box menu
 	switch (gbxDebug)
@@ -382,6 +403,11 @@ uint8_t gbxDebugMenu(uint8_t skipWarning)	// Debug Menu for dev testing
 			ResetSystem();
 			break;
 	}
+	// Testing bret stuff
+	if (bret != 1)
+	{
+		bret = 0;
+	} // EoT
 	return bret;
 }
 
