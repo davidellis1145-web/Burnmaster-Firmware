@@ -141,11 +141,14 @@ uint8_t gbxMenu()
 		LED_GREEN_OFF;	// Make sure GB mode led is off
 		LED_BLUE_ON;	// Make sure GBA mode led is on
 		OledClear();
-		OledShowPicData(70,3,56,4,Icon_data_GBA); // Draws GBA icon
-
+		
 		// Create menu with title and options to choose from
 		// Wait for user choice to come back from the question box menu
 		gbType = questionBox_OLED("Game Boy Flash Master", menuOptionsGBA, 4, 1, 1, 0);
+		
+		// Draw GBA icon here to avoid questionBox_OLED clearing it 
+		OledShowPicData(70,3,56,4,Icon_data_GBA);
+		
 		switch (gbType)
 		{
 			case 0:	// Cancel btn clicked
@@ -170,11 +173,14 @@ uint8_t gbxMenu()
 		LED_BLUE_OFF;	// Make sure GBA mode led is off
 		LED_GREEN_ON;	// Make sure GB mode led is on
 		OledClear();
-		OledShowPicData(97,2,30,6,Icon_data_GBC);	// Draws GB icon
-
+		
 		// Create menu with title and options to choose from
 		// Wait for user choice to come back from the question box menu
 		gbType = questionBox_OLED("Game Boy Flash Master", menuOptionsGBC, 4, 1, 1, 0);
+		
+		// Draw GBC icon here to avoid QuestionBox_OLED clearing it
+		OledShowPicData(97,2,30,6,Icon_data_GBC);
+		
 		switch (gbType)
 		{
 			case 0:	// Cancel btn clicked
