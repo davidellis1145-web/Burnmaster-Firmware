@@ -132,10 +132,7 @@ void aboutScreen()
 // Start menu for both GB and GBA (main menu)
 uint8_t gbxMenu()
 {
-	// Testing bret stuff
-	uint8_t bret;	  // <-- remove this line
-	// uint8_t bret = 0; <-- un-comment and restore this line
-	// EoT  
+	uint8_t bret = 0;
 	uint8_t gbxtype = GetGBType();
 	unsigned char gbType;
 
@@ -216,17 +213,14 @@ uint8_t gbxMenu()
 				break;
 		}
 	}
-	// Testing bret stuff
-	if (bret != 1)
-	{
-		bret = 0;
-	} // EoT
 	return bret;
 }
 
 
 uint8_t gbTestsMenu(uint8_t skipWarning)
 {
+	uint8_t bret = 0;
+
 	// Only show warning if skipWarning is 0
 	if (!skipWarning)
 	{
@@ -240,11 +234,6 @@ uint8_t gbTestsMenu(uint8_t skipWarning)
 
 	OledClear();
 	
-	// Testing bret stuff
-	uint8_t bret;	  // <-- remove this line
-	// uint8_t bret = 0; <-- un-comment and restore this line
-	// EoT 
-
 	// Create menu with title and options to choose from
 	unsigned char gbCTest;
 	gbCTest = questionBox_OLED("GB(C) Cart Tests", menuOptionsGBT, 3, 1, 1, 1, 0);
@@ -264,17 +253,14 @@ uint8_t gbTestsMenu(uint8_t skipWarning)
 			ResetSystem();
 			break;
 	}
-	// Testing bret stuff
-	if (bret != 1)
-	{
-		bret = 0;
-	} // EoT
 	return bret;
 }
 
 
 uint8_t gbaTestsMenu(uint8_t skipWarning)
 {
+	uint8_t bret = 0;
+
 	// Only show warning if skipWarning is 0
 	if (!skipWarning)
 	{
@@ -288,11 +274,6 @@ uint8_t gbaTestsMenu(uint8_t skipWarning)
 
 	OledClear();
 	
-	// Testing bret stuff
-	uint8_t bret;	  // <-- remove this line
-	// uint8_t bret = 0; <-- un-comment and restore this line
-	// EoT
-
 	// Create menu with title and options to choose from
 	unsigned char gbaCTest;
 	gbaCTest = questionBox_OLED("GBA Cart Tests", menuOptionsGBT, 3, 1, 1, 1, 0);
@@ -313,17 +294,13 @@ uint8_t gbaTestsMenu(uint8_t skipWarning)
 			ResetSystem();
 			break;
 	}
-	// Testing bret stuff
-	if (bret != 1)
-	{
-		bret = 0;
-	} // EoT
 	return bret;
 }
 
 
 uint8_t gbxDebugMenu(uint8_t skipWarning)	// Debug Menu for dev testing
 {
+	uint8_t bret = 0;
 	if (!skipWarning) // Only show warning if skipWarning is 0
 	{
 		OledClear();
@@ -336,11 +313,7 @@ uint8_t gbxDebugMenu(uint8_t skipWarning)	// Debug Menu for dev testing
 	}
 
 	OledClear();
-	// Testing bret stuff
-	uint8_t bret;	  // <-- remove this line
-	// uint8_t bret = 0; <-- un-comment and restore this line
-	// EoT
-
+	
 	// Create menu with title and options to choose from
 	unsigned char gbxDebug;
 	gbxDebug = questionBox_OLED("**Debug Menu**", menuOptionsDebug, 5, 1, 1, 1, 0);
@@ -403,11 +376,6 @@ uint8_t gbxDebugMenu(uint8_t skipWarning)	// Debug Menu for dev testing
 			ResetSystem();
 			break;
 	}
-	// Testing bret stuff
-	if (bret != 1)
-	{
-		bret = 0;
-	} // EoT
 	return bret;
 }
 
@@ -420,7 +388,10 @@ void gbxScreen() // Main menu
 	while(1)
 	{
 		uint8_t b = gbxMenu();
-		if(b>0)break;
+		if (b > 0)
+		{
+			break;
+		}
 	}
 }
 
@@ -449,7 +420,7 @@ void gbaTestsScreen() // Cart tests for GBA
 		uint8_t b = gbaTestsMenu(skip);
 		if (b > 0)
 		{
-			ResetSystem();
+			//ResetSystem();
 			break;
 		}
 		// Case 1+... set skip to 1 so it won't show on next loop
@@ -466,7 +437,7 @@ void gbxDebugScreen() // Debug menu loader
 		uint8_t b = gbxDebugMenu(skip);
 		if (b > 0)
 		{
-			ResetSystem();
+			//ResetSystem();
 			break;
 		}
 		// Case 1+... set skip to 1 so it won't show on next loop

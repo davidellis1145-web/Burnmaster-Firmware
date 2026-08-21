@@ -1922,10 +1922,7 @@ static const char* const menuOptionsGB[] = {GBMenuItem1, GBMenuItem2, GBMenuItem
 
 uint8_t gbMenu()
 {
-	// Testing bret stuff
-	uint8_t bret;	  // <-- remove this line
-	// uint8_t bret = 0; <-- un-comment and restore this line
-	// EoT 
+	uint8_t bret = 0;
 	LED_BLUE_OFF; // Make sure blue led is off after blinking (probably redundant)
 
 	// Create menu with title and options to choose from
@@ -1940,7 +1937,10 @@ uint8_t gbMenu()
 		case 1:
 			// Flash ROM
 			// Launch file browser
-			fileBrowser("/","Select file:");
+			if (fileBrowser("/","Select file:") == 0;)
+			{
+				break;
+			}
 			OledClear();
 			identifyCFI_GB();
 			if (!writeCFI_GB())
@@ -1976,7 +1976,10 @@ uint8_t gbMenu()
 				// Change working dir to root
 				f_chdir("/");
 				filePath[0] = '\0';
-				fileBrowser("/","Select sav file");
+				if (fileBrowser("/","Select sav file") == 0);
+				{
+					break;
+				}
 				writeSRAM_GB();
 				unsigned long wrErrors;
 				wrErrors = verifySRAM_GB();
@@ -2002,11 +2005,6 @@ uint8_t gbMenu()
 			break;
 	}
 
-	// Testing bret stuff
-	if (bret != 1)
-	{
-		bret = 0;
-	} // EoT
 	if(bret == 0)
 	{
 		OledShowString(0,7,"Press OK Button...",8);

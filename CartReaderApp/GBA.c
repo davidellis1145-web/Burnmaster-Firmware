@@ -3105,10 +3105,7 @@ static const char* const saveOptionsGBA[] = {GBASaveItem1, GBASaveItem2, GBASave
 uint8_t gbaMenu()
 {
 	// Create menu with title and options to choose from
-	// Testing bret stuff
-	uint8_t bret;	  // <-- remove this line
-	// uint8_t bret = 0; <-- un-comment and restore this line
-	// EoT
+	uint8_t bret = 0;
 	LED_GREEN_OFF; // Make sure green led is off after blinking
 	unsigned char retMenu = questionBox_OLED("GBA Main Menu", menuOptionsGBA, 6, 1, 1, 1, 0);
 	char tmsg[32] = {0};
@@ -3482,11 +3479,6 @@ uint8_t gbaMenu()
 		ResetSystem();
 		break;
 	}
-	// Testing bret stuff
-	if (bret != 1)
-	{
-		bret = 0;
-	} // EoT
 	return bret;
 }
 

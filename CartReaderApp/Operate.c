@@ -298,7 +298,7 @@ char answer7[100];
 char* tanswers[7] = {answer1, answer2, answer3, answer4, answer5, answer6, answer7};
 
 
-void fileBrowser(char * start_dir, const char * browserTitle)
+uint8_t fileBrowser(char * start_dir, const char * browserTitle)
 {
 	int currFile = 0;
 	int menucnt = 0;
@@ -454,8 +454,8 @@ next_page1:
 			// Check if we are at root dir
 			if (len == 0 || (len == 1 && (filePath[0] == '/' || filePath[0] == '\\')))
 			{
-				ResetSystem();
-				return;
+				prnt_title = false;
+				return 0;
 			}
 
 			// Back-nav logic, strip last directory layer
@@ -536,7 +536,7 @@ next_page1:
 					f_closedir(&tdir);
 				}
 				prnt_title = false;
-				return;
+				return 1;
 			}
 		}
 		break;
