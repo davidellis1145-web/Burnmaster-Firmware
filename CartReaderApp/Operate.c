@@ -356,7 +356,7 @@ browserstart:
 	{
 		OledClear();
 		print_Error("SD Error", true);
-		return;
+		return 0;
 	}
 
 	dir_is_open = true;
