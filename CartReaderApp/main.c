@@ -122,8 +122,8 @@ void aboutScreen()
 	OledShowString(0,0,"Game Boy",16);
 	OledShowPicData(80,0,48,6,Icon_data_DGE);
 	OledShowString(3,2,"Flash Master",8);
-	OledShowString(8,4,"v1.0.4-a.9",8);
-	OledShowString(2,5,"Aug 10, 2026",8);
+	OledShowString(8,4,"v1.0.4-a.10",8);
+	OledShowString(2,5,"Aug 22, 2026",8);
 	OledShowString(0,7,"Press OK Button...",8);
 	WaitOKBtn();
 }
@@ -393,12 +393,13 @@ void gbxScreen() // Main menu
 			break;
 		}
 	}
+	ResetSystem();
 }
 
 
 void gbTestsScreen() // Cart tests for GB(C)
 {
-	uint8_t skip = 0; // Don't skip on first run
+	uint8_t skip = 0; // Don't skip warning on first run
 	while(1)
 	{
 		uint8_t b = gbTestsMenu(skip);
@@ -406,7 +407,7 @@ void gbTestsScreen() // Cart tests for GB(C)
 		{
 			break;
 		}
-		// Case 1+... set skip to 1 so it won't show on next loop
+		// Case 1+... set skip to 1 so warning won't show on next loop
 		skip = 1;
 	}
 }
@@ -414,16 +415,15 @@ void gbTestsScreen() // Cart tests for GB(C)
 
 void gbaTestsScreen() // Cart tests for GBA
 {
-	uint8_t skip = 0; // Don't skip on first run
+	uint8_t skip = 0; // Don't skip warning on first run
 	while(1)
 	{
 		uint8_t b = gbaTestsMenu(skip);
 		if (b > 0)
 		{
-			//ResetSystem();
 			break;
 		}
-		// Case 1+... set skip to 1 so it won't show on next loop
+		// Case 1+... set skip to 1 so warning won't show on next loop
 		skip = 1;
 	}
 }
@@ -431,16 +431,15 @@ void gbaTestsScreen() // Cart tests for GBA
 
 void gbxDebugScreen() // Debug menu loader
 {
-	uint8_t skip = 0; // Don't skip on first run
+	uint8_t skip = 0; // Don't skip warning on first run
 	while(1)
 	{
 		uint8_t b = gbxDebugMenu(skip);
 		if (b > 0)
 		{
-			//ResetSystem();
 			break;
 		}
-		// Case 1+... set skip to 1 so it won't show on next loop
+		// Case 1+... set skip to 1 so warning won't show on next loop
 		skip = 1;
 	}
 }
@@ -473,12 +472,7 @@ sd_error_enum sd_io_init(void)
 	if(cardstate & 0x02000000)
 	{
 		printf("\r\n the card is locked!");
-		while (1)
-		{
-		}
-	}
-	if ((SD_OK == status) && (!(cardstate & 0x02000000)))
-	{
+		return SD_LOCKED_ERROR; // Return dedicated error flag
 	}
 	if (SD_OK == status)
 	{
@@ -593,18 +587,29 @@ void card_info_get(void)
 }
 
 
-void SDCardInit()
+uint8_t SDCardInit()
 {
 	FRESULT res_sd;
 	sd_error_enum sd_error;
 	uint16_t i = 5;
+	bool was_locked = false;
+	
 	// Initialize the card
 	do
 	{
 		sd_error = sd_io_init();
+		if (sd_error == SD_LOCKED_ERROR)
+		{
+			was_locked = true;
+			break;
+		}
 	}
 	while((SD_OK != sd_error) && (--i));
 
+	if (was_locked)
+	{
+		return 3; // Return 3: Password or lock-switch error
+	}
 	if(i)
 	{
 		printf("\r\nSD Card init success!\r\n");
@@ -614,31 +619,30 @@ void SDCardInit()
 	{
 		ignoreError = 0;
 		print_Error("No SD Card detected!",true);
+		return 0; // Return 0: Hardware missing
 	}
 
 	// Get the information of the card and print it out by USART
 	card_info_get();
 
-	// When mounting a FS on external SPI flash, it is initialized during mounting
+	// Mount the FatFS file system structure
 	res_sd = f_mount(&fs,"",1);
 
-	/*---------------- Formatting Test --------------------
-		If no file system exists, format and create one */
 	if(res_sd == FR_NO_FILESYSTEM)
 	{
 		printf("\r\n!No File System...");
+		return 2; // Return 2: Needs to be formatted
 	}
 	else if(res_sd!=FR_OK)
 	{
 		printf("\r\n!Mount Failed(%d)",res_sd);
-		while(1)
-		{
-		}
+		return 0; // Return 0: Failure to mount
 	}
 	else
 	{
 		printf("\r\nMount OK!%d\r\n",res_sd);
 	}
+	return 1; // Return 1: SD fully initialized
 }
 
 
@@ -668,12 +672,43 @@ int main(void)
 {
 	PriInit();
 	LEDSInit();
-	OledInit();
 	KeyBrdInit();
-	SDCardInit();
+	OledInit();
+	OledClear();
+	OledShowString(0, 0, "Initializing...", 8);
+	// delay(...ms)? depends on whether or not i notice the msg...
+	uint8_t sdStatus = SDCardInit();
+	
+	// Check return status of SD init
+	if (sdStatus == 0)
+	{
+		// Case 0: Critical hardware failure
+		OledClear();
+		OledShowString(30, 2, "** ERROR **", 8);
+		OledShowString(18, 4, "SD Card Failure", 8);
+		OledShowString(0, 6, "Check card and reboot", 8);
+		while(1); // Trap CPU
+	}
+	else if (sdStatus == 2)
+	{
+		// Case 2: Card working, but file system missing/corrupt
+		OledClear();
+		OledShowString(18, 0, "** WARNING **", 8);
+		OledShowString(0, 2, "No filesystem found!", 8);
+		OledShowString(0, 4, "Format SD to FAT32\nand try again.", 8);
+		while(1); // Trap CPU
+	}
+	else if (sdStatus == 3)
+	{
+		// Case 3: SD locked
+		OledClear();
+		OledShowString(0, 1, "** ERROR **", 8);
+		OledShowString(0, 4, "Card is Locked!", 8);
+		OledShowString(0, 6, "Unlock SD slider or remove password protection", 8); // todo reformat this string to look/fit better
+		while(1); // Trap CPU
+	}
+	
+	// Case 1: Everything's fine, continue!
 	delay(200);
 	gbxScreen();
-	f_mount(NULL,"",1);
-	SysClockFree();
-	exit(EXIT_SUCCESS);
 }

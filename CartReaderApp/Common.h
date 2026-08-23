@@ -18,6 +18,7 @@
 #define FILENAME_LENGTH 64
 #define FILEPATH_LENGTH 256
 #define FILEOPTS_LENGTH 20
+#define SD_LOCKED_ERROR 198
 
 extern int foldern;
 extern char folder[36];
@@ -34,7 +35,7 @@ extern bool errorLvl;
 extern boolean ignoreError;
 extern char flashid[5];
 extern int manufacturerid;
-extern bool wrapped; // testing wrapped
+extern bool wrapped;
 
 // Variable to count errors
 extern unsigned long writeErrors;

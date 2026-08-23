@@ -2,6 +2,8 @@
 
 #define enable_GBX
 
+uint8_t SDCardInit();
+
 void gbxScreen();
 
 uint8_t gbTestsMenu(uint8_t skipWarning);
