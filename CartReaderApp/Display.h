@@ -63,7 +63,7 @@ void LED_ON(uint8_t LedNum);
 void LED_OFF(uint8_t LedNum);
 void LED_BLINK(uint8_t LedNum);
 void LED_CLEAR(void);
-void LED_RESET(bool all_clear);
+void LED_RESET(uint8_t all_clear);
 
 #define LED_RED_ON		LED_ON(LED_R)
 #define LED_GREEN_ON	LED_ON(LED_G)
