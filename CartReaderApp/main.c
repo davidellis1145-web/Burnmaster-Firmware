@@ -41,6 +41,8 @@ PB0 corresponds to the 5v (GB) cart voltage setting (active low)*/
 #define TYPE_ALL (2)
 #define TYPE_NONE (3)
 
+volatile uint8_t cart_activity = 0;
+
 uint8_t GetGBType()
 {
 	uint8_t s3v3 = gpio_input_bit_get(GPIOC,GPIO_PIN_5);
@@ -122,8 +124,8 @@ void aboutScreen()
 	OledShowString(0,0,"Game Boy",16);
 	OledShowPicData(80,0,48,6,Icon_data_DGE);
 	OledShowString(3,2,"Flash Master",8);
-	OledShowString(8,4,"v1.0.4-a.10",8);
-	OledShowString(2,5,"Aug 22, 2026",8);
+	OledShowString(8,4,"v1.1-a.0",8);
+	OledShowString(2,5,"Aug 24, 2026",8);
 	OledShowString(0,7,"Press OK Button...",8);
 	WaitOKBtn();
 }
@@ -617,8 +619,8 @@ uint8_t SDCardInit()
 	}
 	else
 	{
-		ignoreError = 0;
-		print_Error("No SD Card detected!",true);
+		//ignoreError = 0;
+		//print_Error("No SD Card detected!",true);
 		return 0; // Return 0: Hardware missing
 	}
 
@@ -668,15 +670,93 @@ void PriInit()
 }
 
 
+uint32_t get_timer1_clock_hz(void)
+{
+    // Get base APB1 clock speed
+    uint32_t apb1_clock = rcu_clock_freq_get(CK_APB1);
+    
+    // Check RCU config for APB1 prescaler
+    // If prescaler isn't 1, the hardware multiplies the timer clock by 2
+    if ((RCU_CFG0 & RCU_CFG0_APB1PSC) != RCU_APB1_CKAHB_DIV1) 
+    {
+        return apb1_clock * 2; // Timer clock is doubled
+    }
+    return apb1_clock; // Timer clock equals APB1 clock
+}
+
+
+void Timer_Blink_Init(void)
+{
+    timer_parameter_struct timer_initpara;
+    rcu_periph_clock_enable(RCU_TIMER1);
+    timer_deinit(TIMER1);
+
+    // Get clock source speed from hardware
+    uint32_t timer_clk = get_timer1_clock_hz();
+
+    timer_struct_para_init(&timer_initpara);
+    
+    // Forces timer clock tick counter to 10,000 Hz (10kHz)
+    timer_initpara.prescaler		  = (timer_clk / 10000) - 1;       
+    
+	timer_initpara.period			  = 4999;
+	timer_initpara.alignedmode		  = TIMER_COUNTER_EDGE;
+    timer_initpara.counterdirection	  = TIMER_COUNTER_UP;
+    timer_initpara.clockdivision	  = TIMER_CKDIV_DIV1;
+    timer_initpara.repetitioncounter  = 0;
+    timer_init(TIMER1, &timer_initpara);
+	nvic_irq_enable(TIMER1_IRQn, 1, 1);
+    timer_interrupt_enable(TIMER1, TIMER_INT_UP);
+    timer_enable(TIMER1);
+}
+
+
+void TIMER1_IRQHandler(void)
+{
+    if (SET == timer_interrupt_flag_get(TIMER1, TIMER_INT_FLAG_UP))
+    {
+        timer_interrupt_flag_clear(TIMER1, TIMER_INT_FLAG_UP);
+        
+        // Blink if either reading (1) or writing (2)
+        if (cart_activity > 0 && !errorLvl)
+        {
+            uint8_t gbxType = GetGBType();
+            
+            if (gbxType == TYPE_GBA)
+            {
+                // GBA Mode: Green blinks on activity
+                uint8_t current = gpio_output_bit_get(GPIOA, LED_G);
+                gpio_bit_write(GPIOA, LED_G, !current);
+            }
+            else if (gbxType == TYPE_GBC)
+            {
+                // GB/GBC Mode: Blue blinks on activity
+                uint8_t current = gpio_output_bit_get(GPIOA, LED_B);
+                gpio_bit_write(GPIOA, LED_B, !current);
+            }
+        }
+		else if (errorLvl)
+		{
+			// Blink red LED on error messages
+			LED_CLEAR();
+			timer_autoreload_value_config(TIMER1, SPEED_ERROR);
+			uint8_t current = gpio_output_bit_get(GPIOA, LED_R);
+			gpio_bit_write(GPIOA, LED_R, !current);
+		}
+    }
+}
+
+
 int main(void)
 {
 	PriInit();
 	LEDSInit();
 	KeyBrdInit();
 	OledInit();
+	Timer_Blink_Init();
 	OledClear();
 	OledShowString(0, 0, "Initializing...", 8);
-	// delay(...ms)? depends on whether or not i notice the msg...
+	delay(800);
 	uint8_t sdStatus = SDCardInit();
 	
 	// Check return status of SD init
@@ -702,9 +782,10 @@ int main(void)
 	{
 		// Case 3: SD locked
 		OledClear();
-		OledShowString(0, 1, "** ERROR **", 8);
-		OledShowString(0, 4, "Card is Locked!", 8);
-		OledShowString(0, 6, "Unlock SD slider or remove password protection", 8); // todo reformat this string to look/fit better
+		OledShowString(27, 1, "** ERROR **", 8);
+		OledShowString(18, 4, "Card is Locked!", 8);
+		OledShowString(6, 6, "Unlock SD slider or", 8);
+		OledShowString(3, 7, "disable encryption", 8);
 		while(1); // Trap CPU
 	}
 	

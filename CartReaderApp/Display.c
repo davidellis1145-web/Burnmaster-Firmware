@@ -683,9 +683,9 @@ uint8_t OledShowString(uint8_t x, uint8_t y, const char *str, uint8_t Char_Size)
 	uint8_t char_width = (Char_Size == 16) ? 8 : 6;
 	uint8_t height = (Char_Size == 16) ? 2 : 1;
 
-	if (y + height > 8)
+	if (y + height > 8) // Won't fit
 	{
-		return 1; // Won't fit
+		return 1;
 	}
 
 	if (wrapped)
@@ -718,7 +718,7 @@ uint8_t OledShowString(uint8_t x, uint8_t y, const char *str, uint8_t Char_Size)
 				return 1; // Return 1 to indicate truncation
 			}
 
-			wrapped = true; // testing wrap flag
+			wrapped = true;
 			// Clear new line(s)
 			OledClearLine(y);
 			if (Char_Size == 16)
@@ -823,7 +823,25 @@ void print_Error(char *errorMessage, uint8_t forceReset)
 	{
 		OledShowString(0,7,"Press OK To Reset...",8);
 		WaitOKBtn();
-		ResetSystem();
+
+		if (ignoreError == 0)
+		{
+			ResetSystem();
+		}
+		else
+		{
+			ignoreError = 0;
+			OledClear();
+			OledShowString(0,2,"Error Overwrite",8);
+			delay(2000);
+		}
+	}
+	else
+	{
+		OledShowString(0,7,"Press OK Button...",8);
+		WaitOKBtn();
+		errorLvl = 0;
+		LED_RESET();
 	}
 }
 
@@ -928,13 +946,41 @@ void LED_OFF(uint8_t LedNum)
 
 void LED_BLINK(uint8_t LedNum)
 {
+	// Read current LED pin state, invert it and write back
+	uint8_t current_state = gpio_input_bit_get(GPIOA, LedNum);
+
+	gpio_bit_write(GPIOA, LedNum, !current_state);
+}
+/*void LED_BLINK(uint8_t LedNum)
+{
 	static uint8_t ts = 0;
 	ts = !ts;
 	gpio_bit_write(GPIOA,LedNum,ts);
-}
+}*/
 
 
 void LED_CLEAR(void)
 {
 	gpio_bit_set(GPIOA,BITS(0,3));
+}
+
+
+void LED_RESET(bool all_clear)
+{
+	if (all_clear)
+	{
+		LED_CLEAR();
+	}
+	
+	uint8_t gbxType = GetGBType();
+	if (gbxType = TYPE_GBA)
+	{
+		LED_GREEN_OFF;
+		LED_BLUE_ON;
+	}
+	else if (gbxType = TYPE_GBC)
+	{
+		LED_BLUE_OFF;
+		LED_GREEN_ON;
+	}
 }

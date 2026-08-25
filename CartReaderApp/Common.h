@@ -20,6 +20,10 @@
 #define FILEOPTS_LENGTH 20
 #define SD_LOCKED_ERROR 198
 
+#define SPEED_READ		2499 // Fast blink (250ms toggle) for reading
+#define SPEED_WRITE		624  // Hyper-fast flicker (62.5ms toggle) for writing
+#define SPEED_ERROR		4999 // Normal blink (500ms toggle) for error messages
+
 extern int foldern;
 extern char folder[36];
 extern FATFS fs;
@@ -60,5 +64,7 @@ void SysClockFree();
 
 void delayMicroseconds(uint16_t us);
 int findHighestFolder(const char* basePath);
+
+void Set_Cart_Activity(uint8_t activity_type);
 
 #endif

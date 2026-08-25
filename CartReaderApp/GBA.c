@@ -318,10 +318,11 @@ void getCartInfo_GBA()
 
 	if (logoChecksum != 0x4B1B)
 	{
-		print_Error("CARTRIDGE ERROR", false);
-		strcpy(romName, "ERROR");
-		OledShowString(0,1,"Press OK Button to\nignore or powercycle\nto try again!",8);
-		WaitOKBtn();
+		OledShowString(0,1,"Press OK Button to\nignore or powercycle\nto try again!",8);	// Testing new print_error
+		print_Error("CARTRIDGE ERROR", false);												// keep...
+		strcpy(romName, "ERROR");															// keep...
+		//OledShowString(0,1,"Press OK Button to\nignore or powercycle\nto try again!",8);
+		//WaitOKBtn();																		// EoT
 	}
 	else
 	{
@@ -474,9 +475,14 @@ void readROM_GBA()
 		// Blink led
 		if (myAddress % 16384 == 0)
 		{
-			LED_GREEN_BLINK;
+			Set_Cart_Activity(1);				//#testing new led blink logic
+			//LED_GREEN_BLINK;
 			showPercent(myAddress,cartSize,20,3);
 		}
+		else
+		{
+			Set_Cart_Activity(0);
+		}										//EoT
 
 		for (int currWord = 0; currWord < 256; currWord++)
 		{
@@ -487,7 +493,8 @@ void readROM_GBA()
 		UINT wdt;
 		f_write(&tf, sdBuffer, 512, &wdt);
 	}
-	LED_GREEN_OFF;
+	Set_Cart_Activity(0);
+	//LED_GREEN_OFF;
 	showPercent(1,1,20,3);
 	// Close the file
 	f_close(&tf);

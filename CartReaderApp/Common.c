@@ -31,7 +31,8 @@ char checksumStr[5];
 bool errorLvl = 0;
 boolean ignoreError = 0;
 char flashid[5];
-bool wrapped = false; // testing wrapped
+bool wrapped = false;
+bool all_clear = 0;
 
 // Variable to count errors
 unsigned long writeErrors;
@@ -96,6 +97,7 @@ int findHighestFolder(const char* basePath)
 **********************/
 
 static volatile int ticks = 0;
+volatile uint8_t cart_activity = 0; // 0 = Idle, 1 = Reading, 2 = Writing
 
 void SysClockInit()
 {
@@ -127,8 +129,8 @@ void delay(int n)
 
 void ResetSystem()
 {
-	OledClear();	// #Testing, try to keep screen from spazzing on system reset
-	delay(10);		// just for fun
+	OledClear();		// Keeps display from spazzing on system reset
+	delay(10);		
 	__set_FAULTMASK(1); // Disable global interrupts
 	NVIC_SystemReset(); // Request Restart
 }
@@ -164,4 +166,24 @@ void delayMicroseconds(uint16_t us)
 		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
 		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
 	}
+}
+
+
+void Set_Cart_Activity(uint8_t activity_type)
+{
+    cart_activity = activity_type;
+
+    if (activity_type == 1)      // Reading
+    {
+        timer_autoreload_value_config(TIMER1, SPEED_READ);
+    }
+    else if (activity_type == 2) // Writing
+    {
+        timer_autoreload_value_config(TIMER1, SPEED_WRITE);
+    }
+    else                         // Idle
+    {
+        // Reset the LED pins back to their proper static states immediately
+        LED_RESET();
+    }
 }
