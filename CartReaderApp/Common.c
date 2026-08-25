@@ -184,6 +184,6 @@ void Set_Cart_Activity(uint8_t activity_type)
     else                         // Idle
     {
         // Reset the LED pins back to their proper static states immediately
-        LED_RESET();
+        LED_RESET(0);
     }
 }

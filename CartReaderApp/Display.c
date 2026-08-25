@@ -840,8 +840,8 @@ void print_Error(char *errorMessage, uint8_t forceReset)
 	{
 		OledShowString(0,7,"Press OK Button...",8);
 		WaitOKBtn();
+		LED_RESET(1);
 		errorLvl = 0;
-		LED_RESET();
 	}
 }
 
@@ -973,12 +973,12 @@ void LED_RESET(bool all_clear)
 	}
 	
 	uint8_t gbxType = GetGBType();
-	if (gbxType = TYPE_GBA)
+	if (gbxType == TYPE_GBA)
 	{
 		LED_GREEN_OFF;
 		LED_BLUE_ON;
 	}
-	else if (gbxType = TYPE_GBC)
+	else if (gbxType == TYPE_GBC)
 	{
 		LED_BLUE_OFF;
 		LED_GREEN_ON;

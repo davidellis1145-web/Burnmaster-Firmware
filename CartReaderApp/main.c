@@ -36,11 +36,6 @@
 /* PC5 corresponds to the 3.3v (GBA) cart voltage setting (active low)
 PB0 corresponds to the 5v (GB) cart voltage setting (active low)*/
 
-#define TYPE_GBC (0)
-#define TYPE_GBA (1)
-#define TYPE_ALL (2)
-#define TYPE_NONE (3)
-
 volatile uint8_t cart_activity = 0;
 
 uint8_t GetGBType()

@@ -24,6 +24,11 @@
 #define SPEED_WRITE		624  // Hyper-fast flicker (62.5ms toggle) for writing
 #define SPEED_ERROR		4999 // Normal blink (500ms toggle) for error messages
 
+#define TYPE_GBC (0)
+#define TYPE_GBA (1)
+#define TYPE_ALL (2)
+#define TYPE_NONE (3)
+
 extern int foldern;
 extern char folder[36];
 extern FATFS fs;
