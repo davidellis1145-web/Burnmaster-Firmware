@@ -20,9 +20,9 @@
 #define FILEOPTS_LENGTH 20
 #define SD_LOCKED_ERROR 198
 
-#define SPEED_READ		2499 // Fast blink (250ms toggle) for reading
-#define SPEED_WRITE		624  // Hyper-fast flicker (62.5ms toggle) for writing
-#define SPEED_ERROR		4999 // Normal blink (500ms toggle) for error messages
+#define SPEED_READ	2499 // Fast blink (250ms toggle) for reading
+#define SPEED_WRITE	624  // Hyper-fast flicker (62.5ms toggle) for writing
+#define SPEED_ERROR	4999 // Normal blink (500ms toggle) for error messages
 
 #define TYPE_GBC (0)
 #define TYPE_GBA (1)
@@ -45,6 +45,7 @@ extern boolean ignoreError;
 extern char flashid[5];
 extern int manufacturerid;
 extern bool wrapped;
+extern volatile uint8_t cart_activity;
 
 // Variable to count errors
 extern unsigned long writeErrors;
@@ -71,5 +72,6 @@ void delayMicroseconds(uint16_t us);
 int findHighestFolder(const char* basePath);
 
 void Set_Cart_Activity(uint8_t activity_type);
+uint8_t GetGBType();
 
 #endif

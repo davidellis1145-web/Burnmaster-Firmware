@@ -571,7 +571,7 @@ void QBoxShowChar(uint8_t x,uint8_t y,uint8_t chr)
 {
 	uint8_t c = 0, i = 0;
 	c = chr - ' ';
-	
+
 	if (y > 7)
 	{
 		return;
@@ -593,7 +593,7 @@ uint8_t QBoxShowString(uint8_t x,uint8_t y,const char *str,uint8_t scroll_offset
 {
 	unsigned char j = 0;
 	uint8_t skipped_visible = 0;
-	
+
 	while (str[j] != '\0')
 	{
 		if (str[j] == '\n')
@@ -611,7 +611,7 @@ uint8_t QBoxShowString(uint8_t x,uint8_t y,const char *str,uint8_t scroll_offset
 		{
 			return 1;
 		}
-		
+
 		QBoxShowChar(x,y,str[j]);
 		x += 6;
 		j++;
@@ -697,7 +697,7 @@ uint8_t OledShowString(uint8_t x, uint8_t y, const char *str, uint8_t Char_Size)
 		}
 	}
 	wrapped = false;
-	
+
 	while (str[j] != '\0')
 	{
 		if (str[j] == '\n' || (x + char_width > (MAX_COLUMN + 1)))
@@ -816,9 +816,9 @@ void OledInit(void)
 
 void print_Error(char *errorMessage, uint8_t forceReset)
 {
-	errorLvl = 1;
-	OledShowString(0,5,errorMessage,8);
-
+	errorLvl = 1;							// #testing (if this works, go through
+	OledShowString(0,5,errorMessage,8);		// and make sure relavent messages go BEFORE
+											// 'print_error' and remove the WaitOKBtn()'s)
 	if (forceReset)
 	{
 		OledShowString(0,7,"Press OK To Reset...",8);
@@ -834,14 +834,15 @@ void print_Error(char *errorMessage, uint8_t forceReset)
 			OledClear();
 			OledShowString(0,2,"Error Overwrite",8);
 			delay(2000);
+			LED_RESET(1);
 		}
 	}
 	else
 	{
 		OledShowString(0,7,"Press OK Button...",8);
 		WaitOKBtn();
-		LED_RESET(1);
 		errorLvl = 0;
+		LED_RESET(1);
 	}
 }
 
@@ -897,7 +898,7 @@ void showPercent(uint32_t processed, uint32_t total, uint8_t x, uint8_t line)
 {
 	char szt[16] = {0};
 	static uint8_t oripst = 0;
-	
+
 	if (total == 0)
 	{
 		return;
@@ -947,7 +948,7 @@ void LED_OFF(uint8_t LedNum)
 void LED_BLINK(uint8_t LedNum)
 {
 	// Read current LED pin state, invert it and write back
-	uint8_t current_state = gpio_input_bit_get(GPIOA, LedNum);
+	uint8_t current_state = gpio_output_bit_get(GPIOA, LedNum);
 
 	gpio_bit_write(GPIOA, LedNum, !current_state);
 }
@@ -965,13 +966,13 @@ void LED_CLEAR(void)
 }
 
 
-void LED_RESET(bool all_clear)
+void LED_RESET(uint8_t all_clear)
 {
 	if (all_clear)
 	{
 		LED_CLEAR();
 	}
-	
+
 	uint8_t gbxType = GetGBType();
 	if (gbxType == TYPE_GBA)
 	{

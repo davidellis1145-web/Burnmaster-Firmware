@@ -130,7 +130,7 @@ void delay(int n)
 void ResetSystem()
 {
 	OledClear();		// Keeps display from spazzing on system reset
-	delay(10);		
+	delay(10);
 	__set_FAULTMASK(1); // Disable global interrupts
 	NVIC_SystemReset(); // Request Restart
 }
@@ -171,19 +171,19 @@ void delayMicroseconds(uint16_t us)
 
 void Set_Cart_Activity(uint8_t activity_type)
 {
-    cart_activity = activity_type;
+	cart_activity = activity_type;
 
-    if (activity_type == 1)      // Reading
-    {
-        timer_autoreload_value_config(TIMER1, SPEED_READ);
-    }
-    else if (activity_type == 2) // Writing
-    {
-        timer_autoreload_value_config(TIMER1, SPEED_WRITE);
-    }
-    else                         // Idle
-    {
-        // Reset the LED pins back to their proper static states immediately
-        LED_RESET(0);
-    }
+	if (activity_type == 1)		  // Reading
+	{
+		timer_autoreload_value_config(TIMER1, SPEED_READ);
+	}
+	else if (activity_type == 2)  // Writing
+	{
+		timer_autoreload_value_config(TIMER1, SPEED_WRITE);
+	}
+	else						  // Idle
+	{
+		// Reset the LEDs back to their proper idle states
+		LED_RESET(0);
+	}
 }

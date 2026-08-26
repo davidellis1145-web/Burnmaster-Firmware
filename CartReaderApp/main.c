@@ -19,7 +19,9 @@
 *					 Mom						...And FunnyPlaying  *
 *********************************************************************/
 
-#include <gd32f10x.h>
+#include "gd32f10x.h"
+#include "gd32f10x_timer.h"
+#include "gd32f10x_misc.h"
 #include "fatfs/ff.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -33,10 +35,10 @@
 #include "gd32f10x_sdio.h"
 #include "flashparam.h"
 
+#define VERSION_NUM "v1.1-a.1"
+
 /* PC5 corresponds to the 3.3v (GBA) cart voltage setting (active low)
 PB0 corresponds to the 5v (GB) cart voltage setting (active low)*/
-
-volatile uint8_t cart_activity = 0;
 
 uint8_t GetGBType()
 {
@@ -119,7 +121,7 @@ void aboutScreen()
 	OledShowString(0,0,"Game Boy",16);
 	OledShowPicData(80,0,48,6,Icon_data_DGE);
 	OledShowString(3,2,"Flash Master",8);
-	OledShowString(8,4,"v1.1-a.0",8);
+	OledShowString(8,4,VERSION_NUM,8);
 	OledShowString(2,5,"Aug 24, 2026",8);
 	OledShowString(0,7,"Press OK Button...",8);
 	WaitOKBtn();
@@ -230,7 +232,7 @@ uint8_t gbTestsMenu(uint8_t skipWarning)
 	}
 
 	OledClear();
-	
+
 	// Create menu with title and options to choose from
 	unsigned char gbCTest;
 	gbCTest = questionBox_OLED("GB(C) Cart Tests", menuOptionsGBT, 3, 1, 1, 1, 0);
@@ -270,7 +272,7 @@ uint8_t gbaTestsMenu(uint8_t skipWarning)
 	}
 
 	OledClear();
-	
+
 	// Create menu with title and options to choose from
 	unsigned char gbaCTest;
 	gbaCTest = questionBox_OLED("GBA Cart Tests", menuOptionsGBT, 3, 1, 1, 1, 0);
@@ -310,7 +312,7 @@ uint8_t gbxDebugMenu(uint8_t skipWarning)	// Debug Menu for dev testing
 	}
 
 	OledClear();
-	
+
 	// Create menu with title and options to choose from
 	unsigned char gbxDebug;
 	gbxDebug = questionBox_OLED("**Debug Menu**", menuOptionsDebug, 5, 1, 1, 1, 0);
@@ -590,7 +592,7 @@ uint8_t SDCardInit()
 	sd_error_enum sd_error;
 	uint16_t i = 5;
 	bool was_locked = false;
-	
+
 	// Initialize the card
 	do
 	{
@@ -667,78 +669,70 @@ void PriInit()
 
 uint32_t get_timer1_clock_hz(void)
 {
-    // Get base APB1 clock speed
-    uint32_t apb1_clock = rcu_clock_freq_get(CK_APB1);
-    
-    // Check RCU config for APB1 prescaler
-    // If prescaler isn't 1, the hardware multiplies the timer clock by 2
-    if ((RCU_CFG0 & RCU_CFG0_APB1PSC) != RCU_APB1_CKAHB_DIV1) 
-    {
-        return apb1_clock * 2; // Timer clock is doubled
-    }
-    return apb1_clock; // Timer clock equals APB1 clock
+	// Get base APB1 clock speed
+	uint32_t apb1_clock = rcu_clock_freq_get(CK_APB1);
+
+	// Check RCU config for APB1 prescaler
+	// If prescaler isn't 1, the hardware multiplies the timer clock by 2
+	if ((RCU_CFG0 & RCU_CFG0_APB1PSC) != RCU_APB1_CKAHB_DIV1)
+	{
+		return apb1_clock * 2; // Timer clock is doubled
+	}
+	return apb1_clock; // Timer clock equals APB1 clock
 }
 
 
 void Timer_Blink_Init(void)
 {
-    timer_parameter_struct timer_initpara;
-    rcu_periph_clock_enable(RCU_TIMER1);
-    timer_deinit(TIMER1);
+	timer_parameter_struct timer_initpara;
+	rcu_periph_clock_enable(RCU_TIMER1);
+	timer_deinit(TIMER1);
 
-    // Get clock source speed from hardware
-    uint32_t timer_clk = get_timer1_clock_hz();
+	// Get clock source speed from hardware
+	uint32_t timer_clk = get_timer1_clock_hz();
 
-    timer_struct_para_init(&timer_initpara);
-    
-    // Forces timer clock tick counter to 10,000 Hz (10kHz)
-    timer_initpara.prescaler		  = (timer_clk / 10000) - 1;       
-    
+	timer_initpara.prescaler		  = (timer_clk / 10000) - 1; // Forces timer clock tick counter to 10,000 Hz (10kHz)
 	timer_initpara.period			  = 4999;
 	timer_initpara.alignedmode		  = TIMER_COUNTER_EDGE;
-    timer_initpara.counterdirection	  = TIMER_COUNTER_UP;
-    timer_initpara.clockdivision	  = TIMER_CKDIV_DIV1;
-    timer_initpara.repetitioncounter  = 0;
-    timer_init(TIMER1, &timer_initpara);
+	timer_initpara.counterdirection	  = TIMER_COUNTER_UP;
+	timer_initpara.clockdivision	  = TIMER_CKDIV_DIV1;
+	timer_init(TIMER1, &timer_initpara);
 	nvic_irq_enable(TIMER1_IRQn, 1, 1);
-    timer_interrupt_enable(TIMER1, TIMER_INT_UP);
-    timer_enable(TIMER1);
+	timer_interrupt_enable(TIMER1, TIMER_INT_UP);
+	timer_enable(TIMER1);
 }
 
 
 void TIMER1_IRQHandler(void)
 {
-    if (SET == timer_interrupt_flag_get(TIMER1, TIMER_INT_FLAG_UP))
-    {
-        timer_interrupt_flag_clear(TIMER1, TIMER_INT_FLAG_UP);
-        
-        // Blink if either reading (1) or writing (2)
-        if (cart_activity > 0 && !errorLvl)
-        {
-            uint8_t gbxType = GetGBType();
-            
-            if (gbxType == TYPE_GBA)
-            {
-                // GBA Mode: Green blinks on activity
-                uint8_t current = gpio_output_bit_get(GPIOA, LED_G);
-                gpio_bit_write(GPIOA, LED_G, !current);
-            }
-            else if (gbxType == TYPE_GBC)
-            {
-                // GB/GBC Mode: Blue blinks on activity
-                uint8_t current = gpio_output_bit_get(GPIOA, LED_B);
-                gpio_bit_write(GPIOA, LED_B, !current);
-            }
-        }
+	if (SET == timer_interrupt_flag_get(TIMER1, TIMER_INT_FLAG_UP))
+	{
+		timer_interrupt_flag_clear(TIMER1, TIMER_INT_FLAG_UP);
+
+		if (!errorLvl && cart_activity == 0) // Exit early if no activity
+		{
+			return;
+		}
+
+		if (GetGBType() == TYPE_GBA && !errorLvl)
+		{
+			// GBA Mode: Green blinks on activity
+			uint8_t state = gpio_output_bit_get(GPIOA, LED_G);
+			gpio_bit_write(GPIOA, LED_G, !state);
+		}
+		else if (GetGBType() == TYPE_GBC && !errorLvl)
+		{
+			// GB/GBC Mode: Blue blinks on activity
+			uint8_t state = gpio_output_bit_get(GPIOA, LED_B);
+			gpio_bit_write(GPIOA, LED_B, !state);
+		}
 		else if (errorLvl)
 		{
 			// Blink red LED on error messages
-			LED_CLEAR();
-			timer_autoreload_value_config(TIMER1, SPEED_ERROR);
-			uint8_t current = gpio_output_bit_get(GPIOA, LED_R);
-			gpio_bit_write(GPIOA, LED_R, !current);
+			uint8_t state = gpio_output_bit_get(GPIOA, LED_R);
+			gpio_bit_write(GPIOA, LED_R, !state);
 		}
-    }
+	}
 }
 
 
@@ -753,7 +747,7 @@ int main(void)
 	OledShowString(0, 0, "Initializing...", 8);
 	delay(800);
 	uint8_t sdStatus = SDCardInit();
-	
+
 	// Check return status of SD init
 	if (sdStatus == 0)
 	{
@@ -783,7 +777,7 @@ int main(void)
 		OledShowString(3, 7, "disable encryption", 8);
 		while(1); // Trap CPU
 	}
-	
+
 	// Case 1: Everything's fine, continue!
 	delay(200);
 	gbxScreen();

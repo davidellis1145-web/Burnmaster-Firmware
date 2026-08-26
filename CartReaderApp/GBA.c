@@ -2717,7 +2717,7 @@ void flashRepro_GBA()
 
 			// Write flashrom
 			OledShowString(10,3,"Writing...",8);
-			
+
 			// lock to no more than one line wrap
 			int pathLen = strlen(filePath);
 			if (pathLen >= 43)
