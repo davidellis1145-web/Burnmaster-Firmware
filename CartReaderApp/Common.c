@@ -42,6 +42,7 @@ unsigned long writeErrors;
  * Example: If folders 0, 1, 3 exist in "GB/SAVE/GAME/", returns 3				*
  * Returns -1 if no folders found, otherwise returns the highest folder number	*
  * Note: Generated with AI assistance (GitHub Copilot)							*
+ * Note: Reviewed and edited by DE on 8/25/26									*
  ********************************************************************************/
 int findHighestFolder(const char* basePath)
 {
@@ -101,10 +102,18 @@ volatile uint8_t cart_activity = 0; // 0 = Idle, 1 = Reading, 2 = Writing
 
 void SysClockInit()
 {
-	// Enable SysTick timer interrupt
+	// Ensure SystemCoreClock is up-to date
+	SystemCoreClockUpdate();
+	
+	// Enable SysTick ms timer
 	SysTick->LOAD = (SystemCoreClock / 1000) - 1;
 	SysTick->VAL = 0;
 	SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_TICKINT_Msk | SysTick_CTRL_ENABLE_Msk;
+
+	// Enable precision DWT hardware tracker for delayMicroseconds(us)
+	CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+	DWT->CYCCNT = 0;
+	DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
 }
 
 
@@ -122,8 +131,11 @@ int getSystick()
 
 void delay(int n)
 {
-	unsigned endTicks = ticks + n;
-	while (ticks < endTicks);
+	int startTicks = ticks;
+	while ((ticks - startTicks) < n)
+	{
+		// Wait for ms to pass
+	}
 }
 
 
@@ -143,31 +155,18 @@ void SysClockFree()
 }
 
 
-void delayMicroseconds(uint16_t us)
+void delayMicroseconds(uint32_t us)
 {
-	for(int i = 0;i<us;i++)
+	// Calculate number of raw CPU cycles to wait
+	uint32_t start_cycles = DWT->CYCCNT;
+	uint32_t total_cycles = us * (SystemCoreClock / 1000000);
+	
+	// Block execution
+	while ((DWT->CYCCNT - start_cycles) < total_cycles)
 	{
-		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
-		__asm__("nop\n\t""nop\n\t""nop\n\t""nop\n\t""nop\n\t");
+		// Wait for cycles to pass
 	}
 }
-
 
 void Set_Cart_Activity(uint8_t activity_type)
 {

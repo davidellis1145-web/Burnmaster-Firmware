@@ -36,6 +36,7 @@
 #include "flashparam.h"
 
 #define VERSION_NUM "v1.1-a.1"
+#define BUILD_DATE  "Aug 25, 2026"
 
 /* PC5 corresponds to the 3.3v (GBA) cart voltage setting (active low)
 PB0 corresponds to the 5v (GB) cart voltage setting (active low)*/
@@ -122,7 +123,7 @@ void aboutScreen()
 	OledShowPicData(80,0,48,6,Icon_data_DGE);
 	OledShowString(3,2,"Flash Master",8);
 	OledShowString(8,4,VERSION_NUM,8);
-	OledShowString(2,5,"Aug 24, 2026",8);
+	OledShowString(2,5,BUILD_DATE,8);
 	OledShowString(0,7,"Press OK Button...",8);
 	WaitOKBtn();
 }
@@ -707,24 +708,21 @@ void TIMER1_IRQHandler(void)
 {
 	if (SET == timer_interrupt_flag_get(TIMER1, TIMER_INT_FLAG_UP))
 	{
-		timer_interrupt_flag_clear(TIMER1, TIMER_INT_FLAG_UP);
-
-		if (!errorLvl && cart_activity == 0) // Exit early if no activity
+		if (cart_activity > 0 && !errorLvl)
 		{
-			return;
-		}
-
-		if (GetGBType() == TYPE_GBA && !errorLvl)
-		{
-			// GBA Mode: Green blinks on activity
-			uint8_t state = gpio_output_bit_get(GPIOA, LED_G);
-			gpio_bit_write(GPIOA, LED_G, !state);
-		}
-		else if (GetGBType() == TYPE_GBC && !errorLvl)
-		{
-			// GB/GBC Mode: Blue blinks on activity
-			uint8_t state = gpio_output_bit_get(GPIOA, LED_B);
-			gpio_bit_write(GPIOA, LED_B, !state);
+		
+			if (GetGBType() == TYPE_GBA)
+			{
+				// GBA Mode: Green blinks on activity
+				uint8_t state = gpio_output_bit_get(GPIOA, LED_G);
+				gpio_bit_write(GPIOA, LED_G, !state);
+			}
+			else
+			{
+				// GB/GBC Mode: Blue blinks on activity
+				uint8_t state = gpio_output_bit_get(GPIOA, LED_B);
+				gpio_bit_write(GPIOA, LED_B, !state);
+			}
 		}
 		else if (errorLvl)
 		{
@@ -733,6 +731,7 @@ void TIMER1_IRQHandler(void)
 			gpio_bit_write(GPIOA, LED_R, !state);
 		}
 	}
+	timer_interrupt_flag_clear(TIMER1, TIMER_INT_FLAG_UP);
 }
 
 
@@ -744,8 +743,6 @@ int main(void)
 	OledInit();
 	Timer_Blink_Init();
 	OledClear();
-	OledShowString(0, 0, "Initializing...", 8);
-	delay(800);
 	uint8_t sdStatus = SDCardInit();
 
 	// Check return status of SD init

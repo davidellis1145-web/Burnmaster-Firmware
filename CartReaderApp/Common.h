@@ -68,7 +68,7 @@ void delay(int n);
 void ResetSystem();
 void SysClockFree();
 
-void delayMicroseconds(uint16_t us);
+void delayMicroseconds(uint32_t us);
 int findHighestFolder(const char* basePath);
 
 void Set_Cart_Activity(uint8_t activity_type);
