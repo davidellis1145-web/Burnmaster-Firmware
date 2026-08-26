@@ -693,7 +693,7 @@ void Timer_Blink_Init(void)
 	uint32_t timer_clk = get_timer1_clock_hz();
 
 	timer_initpara.prescaler		  = (timer_clk / 10000) - 1; // Forces timer clock tick counter to 10,000 Hz (10kHz)
-	timer_initpara.period			  = 4999;
+	timer_initpara.period			  = SPEED_ERROR;
 	timer_initpara.alignedmode		  = TIMER_COUNTER_EDGE;
 	timer_initpara.counterdirection	  = TIMER_COUNTER_UP;
 	timer_initpara.clockdivision	  = TIMER_CKDIV_DIV1;

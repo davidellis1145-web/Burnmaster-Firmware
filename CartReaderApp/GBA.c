@@ -470,20 +470,14 @@ void readROM_GBA()
 	}
 
 	// Read rom
+	Set_Cart_Activity(1);
 	for (int myAddress = 0; myAddress < cartSize; myAddress += 512)
 	{
-		// Blink led
 		if (myAddress % 16384 == 0)
 		{
-			Set_Cart_Activity(1);				//#testing new led blink logic
-			//LED_GREEN_BLINK;
 			showPercent(myAddress,cartSize,20,3);
 		}
-		else
-		{
-			Set_Cart_Activity(0);
-		}										//EoT
-
+		
 		for (int currWord = 0; currWord < 256; currWord++)
 		{
 			((word *)sdBuffer)[currWord] = readWord_GBA(myAddress + currWord*2);
@@ -494,7 +488,6 @@ void readROM_GBA()
 		f_write(&tf, sdBuffer, 512, &wdt);
 	}
 	Set_Cart_Activity(0);
-	//LED_GREEN_OFF;
 	showPercent(1,1,20,3);
 	// Close the file
 	f_close(&tf);
