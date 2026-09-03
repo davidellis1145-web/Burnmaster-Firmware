@@ -12,7 +12,6 @@ int foldern;
 
 // File browser
 char fileName[FILENAME_LENGTH];
-char filePath[FILEPATH_LENGTH];
 word currPage;
 word lastPage;
 word numPages;
