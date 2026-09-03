@@ -15,14 +15,13 @@
 #define true (1)
 #define false (0)
 
-#define FILENAME_LENGTH 64
 #define FILEPATH_LENGTH 256
 #define FILEOPTS_LENGTH 20
 #define SD_LOCKED_ERROR 198
 
 #define SPEED_READ	4999 // Normal blink (500ms toggle) for reading
-#define SPEED_WRITE	2499  // Medium blink (250ms toggle) for writing
-#define SPEED_ERROR	9999 // Slow blink (1s toggle) for error messages
+#define SPEED_WRITE	999  // Fast blink (100ms toggle) for writing
+#define SPEED_ERROR	7999 // Slow blink (800ms toggle) for error messages
 
 #define TYPE_GBC (0)
 #define TYPE_GBA (1)
@@ -30,10 +29,8 @@
 #define TYPE_NONE (3)
 
 extern int foldern;
-extern char folder[36];
 extern FATFS fs;
 
-extern char fileName[FILENAME_LENGTH];
 extern char filePath[FILEPATH_LENGTH];
 extern word currPage;
 extern word lastPage;
@@ -46,6 +43,9 @@ extern char flashid[5];
 extern int manufacturerid;
 extern bool wrapped;
 extern volatile uint8_t cart_activity;
+extern uint8_t alreadyWaited;
+extern char targetFolder[128];
+extern char targetFile[256];
 
 // Variable to count errors
 extern unsigned long writeErrors;
@@ -70,8 +70,8 @@ void SysClockFree();
 
 void delayMicroseconds(uint32_t us);
 int findHighestFolder(const char* basePath);
-
 void Set_Cart_Activity(uint8_t activity_type);
+void SetErrorLvl(uint8_t errorLvl);
 uint8_t GetGBType();
 
 #endif

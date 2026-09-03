@@ -35,8 +35,8 @@
 #include "gd32f10x_sdio.h"
 #include "flashparam.h"
 
-#define VERSION_NUM "v1.1-a.1"
-#define BUILD_DATE  "Aug 25, 2026"
+#define VERSION_NUM "v1.1-a.2"
+#define BUILD_DATE  "Sep 2, 2026"
 
 /* PC5 corresponds to the 3.3v (GBA) cart voltage setting (active low)
 PB0 corresponds to the 5v (GB) cart voltage setting (active low)*/
@@ -124,8 +124,7 @@ void aboutScreen()
 	OledShowString(3,2,"Flash Master",8);
 	OledShowString(8,4,VERSION_NUM,8);
 	OledShowString(2,5,BUILD_DATE,8);
-	OledShowString(0,7,"Press OK Button...",8);
-	WaitOKBtn();
+	WaitOKBtn(1);
 }
 
 
@@ -138,8 +137,7 @@ uint8_t gbxMenu()
 
 	if(gbxtype == TYPE_GBA)
 	{
-		LED_GREEN_OFF;	// Make sure GB mode led is off
-		LED_BLUE_ON;	// Make sure GBA mode led is on
+		LED_RESET(0);
 		OledClear();
 		OledShowPicData(70,3,56,4,Icon_data_GBA); // Draws GBA icon
 
@@ -167,10 +165,9 @@ uint8_t gbxMenu()
 	}
 	else if(gbxtype == TYPE_GBC)
 	{
-		LED_BLUE_OFF;	// Make sure GBA mode led is off
-		LED_GREEN_ON;	// Make sure GB mode led is on
+		LED_RESET(0);
 		OledClear();
-		OledShowPicData(97,2,30,6,Icon_data_GBC);	// Draws GB icon
+		OledShowPicData(97,2,30,6,Icon_data_GBC);	// Draws GBC icon
 
 		// Create menu with title and options to choose from
 		// Wait for user choice to come back from the question box menu
@@ -224,12 +221,13 @@ uint8_t gbTestsMenu(uint8_t skipWarning)
 	// Only show warning if skipWarning is 0
 	if (!skipWarning)
 	{
+		SetErrorLvl(1);
 		OledClear();
 		OledShowString(30,1,"**WARNING**",8);
 		OledShowString(3,3,"The following tests",8);
 		OledShowString(2,4,"will erase the cart!",8);
-		OledShowString(0,7,"Press OK Button...",8);
-		WaitOKBtn();
+		WaitOKBtn(1);
+		SetErrorLvl(0);
 	}
 
 	OledClear();
@@ -264,12 +262,13 @@ uint8_t gbaTestsMenu(uint8_t skipWarning)
 	// Only show warning if skipWarning is 0
 	if (!skipWarning)
 	{
+		SetErrorLvl(1);
 		OledClear();
 		OledShowString(30,1,"**WARNING**",8);
 		OledShowString(3,3,"The following tests",8);
 		OledShowString(2,4,"will erase the cart!",8);
-		OledShowString(0,7,"Press OK Button...",8);
-		WaitOKBtn();
+		WaitOKBtn(1);
+		SetErrorLvl(0);
 	}
 
 	OledClear();
@@ -303,13 +302,14 @@ uint8_t gbxDebugMenu(uint8_t skipWarning)	// Debug Menu for dev testing
 	uint8_t bret = 0;
 	if (!skipWarning) // Only show warning if skipWarning is 0
 	{
+		SetErrorLvl(1);
 		OledClear();
 		OledShowString(30,1,"**WARNING**",8);
 		OledShowString(0,3,"Entering debug menu",8);
 		OledShowString(0,4,"don't use important",8);
 		OledShowString(0,5,"carts, may corrupt.",8);
-		OledShowString(0,7,"Press OK Button...",8);
-		WaitOKBtn();
+		WaitOKBtn(1);
+		SetErrorLvl(0);
 	}
 
 	OledClear();
@@ -328,21 +328,21 @@ uint8_t gbxDebugMenu(uint8_t skipWarning)	// Debug Menu for dev testing
 			OledClear();
 			OledShowString(0,0,"This string is too long",8);
 			OledShowString(0,7,"Press OK...",8);
-			WaitOKBtn();
+			WaitOKBtn(0);
 			OledClear();
 			OledShowString(0,0,"This string is too long\nand it has two newlines\nNewline two",8);
 			OledShowString(0,7,"Press OK...",8);
-			WaitOKBtn();
+			WaitOKBtn(0);
 			break;
 		case 2:
 			OledClear();
 			OledShowString(0,0,"This string is too long",16);
 			OledShowString(0,7,"Press OK...",16);
-			WaitOKBtn();
+			WaitOKBtn(0);
 			OledClear();
 			OledShowString(0,0,"This string is too long\nThis Newline is too long\nNewline",16);
 			OledShowString(0,7,"Press OK...",16);
-			WaitOKBtn();
+			WaitOKBtn(0);
 			break;
 		case 3:
 			OledClear();
@@ -355,22 +355,22 @@ uint8_t gbxDebugMenu(uint8_t skipWarning)	// Debug Menu for dev testing
 			OledShowString(0,6,"7",8);
 			OledShowString(0,7,"8....Press OK button",8);
 			OledShowString(0,8,"out of bounds",8);
-			WaitOKBtn();
+			WaitOKBtn(0);
 			OledClear();
 			OledShowString(0,0,"This line is just a bit long",8);
 			OledShowString(0,1,"This line is 21 chars\nwith a newline",8);
 			OledShowString(0,3,"And this has too many\nnewlines\n5\n6 Press OK...\n7\noverflow",8);
-			WaitOKBtn();
+			WaitOKBtn(0);
 			break;
 		case 4:
 			OledClear();
 			OledShowPicData(100,0,48,6,Icon_data_DGE);
 			OledShowString(0,7,"Press OK...",8);
-			WaitOKBtn();
+			WaitOKBtn(0);
 			OledClear();
 			OledShowPicData(80,4,48,6,Icon_data_DGE);
 			OledShowString(0,7,"Press OK...",8);
-			WaitOKBtn();
+			WaitOKBtn(0);
 			break;
 		case 5:
 			ResetSystem();
@@ -617,8 +617,6 @@ uint8_t SDCardInit()
 	}
 	else
 	{
-		//ignoreError = 0;
-		//print_Error("No SD Card detected!",true);
 		return 0; // Return 0: Hardware missing
 	}
 
@@ -710,7 +708,7 @@ void TIMER1_IRQHandler(void)
 	{
 		if (cart_activity > 0 && !errorLvl)
 		{
-		
+
 			if (GetGBType() == TYPE_GBA)
 			{
 				// GBA Mode: Green blinks on activity
@@ -749,6 +747,7 @@ int main(void)
 	if (sdStatus == 0)
 	{
 		// Case 0: Critical hardware failure
+		SetErrorLvl(1);
 		OledClear();
 		OledShowString(30, 2, "** ERROR **", 8);
 		OledShowString(18, 4, "SD Card Failure", 8);
@@ -758,6 +757,7 @@ int main(void)
 	else if (sdStatus == 2)
 	{
 		// Case 2: Card working, but file system missing/corrupt
+		SetErrorLvl(1);
 		OledClear();
 		OledShowString(18, 0, "** WARNING **", 8);
 		OledShowString(0, 2, "No filesystem found!", 8);
@@ -767,6 +767,7 @@ int main(void)
 	else if (sdStatus == 3)
 	{
 		// Case 3: SD locked
+		SetErrorLvl(1);
 		OledClear();
 		OledShowString(27, 1, "** ERROR **", 8);
 		OledShowString(18, 4, "Card is Locked!", 8);

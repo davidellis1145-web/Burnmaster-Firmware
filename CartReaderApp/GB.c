@@ -378,31 +378,32 @@ void showCartInfo_GB()
 		OledShowString(65,6,checksumStr,8);
 
 		// Wait for user input
-		OledShowString(0,7,"Press OK Button...",8);
-		WaitOKBtn();
+		WaitOKBtn(1);
 	}
 	else
 	{
 		if ((strcmp(romName, "456789") == 0) &&
 			(strcmp(checksumStr, "4E4F") == 0))
 		{
+			SetErrorLvl(1);
 			OledShowString(0,1,"GAMEPAK ERROR",8);
 			OledShowString(0,3,"Try reflashing ROM.",8);
 			OledShowString(0,4,"Rom Name: ",8);
 			OledShowString(63,4,romName,8);
 			OledShowString(0,5,"Checksum: ",8);
 			OledShowString(63,5,checksumStr,8);
-			OledShowString(0,7,"Press OK Button...",8);
-			WaitOKBtn();
+			WaitOKBtn(1);
+			SetErrorLvl(0);
 		}
 		else
 		{
+			SetErrorLvl(1);
 			OledShowString(0,2,"GAMEPAK ERROR",8);
 			OledShowString(0,4,"Checksum: ",8);
 			OledShowString(63,4,checksumStr,8);
 			OledShowString(10,5,"No Cart?",8);
-			OledShowString(0,7,"Press OK Button...",8);
-			WaitOKBtn();
+			WaitOKBtn(1);
+			SetErrorLvl(0);
 		}
 	}
 }
@@ -456,6 +457,7 @@ void readROM_GB()
 		strcmp(checksumStr, "FFFF") == 0 ||
 		strcmp(checksumStr, "0000") == 0)
 	{
+		SetErrorLvl(1);
 		strcpy(romName, "ERROR");
 		OledShowString(0,0,"GAMEPAK ERROR",8);
 		OledShowString(0,2,"Try reflashing ROM.",8);
@@ -465,36 +467,37 @@ void readROM_GB()
 		OledShowString(63,4,checksumStr,8);
 		OledShowString(0,6,"Press OK to ignore or",8);
 		OledShowString(0,7,"power cycle to retry",8);
-		WaitOKBtn();
+		WaitOKBtn(0);
+		SetErrorLvl(0);
 		goto here;
 	}
 	else
 	{
 here:
 		// Get name, add extension and convert to char array for sd lib
-		strcpy(fileName, romName);
-		strcat(fileName, ".gb");
+		strcpy(targetFile, romName);
+		strcat(targetFile, ".gb");
 		// Find the highest existing folder number and use next one
 		char basePath[64];
 		sprintf(basePath, "GB/ROM/%s", romName);
 		int highestFolder = findHighestFolder(basePath);
-		foldern = highestFolder + 1;	// Use next folder number
+		foldern = highestFolder + 1;
 
 		f_chdir("/");
-		sprintf(folder, "GB/ROM/%s/%d", romName, foldern);
+		sprintf(targetFolder, "GB/ROM/%s/%d", romName, foldern);
 
 		FRESULT rst;
 		FIL tfile;
 
-		rst = my_mkdir(folder);
-		rst = f_chdir(folder);
+		rst = my_mkdir(targetFolder);
+		rst = f_chdir(targetFolder);
 
 		OledClear();
 		OledShowString(0,0,"Saving to: ",8);
-		OledShowString(4,1,folder,8);
+		OledShowString(4,1,targetFolder,8);
 
 		// Open file on sd card
-		rst = f_open(&tfile,fileName, FA_CREATE_ALWAYS|FA_WRITE);
+		rst = f_open(&tfile,targetFile, FA_CREATE_ALWAYS|FA_WRITE);
 		if (rst != FR_OK)
 		{
 			print_Error("Can't create file", 1);
@@ -558,18 +561,18 @@ here:
 
 
 // Calculate checksum
-uint16_t calc_checksum_GB (char* fileName, char* folder)
+uint16_t calc_checksum_GB (char* targetFile, char* targetFolder)
 {
 	uint16_t calcChecksum = 0;
 	unsigned long i = 0;
 	int c = 0;
 	FIL tfile;
 
-	if (strcmp(folder, "root") != 0)
-		f_chdir(folder);
+	if (strcmp(targetFolder, "root") != 0)
+		f_chdir(targetFolder);
 
 	// If file exists
-	if (f_open(&tfile,fileName, FA_READ) == FR_OK)
+	if (f_open(&tfile,targetFile, FA_READ) == FR_OK)
 	{
 		for (i = 0; i < (f_size(&tfile) / 512); i++)
 		{
@@ -606,17 +609,17 @@ boolean compare_checksum_GB()
 {
 	OledShowString(0,3,"Calculating Checksum",8);
 
-	strcpy(fileName, romName);
-	strcat(fileName, ".gb");
+	strcpy(targetFile, romName);
+	strcat(targetFile, ".gb");
 
 	// Find the highest existing folder number
 	char basePath[64];
 	sprintf(basePath, "GB/ROM/%s", romName);
 	int highestFolder = findHighestFolder(basePath);
-	sprintf(folder, "GB/ROM/%s/%d", romName, highestFolder);
+	sprintf(targetFolder, "GB/ROM/%s/%d", romName, highestFolder);
 
 	char calcsumStr[5];
-	sprintf(calcsumStr, "%04X", calc_checksum_GB(fileName, folder));
+	sprintf(calcsumStr, "%04X", calc_checksum_GB(targetFile, targetFolder));
 
 	if (strcmp(calcsumStr, checksumStr) == 0)
 	{
@@ -645,6 +648,7 @@ void readSRAM_GB()
 		(strcmp(checksumStr, "FFFF") == 0) ||
 		(strcmp(checksumStr, "0000") == 0))
 	{
+		SetErrorLvl(1);
 		strcpy(romName, "ERROR");
 		OledShowString(0,0,"GAMEPAK ERROR",8);
 		OledShowString(0,2,"Try reflashing ROM.",8);
@@ -654,7 +658,8 @@ void readSRAM_GB()
 		OledShowString(63,4,checksumStr,8);
 		OledShowString(0,6,"Press OK to ignore or",8);
 		OledShowString(0,7,"power cycle to retry",8);
-		WaitOKBtn();
+		WaitOKBtn(0);
+		SetErrorLvl(0);
 		OledClear();
 		goto here;
 	}
@@ -665,22 +670,25 @@ here:
 		if ((lastByte > 0) && (sramBanks > 0))
 		{
 			// Get name, add extension and convert to char array for sd lib
-			strcpy(fileName, romName);
-			strcat(fileName, ".sav");
+			strcpy(targetFile, romName);
+			strcat(targetFile, ".sav");
 
 			// Find the highest existing folder number and use next one
 			char basePath[64];
 			sprintf(basePath, "GB/SAVE/%s", romName);
 			int highestFolder = findHighestFolder(basePath);
-			foldern = highestFolder + 1;	// Use next folder number
+			foldern = highestFolder + 1;
 
-			sprintf(folder, "GB/SAVE/%s/%d", romName, foldern);
-			my_mkdir(folder);
-			f_chdir(folder);
+			sprintf(targetFolder, "GB/SAVE/%s/%d", romName, foldern);
+			my_mkdir(targetFolder);
+			f_chdir(targetFolder);
+
+			OledShowString(0,0,"Saving to: ",8);
+			OledShowString(4,1,targetFolder,8);
 
 			// Open file on sd card
 			FIL tfile;
-			if (f_open(&tfile, fileName, FA_CREATE_ALWAYS|FA_WRITE) != FR_OK)
+			if (f_open(&tfile, targetFile, FA_CREATE_ALWAYS|FA_WRITE) != FR_OK)
 			{
 				print_Error("SD Error", true);
 			}
@@ -727,8 +735,6 @@ here:
 			f_close(&tfile);
 
 			// Signal end of process
-			OledShowString(0,0,"Saving to: ",8);
-			OledShowString(4,1,folder,8);
 			OledShowString(4,4,"Done!",8);
 		}
 		else
@@ -1100,7 +1106,7 @@ void identifyCFI_GB()
 			OledShowString(0,0,"CFI Query failed!",8);
 			OledShowString(0,3,"Press OK to ignore or",8);
 			OledShowString(0,4,"powercycle and retry.",8);
-			WaitOKBtn();
+			WaitOKBtn(0);
 			return;
 		}
 	}
@@ -1148,7 +1154,7 @@ bool writeCFI_GB()
 			OledShowString(0,0,msgbuf,8);
 			OledShowString(0,7,"Press OK to reset...",8);
 			f_close(&tf);
-			WaitOKBtn();
+			WaitOKBtn(0);
 			ResetSystem();
 		}
 
@@ -1906,8 +1912,7 @@ void TestMemGB(boolean bFast)
 		TestSramGB(8,0xBFFF);
 		testCFI_GB(512);
 	}
-	OledShowString(0,7,"Press OK Button...",8);
-	WaitOKBtn();
+	WaitOKBtn(1);
 	ResetSystem();
 }
 
@@ -1939,6 +1944,7 @@ uint8_t gbMenu()
 			// Launch file browser
 			if (fileBrowser("/","Select file:") == 0)
 			{
+				bret = 2;
 				break;
 			}
 			OledClear();
@@ -1978,6 +1984,7 @@ uint8_t gbMenu()
 				filePath[0] = '\0';
 				if (fileBrowser("/","Select sav file") == 0)
 				{
+					bret = 2;
 					break;
 				}
 				writeSRAM_GB();
@@ -2005,10 +2012,15 @@ uint8_t gbMenu()
 			break;
 	}
 
-	if(bret == 0)
+	if (bret == 2)
 	{
-		OledShowString(0,7,"Press OK Button...",8);
-		WaitOKBtn();
+		OledShowString(0, 0, "Process aborted!", 8);
+		WaitOKBtn(1);
+	}
+
+	else if (bret == 0)
+	{
+		WaitOKBtn(1);
 	}
 	return bret;
 }

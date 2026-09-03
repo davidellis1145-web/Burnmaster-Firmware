@@ -589,7 +589,7 @@ void QBoxShowChar(uint8_t x,uint8_t y,uint8_t chr)
 
 // Display string for QuestionBox (prevents wrapping so long strings scroll)
 // Don't use '\n' with this. It shouldn't be needed anyway.
-uint8_t QBoxShowString(uint8_t x,uint8_t y,const char *str,uint8_t scroll_offset)
+uint8_t QBoxShowString(uint8_t x, uint8_t y, const char *str, uint8_t scroll_offset)
 {
 	unsigned char j = 0;
 	uint8_t skipped_visible = 0;
@@ -814,17 +814,18 @@ void OledInit(void)
 }
 
 
-void print_Error(char *errorMessage, uint8_t forceReset)
+void print_Error(char *errorMessage, boolean forceReset)
 {
-	LED_CLEAR();
+	SetErrorLvl(1);
+	/*LED_CLEAR();
 	timer_autoreload_value_config(TIMER1, SPEED_ERROR);
-	errorLvl = 1;							// #testing (if this works, go through
+	errorLvl = 1;*/							// #testing (if this works, go through
 	OledShowString(0,5,errorMessage,8);		// and make sure relavent messages go BEFORE
 											// 'print_error' and remove the WaitOKBtn()'s)
 	if (forceReset)
 	{
 		OledShowString(0,7,"Press OK To Reset...",8);
-		WaitOKBtn();
+		WaitOKBtn(0);
 
 		if (ignoreError == 0)
 		{
@@ -836,17 +837,17 @@ void print_Error(char *errorMessage, uint8_t forceReset)
 			OledClear();
 			OledShowString(0,2,"Error Overwrite",8);
 			delay(2000);
-			errorLvl = 0;
-			LED_RESET(1);
+			SetErrorLvl(0);
+			//errorLvl = 0;
+			//LED_RESET(1);
 		}
 	}
 	else
 	{
-		OledShowString(0,7,"Press OK Button...",8);
-		WaitOKBtn();
-		errorLvl = 0;
-		LED_RESET(1);
+		WaitOKBtn(1);
+		SetErrorLvl(0);
 	}
+	alreadyWaited = 1;
 }
 
 
@@ -955,12 +956,6 @@ void LED_BLINK(uint8_t LedNum)
 
 	gpio_bit_write(GPIOA, LedNum, !current_state);
 }
-/*void LED_BLINK(uint8_t LedNum)
-{
-	static uint8_t ts = 0;
-	ts = !ts;
-	gpio_bit_write(GPIOA,LedNum,ts);
-}*/
 
 
 void LED_CLEAR(void)
@@ -974,18 +969,14 @@ void LED_RESET(uint8_t all_clear)
 	if (all_clear)
 	{
 		LED_CLEAR();
-		//LED_GREEN_OFF;
-		//LED_BLUE_OFF;
-		//LED_RED_OFF;
 	}
 
-	uint8_t gbxType = GetGBType();
-	if (gbxType == TYPE_GBA)
+	if (GetGBType() == TYPE_GBA)
 	{
 		LED_GREEN_OFF;
 		LED_BLUE_ON;
 	}
-	else if (gbxType == TYPE_GBC)
+	else
 	{
 		LED_BLUE_OFF;
 		LED_GREEN_ON;

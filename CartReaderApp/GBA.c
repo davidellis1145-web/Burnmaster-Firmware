@@ -318,11 +318,15 @@ void getCartInfo_GBA()
 
 	if (logoChecksum != 0x4B1B)
 	{
-		OledShowString(0,1,"Press OK Button to\nignore or powercycle\nto try again!",8);	// Testing new print_error
-		print_Error("CARTRIDGE ERROR", false);												// keep...
-		strcpy(romName, "ERROR");															// keep...
-		//OledShowString(0,1,"Press OK Button to\nignore or powercycle\nto try again!",8);
-		//WaitOKBtn();																		// EoT
+		SetErrorLvl(1);
+		OledShowString(0, 0, "CARTRIDGE ERROR", 8);
+		OledShowString(0, 3, "Press OK Button to\nignore or powercycle\nto try again!", 8);
+		WaitOKBtn(0);
+		SetErrorLvl(0);
+		strcpy(romName, "ERROR");
+		/*OledShowString(0,1,"Press OK Button to\nignore or powercycle\nto try again!",8);
+		print_Error("CARTRIDGE ERROR", false, 0);
+		strcpy(romName, "ERROR");*/
 	}
 	else
 	{
@@ -433,8 +437,6 @@ void getCartInfo_GBA()
 			OledShowString(0, 0, "Result: ", 8);
 			OledShowString(48, 0, calcChecksumStr, 8);
 			print_Error("Checksum Error!", false);
-			OledShowString(0, 7, "Press OK Button...", 8);
-			WaitOKBtn();
 		}
 	}
 }
@@ -444,40 +446,39 @@ void getCartInfo_GBA()
 void readROM_GBA()
 {
 	// Get name, add extension and convert to char array for sd lib
-	strcpy(fileName, romName);
-	strcat(fileName, ".gba");
+	sprintf(targetFile, "%s.gba", romName);
+	Set_Cart_Activity(1);
 
 	// Create a new folder for the rom file
 	char basePath[64];
 	sprintf(basePath, "GBA/ROM/%s", romName);
 	int highestFolder = findHighestFolder(basePath);
-	foldern = highestFolder + 1;	// Use next folder number
+	foldern = highestFolder + 1;
 
-	sprintf(folder, "/GBA/ROM/%s/%d", romName, foldern);
-	my_mkdir(folder);
-	f_chdir(folder);
+	sprintf(targetFolder, "/GBA/ROM/%s/%d", romName, foldern);
+	my_mkdir(targetFolder);
+	f_chdir(targetFolder);
 
 	// Clear the screen
 	OledClear();
 	OledShowString(0,0,"Saving to:",8);
-	OledShowString(0,1,folder,8);
+	OledShowString(0,1,targetFolder,8);
 
 	FIL tf;
 	// Open file on sd card
-	if (f_open(&tf,fileName, FA_CREATE_ALWAYS|FA_WRITE) != FR_OK)
+	if (f_open(&tf,targetFile, FA_CREATE_ALWAYS|FA_WRITE) != FR_OK)
 	{
 		print_Error("Can't create file!", true);
 	}
 
 	// Read rom
-	Set_Cart_Activity(1);
 	for (int myAddress = 0; myAddress < cartSize; myAddress += 512)
 	{
 		if (myAddress % 16384 == 0)
 		{
 			showPercent(myAddress,cartSize,20,3);
 		}
-		
+
 		for (int currWord = 0; currWord < 256; currWord++)
 		{
 			((word *)sdBuffer)[currWord] = readWord_GBA(myAddress + currWord*2);
@@ -497,16 +498,68 @@ void readROM_GBA()
 // Calculate the checksum of the dumped rom
 boolean compare_checksum_GBA()
 {
-	OledShowString(0,4,"Calculating Checksum",8);
+	char basePath[64];
 
-	strcpy(fileName, romName);
+	OledShowString(0,4,"Calculating Checksum",8);
+	sprintf(basePath, "GBA/ROM/%s", romName);
+	int highestFolder = findHighestFolder(basePath);
+
+	if (highestFolder == -1)
+	{
+		OledClear();
+		OledShowString(0, 1, "** ERROR **", 8);
+		print_Error("No backup found", false);
+		return 0;
+	}
+
+	sprintf(targetFolder, "/GBA/ROM/%s/%d", romName, highestFolder);
+	f_chdir(targetFolder);
+	sprintf(targetFile, "%s.gba", romName);
+
+	FIL tf;
+	if (f_open(&tf, targetFile, FA_READ) == FR_OK)
+	{
+		UINT rdt;
+		f_read(&tf,sdBuffer, 512,&rdt);
+		f_close(&tf);
+
+		// Calculate Checksum
+		int calcChecksum = 0x00;
+		for (int n = 0xA0; n < 0xBD; n++)
+		{
+			calcChecksum -= sdBuffer[n];
+		}
+		calcChecksum = (calcChecksum - 0x19) & 0xFF;
+
+		// Turn into string
+		sprintf(calcChecksumStr, "%02X", calcChecksum);
+
+		if (strcmp(calcChecksumStr, checksumStr) == 0)
+		{
+			OledShowString(0,5,"Checksum matches",8);
+			return 1;
+		}
+		else
+		{
+			OledShowString(0,5,"Result: ",8);
+			OledShowString(50,5,calcChecksumStr,8);
+			print_Error("\nChecksum Error", false);
+			return 0;
+		}
+	}
+	else
+	{
+		print_Error("Error opening ROM.", false);
+		return 0;
+	}
+	/*strcpy(fileName, romName);
 	strcat(fileName, ".gba");
 
 	// Last used rom folder
 	char basePath[64];
 	sprintf(basePath, "/GBA/ROM/%s", romName);
-	int highestFolder = findHighestFolder(basePath);
-	sprintf(folder, "/GBA/ROM/%s/%d", romName, highestFolder);
+	int firstAvailFolder = findNextAvailableFolder(basePath);
+	sprintf(folder, "/GBA/ROM/%s/%d", romName, firstAvailFolder);
 	f_chdir(folder);
 
 	FIL tf;
@@ -547,7 +600,7 @@ boolean compare_checksum_GBA()
 	{
 		print_Error("Failed to open rom.", false);
 		return 0;
-	}
+	}*/
 }
 
 
@@ -559,27 +612,27 @@ void readSRAM_GBA(boolean browseFile, unsigned long sramSize, uint32_t pos)
 	if (browseFile)
 	{
 		// Get name, add extension and convert to char array for sd lib
-		strcpy(fileName, romName);
-		strcat(fileName, ".srm");
+		strcpy(targetFile, romName);
+		strcat(targetFile, ".srm");
 
 		// Create a new folder for the save file
 		char basePath[64];
 		sprintf(basePath, "GBA/SAVE/%s", romName);
 		int highestFolder = findHighestFolder(basePath);
-		foldern = highestFolder + 1;	// Use next folder number
+		foldern = highestFolder + 1;
 
-		sprintf(folder, "GBA/SAVE/%s/%d", romName, foldern);
-		my_mkdir(folder);
-		f_chdir(folder);
+		sprintf(targetFolder, "GBA/SAVE/%s/%d", romName, foldern);
+		my_mkdir(targetFolder);
+		f_chdir(targetFolder);
 
 		// Save location
 		OledShowString(0,0,"Saving to:",8);
-		OledShowString(0,1,folder,8);
+		OledShowString(0,1,targetFolder,8);
 	}
 
 	// Open file on sd card
 	FIL tf;
-	if (f_open(&tf, fileName, FA_CREATE_ALWAYS|FA_WRITE) != FR_OK)
+	if (f_open(&tf, targetFile, FA_CREATE_ALWAYS|FA_WRITE) != FR_OK)
 	{
 		print_Error("SD File Error", true);
 	}
@@ -739,7 +792,7 @@ void TestSRAM_GBA(unsigned long sramSize)
 	{
 		sprintf(msgbuf,"Error %d bytes...\n\n\n\n\nPress OK Button...",wErrors);
 		OledShowString(0,2,msgbuf,8);
-		WaitOKBtn();
+		WaitOKBtn(0);
 	}
 	else
 	{
@@ -1050,26 +1103,26 @@ void writeEeprom_GBA(word eepSize)
 void readEeprom_GBA(word eepSize)
 {
 	// Get name, add extension and convert to char array for sd lib
-	strcpy(fileName, romName);
-	strcat(fileName, ".eep");
+	strcpy(targetFile, romName);
+	strcat(targetFile, ".eep");
 
 	// Create a new folder for the save file
 	char basePath[64];
 	sprintf(basePath, "GBA/SAVE/%s", romName);
 	int highestFolder = findHighestFolder(basePath);
-	foldern = highestFolder + 1;	// Use next folder number
+	foldern = highestFolder + 1;
 
-	sprintf(folder, "GBA/SAVE/%s/%d", romName, foldern);
-	my_mkdir(folder);
-	f_chdir(folder);
+	sprintf(targetFolder, "GBA/SAVE/%s/%d", romName, foldern);
+	my_mkdir(targetFolder);
+	f_chdir(targetFolder);
 
 	// Save location
 	OledShowString(0,0,"Saving to:",8);
-	OledShowString(0,1,folder,8);
+	OledShowString(0,1,targetFolder,8);
 	FIL tf;
 
 	// Open file on sd card
-	if (f_open(&tf, fileName, FA_CREATE_ALWAYS | FA_WRITE) != FR_OK)
+	if (f_open(&tf, targetFile, FA_CREATE_ALWAYS | FA_WRITE) != FR_OK)
 	{
 		print_Error("SD Card Error!", true);
 	}
@@ -1352,27 +1405,27 @@ void readFLASH_GBA(boolean browseFile, unsigned long flashSize, uint32_t pos)
 	if (browseFile)
 	{
 		// Get name, add extension and convert to char array for sd lib
-		strcpy(fileName, romName);
-		strcat(fileName, ".fla");
+		strcpy(targetFile, romName);
+		strcat(targetFile, ".fla");
 
 		// Create a new folder for the save file
 		char basePath[64];
 		sprintf(basePath, "GBA/SAVE/%s", romName);
 		int highestFolder = findHighestFolder(basePath);
-		foldern = highestFolder + 1;	// Use next folder number
+		foldern = highestFolder + 1;
 
-		sprintf(folder, "GBA/SAVE/%s/%d", romName, foldern);
-		my_mkdir(folder);
-		f_chdir(folder);
+		sprintf(targetFolder, "GBA/SAVE/%s/%d", romName, foldern);
+		my_mkdir(targetFolder);
+		f_chdir(targetFolder);
 
 		// Save location
 		OledShowString(0,0,"Saving to:",8);
-		OledShowString(0,1,folder,8);
+		OledShowString(0,1,targetFolder,8);
 	}
 
 	FIL tf;
 	// Open file on sd card
-	if (f_open(&tf, fileName,FA_CREATE_ALWAYS | FA_WRITE) != FR_OK)
+	if (f_open(&tf, targetFile,FA_CREATE_ALWAYS | FA_WRITE) != FR_OK)
 	{
 		print_Error("SD Card Error", true);
 	}
@@ -1445,7 +1498,7 @@ void writeFLASH_GBA(boolean browseFile, unsigned long flashSize, uint32_t pos)
 		filePath[0] = '\0';
 		fileBrowser("/","Select fla file");
 		// Create filepath
-		sprintf(filePath, "%s/%s", filePath, fileName);
+		sprintf(filePath, "%s/%s", filePath, targetFile);
 		OledClear();
 	}
 
@@ -1980,27 +2033,32 @@ void sectorEraseMX29GL128E_GBA(unsigned long lastSector)
 
 void sectorEraseSpansion_GBA(unsigned long lastSector)
 {
-	// Erase 128 sectors with 128kbytes each
+	// Set cart activity to 2 (Writing)
+	Set_Cart_Activity(2);
+
+	// Erase sectors with 128kbytes each
 	unsigned long currSector;
 	for (currSector = 0x0; currSector < lastSector; currSector += 0x20000)
 	{
+		// Send Spansion sector erase commands
 		writeWord_GBA(0xAAA, 0xAA);
 		writeWord_GBA(0x555, 0x55);
 		writeWord_GBA(0xAAA, 0x80);
 		writeWord_GBA(0xAAA, 0xAA);
 		writeWord_GBA(0x555, 0x55);
 		writeWord_GBA(currSector, 0x30);
-		// Blink LED
-		LED_GREEN_BLINK;
-		showPercent(currSector,lastSector,68,2);
-		// Read the status register
+
+		// Read status register and wait for sector to erase
 		word statusReg = readWord_GBA(currSector);
 		while ((statusReg | 0xFF7F) != 0xFFFF)
 		{
 			statusReg = readWord_GBA(currSector);
 		}
-		showPercent(1,1,68,2);
+
+		showPercent(currSector,lastSector,68,2);
 	}
+	showPercent(1,1,68,2);
+	Set_Cart_Activity(0);
 }
 
 
@@ -2648,181 +2706,188 @@ void flashRepro_GBA()
 
 		strcat(tmsg,"\n\nThis will erase your\nRepro Cartridge.\nPress OK Button...");
 		OledShowString(0,0,tmsg,8);
-		WaitOKBtn();
+		WaitOKBtn(0);
 
 		// Launch file browser
 		filePath[0] = '\0';
-		fileBrowser("/","Select gba file:");
-		OledClear();
-
-		FIL tf;
-		// Open file on sd card
-		if (f_open(&tf, filePath, FA_READ) == FR_OK)
+		if (fileBrowser("/","Select gba file:") == MENU_CANCEL)
 		{
-			// Get rom size from file
-			fileSize = f_size(&tf);
-			sprintf(tmsg,"FileSize: %dMB",fileSize / 0x100000);
-			OledShowString(0,0,tmsg,8);
-
-			// Erase needed sectors
-			if (strcmp(flashid, "8802") == 0)
-			{
-				OledShowString(10,2,"Erasing...",8);
-				eraseIntel4000_GBA();
-				resetIntel_GBA(0x200000);
-			}
-			else if (strcmp(flashid, "8816") == 0)
-			{
-				OledShowString(10,2,"Erasing...",8);
-				eraseIntel4400_GBA();
-				resetIntel_GBA(0x200000);
-			}
-			else if (strcmp(flashid, "227E") == 0 || strcmp(flashid, "227A") == 0)
-			{
-				OledShowString(10,2,"Erasing...",8);
-				// Spansion
-				if(manufacturerid == 0x1)
-				{
-					// S29GLXXXN
-					if((strcmp(flashid, "227E") == 0 || strcmp(flashid, "217E") == 0 || strcmp(flashid, "237E") == 0) && romType == 0x1)
-					{
-						sectorEraseSpansion_GBA(fileSize - 1);
-					}
-				}
-				else
-				{
-					if ((romType == 0xC2) || (romType == 0x89))
-					{
-						// MX29GL128E
-						// PC28F256M29 (0x89)
-						sectorEraseMX29GL128E_GBA(fileSize - 1);
-					}
-					else if (romType == 0x20)
-					{
-						sectorEraseMX29GL128E_GBA_1(fileSize - 1);
-					}
-					else if ((romType == 0x1) || (romType == 0x4))
-					{
-						sectorEraseMSP55LV128_GBA(fileSize - 1);
-					}
-				}
-			}
-
-			// Write flashrom
-			OledShowString(10,3,"Writing...",8);
-
-			// lock to no more than one line wrap
-			int pathLen = strlen(filePath);
-			if (pathLen >= 43)
-			{
-				char backupChar = filePath[39];
-				filePath[39] = '\0';
-				OledShowString(0, 4, filePath, 8);
-				wrapped = false;
-				OledShowString(0, 108, "...", 8);
-				filePath[39] = backupChar;
-			}
-			else
-			{
-				OledShowString(0,4,filePath,8);
-			}
-
-			if ((strcmp(flashid, "8802") == 0) || (strcmp(flashid, "8816") == 0))
-			{
-				OledShowString(0,1,"Intel 4x00",8);
-				writeIntel4000_GBA(&tf);
-			}
-			else if (strcmp(flashid, "227E") == 0 || strcmp(flashid, "227A") == 0)
-			{
-				// Spansion
-				if(manufacturerid == 0x1)
-				{
-					// S29GLXXXN
-					if((strcmp(flashid, "227E") == 0 || strcmp(flashid, "217E") == 0 || strcmp(flashid, "237E") == 0) && romType == 0x1)
-					{
-						OledShowString(0,1,"S29GLXXXN",8);
-						writeSpansion_GBA(&tf);
-					}
-				}
-				else
-				{
-					if ((romType == 0xC2) || (romType == 0x89))
-					{
-						// MX29GL128E (0xC2)
-						// PC28F256M29 (0x89)
-						OledShowString(0,1,"29 GL",8);
-						writeMX29GL128E_GBA(&tf);
-					}
-					else if (romType == 0x20)
-					{
-						OledShowString(0,1,"ST M29",8);
-						writeMX29GL128E_GBA_1(&tf);
-					}
-					else if ((romType == 0x1) || (romType == 0x4))
-					{
-						// MSP55LV128(N)
-						OledShowString(0,1,"MSP55LV",8);
-						writeMSP55LV128_GBA(&tf);
-					}
-				}
-			}
-			// Close the file
-			f_close(&tf);
-
-			// Verify
-			OledClearLine(5); // Incase 'folder' string wrapped
-			OledShowString(10,5,"Verifying...",8);
-
-			if (strcmp(flashid, "8802") == 0)
-			{
-				// Don't know the correct size so just take some guesses
-				resetIntel_GBA(0x8000);
-				delay(1000);
-				resetIntel_GBA(0x100000);
-				delay(1000);
-				resetIntel_GBA(0x200000);
-				delay(1000);
-			}
-			else if (strcmp(flashid, "8816") == 0)
-			{
-				resetIntel_GBA(0x200000);
-				delay(1000);
-			}
-			else if (strcmp(flashid, "227E") == 0 || strcmp(flashid, "227A") == 0)
-			{
-				if(manufacturerid == 0x1)
-				{
-					resetSpansion_GBA();
-					delay(1000);
-				}
-				else
-				{
-					resetMX29GL128E_GBA();
-					delay(1000);
-				}
-			}
-			if (verifyFlashrom_GBA_new() == 1)
-			{
-			}
-			else
-			{
-				OledClear();
-				print_Error("verify ERROR!", true);
-			}
-			use_tick = (getSystick() - use_tick)/1055;
-			sprintf(tmsg,"Completed in: %d(s)",use_tick);
-			OledShowString(8,6,tmsg,8);
+			OledClear();
+			OledShowString(0, 0, "Flashing aborted!", 8);
+			return;
 		}
 		else
 		{
-			print_Error("Can't open file!", true);
+			OledClear();
+			FIL tf;
+			// Open file on sd card
+			if (f_open(&tf, filePath, FA_READ) == FR_OK)
+			{
+				// Get rom size from file
+				fileSize = f_size(&tf);
+				sprintf(tmsg,"FileSize: %dMB",fileSize / 0x100000);
+				OledShowString(0,0,tmsg,8);
+
+				// Erase needed sectors
+				if (strcmp(flashid, "8802") == 0)
+				{
+					OledShowString(10,2,"Erasing...",8);
+					eraseIntel4000_GBA();
+					resetIntel_GBA(0x200000);
+				}
+				else if (strcmp(flashid, "8816") == 0)
+				{
+					OledShowString(10,2,"Erasing...",8);
+					eraseIntel4400_GBA();
+					resetIntel_GBA(0x200000);
+				}
+				else if (strcmp(flashid, "227E") == 0 || strcmp(flashid, "227A") == 0)
+				{
+					OledShowString(10,2,"Erasing...",8);
+					// Spansion
+					if(manufacturerid == 0x1)
+					{
+						// S29GLXXXN
+						if((strcmp(flashid, "227E") == 0 || strcmp(flashid, "217E") == 0 || strcmp(flashid, "237E") == 0) && romType == 0x1)
+						{
+							sectorEraseSpansion_GBA(fileSize - 1);
+						}
+					}
+					else
+					{
+						if ((romType == 0xC2) || (romType == 0x89))
+						{
+							// MX29GL128E
+							// PC28F256M29 (0x89)
+							sectorEraseMX29GL128E_GBA(fileSize - 1);
+						}
+						else if (romType == 0x20)
+						{
+							sectorEraseMX29GL128E_GBA_1(fileSize - 1);
+						}
+						else if ((romType == 0x1) || (romType == 0x4))
+						{
+							sectorEraseMSP55LV128_GBA(fileSize - 1);
+						}
+					}
+				}
+
+				// Write flashrom
+				OledShowString(10,3,"Writing...",8);
+
+				// lock to no more than one line wrap
+				int pathLen = strlen(filePath);
+				if (pathLen >= 43)
+				{
+					char backupChar = filePath[39];
+					filePath[39] = '\0';
+					OledShowString(0, 4, filePath, 8);
+					wrapped = false;
+					OledShowString(0, 108, "...", 8);
+					filePath[39] = backupChar;
+				}
+				else
+				{
+					OledShowString(0,4,filePath,8);
+				}
+
+				if ((strcmp(flashid, "8802") == 0) || (strcmp(flashid, "8816") == 0))
+				{
+					OledShowString(0,1,"Intel 4x00",8);
+					writeIntel4000_GBA(&tf);
+				}
+				else if (strcmp(flashid, "227E") == 0 || strcmp(flashid, "227A") == 0)
+				{
+					// Spansion
+					if(manufacturerid == 0x1)
+					{
+						// S29GLXXXN
+						if((strcmp(flashid, "227E") == 0 || strcmp(flashid, "217E") == 0 || strcmp(flashid, "237E") == 0) && romType == 0x1)
+						{
+							OledShowString(0,1,"S29GLXXXN",8);
+							writeSpansion_GBA(&tf);
+						}
+					}
+					else
+					{
+						if ((romType == 0xC2) || (romType == 0x89))
+						{
+							// MX29GL128E (0xC2)
+							// PC28F256M29 (0x89)
+							OledShowString(0,1,"29 GL",8);
+							writeMX29GL128E_GBA(&tf);
+						}
+						else if (romType == 0x20)
+						{
+							OledShowString(0,1,"ST M29",8);
+							writeMX29GL128E_GBA_1(&tf);
+						}
+						else if ((romType == 0x1) || (romType == 0x4))
+						{
+							// MSP55LV128(N)
+							OledShowString(0,1,"MSP55LV",8);
+							writeMSP55LV128_GBA(&tf);
+						}
+					}
+				}
+				// Close the file
+				f_close(&tf);
+
+				// Verify
+				OledClearLine(5); // Incase 'folder' string wrapped
+				OledShowString(10,5,"Verifying...",8);
+
+				if (strcmp(flashid, "8802") == 0)
+				{
+					// Don't know the correct size so just take some guesses
+					resetIntel_GBA(0x8000);
+					delay(1000);
+					resetIntel_GBA(0x100000);
+					delay(1000);
+					resetIntel_GBA(0x200000);
+					delay(1000);
+				}
+				else if (strcmp(flashid, "8816") == 0)
+				{
+					resetIntel_GBA(0x200000);
+					delay(1000);
+				}
+				else if (strcmp(flashid, "227E") == 0 || strcmp(flashid, "227A") == 0)
+				{
+					if(manufacturerid == 0x1)
+					{
+						resetSpansion_GBA();
+						delay(1000);
+					}
+					else
+					{
+						resetMX29GL128E_GBA();
+						delay(1000);
+					}
+				}
+				if (verifyFlashrom_GBA_new() == 1)
+				{
+				}
+				else
+				{
+					OledClear();
+					print_Error("verify ERROR!", true);
+				}
+				use_tick = (getSystick() - use_tick)/1055;
+				sprintf(tmsg,"Completed in: %d(s)",use_tick);
+				OledShowString(8,6,tmsg,8);
+			}
+			else
+			{
+				print_Error("Can't open file!", true);
+			}
 		}
 	}
 	else
 	{
-		sprintf(tmsg,"Error!\nUnknown Flash!\nFlash ID: %s",flashid);
-		OledShowString(0,0,tmsg,8);
-		print_Error("Check voltage?", true);
+	sprintf(tmsg,"Error!\nUnknown Flash!\nFlash ID: %s",flashid);
+	OledShowString(0,0,tmsg,8);
+	print_Error("Check voltage?", true);
 	}
 }
 
@@ -3048,8 +3113,7 @@ void setup_GBA()
 	}
 
 	// Wait for user input
-	OledShowString(0,7,"Press OK Button...",8);
-	WaitOKBtn();
+	WaitOKBtn(1);
 }
 
 
@@ -3066,8 +3130,7 @@ void TestMemGBA(boolean bFast)
 		TestSRAM_GBA(0x20000);
 		flashTest_GBA(0x2000000);
 	}
-	OledShowString(0,7,"Press OK Button...",8);
-	WaitOKBtn();
+	WaitOKBtn(1);
 	ResetSystem();
 }
 
@@ -3106,7 +3169,7 @@ uint8_t gbaMenu()
 {
 	// Create menu with title and options to choose from
 	uint8_t bret = 0;
-	LED_GREEN_OFF; // Make sure green led is off after blinking
+	LED_GREEN_OFF; // Make sure green led is off after blinking #TODO: review and possibly remove
 	unsigned char retMenu = questionBox_OLED("GBA Main Menu", menuOptionsGBA, 6, 1, 1, 1, 0);
 	char tmsg[32] = {0};
 
@@ -3118,8 +3181,7 @@ uint8_t gbaMenu()
 			break;
 		case MENU_1:
 			flashRepro_GBA();
-			OledShowString(0,7,"Press OK Button...",8);
-			WaitOKBtn();
+			WaitOKBtn(1);
 			ResetSystem();
 			break;
 		case MENU_2:
@@ -3188,8 +3250,7 @@ uint8_t gbaMenu()
 			// Change working dir to root
 			readROM_GBA();
 			compare_checksum_GBA();
-			OledShowString(0,7,"Press OK Button...",8);
-			WaitOKBtn();
+			WaitOKBtn(1);
 			break;
 		case MENU_3:
 			// Read save
@@ -3268,8 +3329,7 @@ uint8_t gbaMenu()
 					setROM_GBA();
 					break;
 			}
-			OledShowString(0,7,"Press OK Button...",8);
-			WaitOKBtn();
+			WaitOKBtn(1);
 			break;
 		case MENU_4:
 			// Write save
@@ -3435,8 +3495,7 @@ uint8_t gbaMenu()
 					setROM_GBA();
 					break;
 			}
-			OledShowString(0,7,"Press OK Button...",8);
-			WaitOKBtn();
+			WaitOKBtn(1);
 			break;
 
 	case MENU_5:

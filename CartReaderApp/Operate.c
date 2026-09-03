@@ -27,13 +27,16 @@ uint8_t checkButton()
 	uint8_t keycode = keyState();
 	delay(44);
 
-	if(gpio_input_bit_get(GPIOB, GPIO_PIN_1) == RESET)
+	if (!errorLvl)
 	{
-		LED_RED_ON;
-	}
-	else
-	{
-		LED_RED_OFF;
+		if(gpio_input_bit_get(GPIOB, GPIO_PIN_1) == RESET)
+		{
+			LED_RED_ON;
+		}
+		else
+		{
+			LED_RED_OFF;
+		}
 	}
 
 	if(keyState() != keycode)
@@ -47,10 +50,21 @@ uint8_t checkButton()
 }
 
 
-void WaitOKBtn()
+void WaitOKBtn(uint8_t showString)
 {
+	if (alreadyWaited)
+	{
+		alreadyWaited = 0;
+		return;
+	}
+	if (showString)
+	{
+		OledShowString(0, 7, "Press OK Button...", 8);
+	}
+
 	while(checkButton() != BTNOK)
 	{
+		// Waiting for you!
 	}
 }
 
@@ -83,7 +97,7 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 		QBoxShowString(6, i + 1, tanswer, 0);
 	}
 
-	if (!hasPicData)
+	if (!hasPicData) // Prevents accidental clearing of icons on menus
 	{
 		// Blank out any remaining menu list lines
 		// This prevents text artifacts from previous pages if this page has fewer items.
@@ -193,13 +207,13 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 		// Move '*' to new selection
 		if(choice != choice_ori)
 		{
-			// Erase old bullet
+			// Erase old '*'
 			OledShowChar(0, choice_ori, ' ', 8);
 
 			// Reset ticker layout immediately for the item we just left
 			QBoxShowString(6, choice_ori, answers[choice_ori - 1], 0);
 
-			// Draw new bullet
+			// Draw new '*'
 			OledShowChar(0, choice, '*', 8);
 
 			// Draw new line at un-scrolled starting position
@@ -455,7 +469,7 @@ next_page1:
 			if (len == 0 || (len == 1 && (filePath[0] == '/' || filePath[0] == '\\')))
 			{
 				prnt_title = false;
-				return 0;
+				return MENU_CANCEL;
 			}
 
 			// Back-nav logic, strip last directory layer

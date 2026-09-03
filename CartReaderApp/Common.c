@@ -9,7 +9,6 @@ byte sdBuffer[512];
 
 // Remember folder number to create a new folder for every save
 int foldern;
-char folder[36];
 
 // File browser
 char fileName[FILENAME_LENGTH];
@@ -33,6 +32,9 @@ boolean ignoreError = 0;
 char flashid[5];
 bool wrapped = false;
 bool all_clear = 0;
+bool alreadyWaited = 0;
+char targetFolder[128];
+char targetFile[256];
 
 // Variable to count errors
 unsigned long writeErrors;
@@ -41,7 +43,9 @@ unsigned long writeErrors;
  * Find the highest numbered folder in the given path							*
  * Example: If folders 0, 1, 3 exist in "GB/SAVE/GAME/", returns 3				*
  * Returns -1 if no folders found, otherwise returns the highest folder number	*
- * Note: Generated with AI assistance (GitHub Copilot)							*
+ * Note: Functions that call this use (foldern = (return value) + 1) -1 + 1 = 0	*
+ * Note: Generated with AI assistance (GitHub Copilot) on 2/24/26				*
+ * Note: Reveiwed and edited by David Ellis on 9/1/26							*
  ********************************************************************************/
 int findHighestFolder(const char* basePath)
 {
@@ -49,44 +53,23 @@ int findHighestFolder(const char* basePath)
 	FILINFO finfo;
 	int maxFolder = -1;
 
-	// Try to open the directory
 	if (f_opendir(&dir, basePath) != FR_OK)
 	{
-		return -1;	// Directory doesn't exist yet
+		return -1; // Directory doesn't exist yet
 	}
 
-	// Read all entries in the directory
-	while (f_readdir(&dir, &finfo) == FR_OK && finfo.fname[0])
+	while (f_readdir(&dir, &finfo) == FR_OK && finfo.fname[0] != '\0')
 	{
-		// Check if this is a directory
-		if (finfo.fattrib & AM_DIR)
+		if ((finfo.fattrib & AM_DIR) && (finfo.fname[0] >= '0' && finfo.fname[0] <= '9'))
 		{
-			// Try to convert the folder name to a number
-			int folderNum = 0;
-			int validNumber = 1;
+			int folderNum = atoi(finfo.fname);
 
-			// Parse folder name as a number
-			for (int i = 0; finfo.fname[i] != '\0'; i++)
-			{
-				if (finfo.fname[i] >= '0' && finfo.fname[i] <= '9')
-				{
-					folderNum = folderNum * 10 + (finfo.fname[i] - '0');
-				}
-				else
-				{
-					validNumber = 0;
-					break;
-				}
-			}
-
-			// If it's a valid number and higher than current max, update max
-			if (validNumber && folderNum > maxFolder)
+			if (folderNum > maxFolder)
 			{
 				maxFolder = folderNum;
 			}
 		}
 	}
-
 	f_closedir(&dir);
 	return maxFolder;
 }
@@ -103,7 +86,7 @@ void SysClockInit()
 {
 	// Ensure SystemCoreClock is up-to date
 	SystemCoreClockUpdate();
-	
+
 	// Enable SysTick ms timer
 	SysTick->LOAD = (SystemCoreClock / 1000) - 1;
 	SysTick->VAL = 0;
@@ -159,7 +142,7 @@ void delayMicroseconds(uint32_t us)
 	// Calculate number of raw CPU cycles to wait
 	uint32_t start_cycles = DWT->CYCCNT;
 	uint32_t total_cycles = us * (SystemCoreClock / 1000000);
-	
+
 	// Block execution
 	while ((DWT->CYCCNT - start_cycles) < total_cycles)
 	{
@@ -170,6 +153,15 @@ void delayMicroseconds(uint32_t us)
 void Set_Cart_Activity(uint8_t activity_type)
 {
 	cart_activity = activity_type;
+
+	if (GetGBType() == TYPE_GBA)
+	{
+		LED_GREEN_ON;
+	}
+	else
+	{
+		LED_BLUE_ON;
+	}
 
 	if (activity_type == 1)		  // Reading
 	{
@@ -183,5 +175,22 @@ void Set_Cart_Activity(uint8_t activity_type)
 	{
 		// Reset the LEDs back to their proper idle states
 		LED_RESET(0);
+	}
+}
+
+
+void SetErrorLvl(uint8_t errorLvl)
+{
+	if (errorLvl)
+	{
+		errorLvl = 1; // Check if this would already be set by errorLvl argument in SetErrorLvl
+		LED_CLEAR();
+		//LED_RED_ON;
+		timer_autoreload_value_config(TIMER1, SPEED_ERROR);
+	}
+	else
+	{
+		errorLvl = 0;
+		LED_RESET(1);
 	}
 }
