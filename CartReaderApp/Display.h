@@ -49,7 +49,7 @@ void OledShowPicData(uint8_t x,uint8_t y,uint8_t wdt,uint8_t hgt,uint8_t *pPicDa
 void OledInit(void);
 
 // Display an error message
-void print_Error(char *errorMessage, boolean forceReset);
+void print_Error(char *errorMessage, uint8_t forceReset);
 
 // Displays a basic progress bar
 void draw_progressbar(uint32_t processed, uint32_t total, uint8_t line);

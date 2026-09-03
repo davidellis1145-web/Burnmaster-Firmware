@@ -814,7 +814,7 @@ void OledInit(void)
 }
 
 
-void print_Error(char *errorMessage, boolean forceReset)
+void print_Error(char *errorMessage, uint8_t forceReset)
 {
 	SetErrorLvl(1);
 	/*LED_CLEAR();
