@@ -447,7 +447,6 @@ void readROM_GBA()
 {
 	// Get name, add extension and convert to char array for sd lib
 	sprintf(targetFile, "%s.gba", romName);
-	Set_Cart_Activity(1);
 
 	// Create a new folder for the rom file
 	char basePath[64];
@@ -460,6 +459,7 @@ void readROM_GBA()
 	f_chdir(targetFolder);
 
 	// Clear the screen
+	Set_Cart_Activity(1);
 	OledClear();
 	OledShowString(0,0,"Saving to:",8);
 	OledShowString(0,1,targetFolder,8);

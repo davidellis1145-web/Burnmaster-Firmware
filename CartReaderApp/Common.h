@@ -71,7 +71,7 @@ void SysClockFree();
 void delayMicroseconds(uint32_t us);
 int findHighestFolder(const char* basePath);
 void Set_Cart_Activity(uint8_t activity_type);
-void SetErrorLvl(uint8_t errorLvl);
+void SetErrorLvl(uint8_t errorStat);
 uint8_t GetGBType();
 
 #endif

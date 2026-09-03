@@ -54,6 +54,8 @@ int findHighestFolder(const char* basePath)
 
 	if (f_opendir(&dir, basePath) != FR_OK)
 	{
+		OledShowString(0, 0, "bummer dude...", 8);
+		WaitOKBtn(1);
 		return -1; // Directory doesn't exist yet
 	}
 
@@ -178,9 +180,9 @@ void Set_Cart_Activity(uint8_t activity_type)
 }
 
 
-void SetErrorLvl(uint8_t errorLvl)
+void SetErrorLvl(uint8_t errorStat)
 {
-	if (errorLvl)
+	if (errorStat)
 	{
 		errorLvl = 1; // Check if this would already be set by errorLvl argument in SetErrorLvl
 		LED_CLEAR();
