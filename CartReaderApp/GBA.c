@@ -446,9 +446,9 @@ void getCartInfo_GBA()
 void readROM_GBA()
 {
 	// Get name, add extension and convert to char array for sd lib
-	strcpy(targetFile, romName);
-	strcat(targetFile, ".gba");
-	//sprintf(targetFile, "%s.gba", romName);
+	/*strcpy(targetFile, romName);
+	strcat(targetFile, ".gba");*/
+	sprintf(targetFile, "%s.gba", romName);
 
 	// Create a new folder for the rom file
 	char basePath[64];
@@ -517,9 +517,9 @@ boolean compare_checksum_GBA()
 	sprintf(targetFolder, "/GBA/ROM/%s/%d", romName, highestFolder);
 	f_chdir(targetFolder);
 	
-	strcpy(targetFile, romName);
-	strcat(targetFile, ".gba");
-	//sprintf(targetFile, "%s.gba", romName);
+	/*strcpy(targetFile, romName);
+	strcat(targetFile, ".gba");*/
+	sprintf(targetFile, "%s.gba", romName);
 
 	FIL tf;
 	if (f_open(&tf, targetFile, FA_READ) == FR_OK)

@@ -53,17 +53,15 @@ int findHighestFolder(const char* basePath)
 	int maxFolder = -1;
 
 	// Debugging...
-	OledClearLine(0);
+	OledClear();
 	OledShowString(0, 0, "bPath =", 8);
-	OledShowString(42, 0, basePath, 8);
+	OledShowString(48, 0, basePath, 8);
 	WaitOKBtn(1);
 	OledClear();
 	// ...End
 
 	if (f_opendir(&dir, basePath) != FR_OK)
 	{
-		OledShowString(0, 0, "bummer dude...", 8);
-		WaitOKBtn(1);
 		return -1; // Directory doesn't exist yet
 	}
 
@@ -71,7 +69,12 @@ int findHighestFolder(const char* basePath)
 	{
 		if ((finfo.fattrib & AM_DIR) && (finfo.fname[0] >= '0' && finfo.fname[0] <= '9'))
 		{
-			int folderNum = atoi(finfo.fname);
+			if (int folderNum = atoi(finfo.fname))
+			{
+				OledShowString(0, 0, "ok...", 8);
+				WaitOKBtn(1);
+				OledClear();
+			}
 
 			if (folderNum > maxFolder)
 			{
@@ -82,7 +85,8 @@ int findHighestFolder(const char* basePath)
 	f_closedir(&dir);
 	char tmsg[32] = {0};
 	sprintf(tmsg, "maxFolder = %d", maxFolder);
-	OledShowString(0, 0, "tmsg", 8);
+	OledClear();
+	OledShowString(0, 0, tmsg, 8);
 	WaitOKBtn(1);
 	
 	return maxFolder;
