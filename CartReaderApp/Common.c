@@ -56,8 +56,8 @@ int findHighestFolder(const char* basePath)
 	OledClearLine(0);
 	OledShowString(0, 0, "bPath =", 8);
 	OledShowString(42, 0, basePath, 8);
-	waitOKBtn(1);
-	OledClearScreen();
+	WaitOKBtn(1);
+	OledClear();
 	// ...End
 
 	if (f_opendir(&dir, basePath) != FR_OK)
@@ -80,8 +80,10 @@ int findHighestFolder(const char* basePath)
 		}
 	}
 	f_closedir(&dir);
-	OledShowString(0, 0, "maxFolder =", 8);
-	OledShowString(72, 0, maxFolder, 8);
+	sprintf(tmsg, "maxFolder = %d", maxFolder);
+	OledShowString(0, 0, "tmsg", 8);
+	WaitOKBtn(1);
+	
 	return maxFolder;
 }
 
