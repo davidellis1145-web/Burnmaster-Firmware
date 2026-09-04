@@ -44,13 +44,21 @@ unsigned long writeErrors;
  * Returns -1 if no folders found, otherwise returns the highest folder number	*
  * Note: Functions that call this use (foldern = (return value) + 1) -1 + 1 = 0	*
  * Note: Generated with AI assistance (GitHub Copilot) on 2/24/26				*
- * Note: Reveiwed and edited by David Ellis on 9/1/26							*
+ * Note: Reveiwed by David Ellis on 9/1/26										*
  ********************************************************************************/
 int findHighestFolder(const char* basePath)
 {
 	DIR dir;
 	FILINFO finfo;
 	int maxFolder = -1;
+
+	// Debugging...
+	OledClearLine(0);
+	OledShowString(0, 0, "bPath =", 8);
+	OledShowString(42, 0, basePath, 8);
+	waitOKBtn(1);
+	OledClearScreen();
+	// ...End
 
 	if (f_opendir(&dir, basePath) != FR_OK)
 	{
@@ -72,6 +80,8 @@ int findHighestFolder(const char* basePath)
 		}
 	}
 	f_closedir(&dir);
+	OledShowString(0, 0, "maxFolder =", 8);
+	OledShowString(72, 0, maxFolder, 8);
 	return maxFolder;
 }
 

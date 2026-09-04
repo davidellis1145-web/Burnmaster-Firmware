@@ -446,7 +446,9 @@ void getCartInfo_GBA()
 void readROM_GBA()
 {
 	// Get name, add extension and convert to char array for sd lib
-	sprintf(targetFile, "%s.gba", romName);
+	strcpy(targetFile, romName);
+	strcat(targetFile, ".gba");
+	//sprintf(targetFile, "%s.gba", romName);
 
 	// Create a new folder for the rom file
 	char basePath[64];
@@ -459,8 +461,8 @@ void readROM_GBA()
 	f_chdir(targetFolder);
 
 	// Clear the screen
-	Set_Cart_Activity(1);
 	OledClear();
+	Set_Cart_Activity(1);
 	OledShowString(0,0,"Saving to:",8);
 	OledShowString(0,1,targetFolder,8);
 
@@ -514,7 +516,10 @@ boolean compare_checksum_GBA()
 
 	sprintf(targetFolder, "/GBA/ROM/%s/%d", romName, highestFolder);
 	f_chdir(targetFolder);
-	sprintf(targetFile, "%s.gba", romName);
+	
+	strcpy(targetFile, romName);
+	strcat(targetFile, ".gba");
+	//sprintf(targetFile, "%s.gba", romName);
 
 	FIL tf;
 	if (f_open(&tf, targetFile, FA_READ) == FR_OK)
@@ -2783,7 +2788,7 @@ void flashRepro_GBA()
 					filePath[39] = '\0';
 					OledShowString(0, 4, filePath, 8);
 					wrapped = false;
-					OledShowString(0, 108, "...", 8);
+					OledShowString(108, 5, "...", 8);
 					filePath[39] = backupChar;
 				}
 				else
