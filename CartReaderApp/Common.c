@@ -69,13 +69,8 @@ int findHighestFolder(const char* basePath)
 	{
 		if ((finfo.fattrib & AM_DIR) && (finfo.fname[0] >= '0' && finfo.fname[0] <= '9'))
 		{
-			if (int folderNum = atoi(finfo.fname))
-			{
-				OledShowString(0, 0, "ok...", 8);
-				WaitOKBtn(1);
-				OledClear();
-			}
-
+			int folderNum = atoi(finfo.fname);
+			
 			if (folderNum > maxFolder)
 			{
 				maxFolder = folderNum;
