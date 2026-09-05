@@ -841,7 +841,9 @@ void print_Error(char *errorMessage, uint8_t forceReset)
 		WaitOKBtn(1);
 		SetErrorLvl(0);
 	}
-	alreadyWaited = 1;
+	/*						#TODO: Go thru menus and find where this needs to be, and
+								   figure out how to handle it.
+	alreadyWaited = 1;*/
 }
 
 
