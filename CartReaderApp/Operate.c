@@ -107,7 +107,7 @@ unsigned char questionBox_OLED(char * question, const char* const answers[7], in
 		}
 	}
 
-	// Explicitly clear cursor column (x=0) for all rows on entry
+	// Explicitly clear '*' column (x=0) for all rows on entry
 	for (uint8_t i = 1; i <= 7; i++)
 	{
 		OledShowChar(0, i, ' ', 8);
@@ -252,7 +252,7 @@ uint8_t my_mkdir(char * dir)
 		}
 
 		strcpy(SonPath[num], dot);
-		FRESULT W_Dresult = f_opendir(&W_Ddir, RootPath); // Try open directory
+		FRESULT W_Dresult = f_opendir(&W_Ddir, RootPath); // Try opening directory
 		if(W_Dresult == FR_OK)
 		{
 			printf("Exist[%s]\r\n", RootPath);
@@ -652,7 +652,7 @@ next_page1:
 			{
 				f_closedir(&tdir);
 			}
-			print_Error("File Err...", 1);
+			print_Error("File Err...", true);
 		}
 		break;
 	}

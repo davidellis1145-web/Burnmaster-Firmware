@@ -19,8 +19,8 @@
 #define FILEOPTS_LENGTH 20
 #define SD_LOCKED_ERROR 198
 
-#define SPEED_READ	4999 // Normal blink (500ms toggle) for reading
-#define SPEED_WRITE	999  // Fast blink (100ms toggle) for writing
+#define SPEED_READ	3999 // Fast blink (400ms toggle) for reading
+#define SPEED_WRITE	999  // Super-fast blink (100ms toggle) for writing
 #define SPEED_ERROR	7999 // Slow blink (800ms toggle) for error messages
 
 #define TYPE_GBC (0)

@@ -817,11 +817,7 @@ void OledInit(void)
 void print_Error(char *errorMessage, uint8_t forceReset)
 {
 	SetErrorLvl(1);
-	/*LED_CLEAR();
-	timer_autoreload_value_config(TIMER1, SPEED_ERROR);
-	errorLvl = 1;*/							// #testing (if this works, go through
-	OledShowString(0,5,errorMessage,8);		// and make sure relavent messages go BEFORE
-											// 'print_error' and remove the WaitOKBtn()'s)
+	OledShowString(0, 5, errorMessage, 8);
 	if (forceReset)
 	{
 		OledShowString(0,7,"Press OK To Reset...",8);
@@ -835,11 +831,9 @@ void print_Error(char *errorMessage, uint8_t forceReset)
 		{
 			ignoreError = 0;
 			OledClear();
-			OledShowString(0,2,"Error Overwrite",8);
+			OledShowString(0,2,"Error Overwrite...",8);
 			delay(2000);
 			SetErrorLvl(0);
-			//errorLvl = 0;
-			//LED_RESET(1);
 		}
 	}
 	else

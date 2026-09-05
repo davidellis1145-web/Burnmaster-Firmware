@@ -500,7 +500,7 @@ here:
 		rst = f_open(&tfile,targetFile, FA_CREATE_ALWAYS|FA_WRITE);
 		if (rst != FR_OK)
 		{
-			print_Error("Can't create file", 1);
+			print_Error("Can't create file", true);
 		}
 
 		word romAddress = 0;

@@ -324,9 +324,6 @@ void getCartInfo_GBA()
 		WaitOKBtn(0);
 		SetErrorLvl(0);
 		strcpy(romName, "ERROR");
-		/*OledShowString(0,1,"Press OK Button to\nignore or powercycle\nto try again!",8);
-		print_Error("CARTRIDGE ERROR", false, 0);
-		strcpy(romName, "ERROR");*/
 	}
 	else
 	{
@@ -446,8 +443,6 @@ void getCartInfo_GBA()
 void readROM_GBA()
 {
 	// Get name, add extension and convert to char array for sd lib
-	/*strcpy(targetFile, romName);
-	strcat(targetFile, ".gba");*/
 	sprintf(targetFile, "%s.gba", romName);
 
 	// Create a new folder for the rom file
@@ -508,23 +503,13 @@ boolean compare_checksum_GBA()
 
 	if (highestFolder == -1)
 	{
-		char tmsg[32] = {0};
-
-		sprintf(tmsg, "basePath = %d", basePath);
-		OledShowString(0, 5, tmsg, 8);
-		WaitOKBtn(1);
-		OledClear();
-		return 0;
-		/*OledShowString(0, 1, "** ERROR **", 8);
+		OledShowString(0, 1, "** ERROR **", 8);
 		print_Error("No backup found", false);
-		return 0;*/
+		return 0;
 	}
 	
 	sprintf(targetFolder, "/GBA/ROM/%s/%d", romName, highestFolder);
 	f_chdir(targetFolder);
-	
-	/*strcpy(targetFile, romName);
-	strcat(targetFile, ".gba");*/
 	
 	sprintf(targetFile, "%s.gba", romName);
 
@@ -564,55 +549,6 @@ boolean compare_checksum_GBA()
 		print_Error("Error opening ROM.", false);
 		return 0;
 	}
-	/*strcpy(fileName, romName);
-	strcat(fileName, ".gba");
-
-	// Last used rom folder
-	char basePath[64];
-	sprintf(basePath, "/GBA/ROM/%s", romName);
-	int firstAvailFolder = findNextAvailableFolder(basePath);
-	sprintf(folder, "/GBA/ROM/%s/%d", romName, firstAvailFolder);
-	f_chdir(folder);
-
-	FIL tf;
-	// If file exists
-	if (f_open(&tf, fileName, FA_READ) == FR_OK)
-	{
-		// Read rom header
-		UINT rdt;
-		f_read(&tf,sdBuffer, 512,&rdt);
-		f_close(&tf);
-
-		// Calculate Checksum
-		int calcChecksum = 0x00;
-		for (int n = 0xA0; n < 0xBD; n++)
-		{
-			calcChecksum -= sdBuffer[n];
-		}
-		calcChecksum = (calcChecksum - 0x19) & 0xFF;
-
-		// Turn into string
-		sprintf(calcChecksumStr, "%02X", calcChecksum);
-
-		if (strcmp(calcChecksumStr, checksumStr) == 0)
-		{
-			OledShowString(0,5,"Checksum matches",8);
-			return 1;
-		}
-		else
-		{
-			OledShowString(0,5,"Result: ",8);
-			OledShowString(50,5,calcChecksumStr,8);
-			print_Error("\nChecksum Error", false);
-			return 0;
-		}
-	}
-	// Else show error
-	else
-	{
-		print_Error("Failed to open rom.", false);
-		return 0;
-	}*/
 }
 
 
