@@ -452,7 +452,7 @@ void readROM_GBA()
 
 	// Create a new folder for the rom file
 	char basePath[64];
-	sprintf(basePath, "GBA/ROM/%s", romName);
+	sprintf(basePath, "/GBA/ROM/%s", romName);
 	int highestFolder = findHighestFolder(basePath);
 	foldern = highestFolder + 1;
 
@@ -503,7 +503,7 @@ boolean compare_checksum_GBA()
 	char basePath[64];
 
 	OledShowString(0,4,"Calculating Checksum",8);
-	sprintf(basePath, "GBA/ROM/%s", romName);
+	sprintf(basePath, "/GBA/ROM/%s", romName);
 	int highestFolder = findHighestFolder(basePath);
 
 	if (highestFolder == -1)
@@ -629,11 +629,11 @@ void readSRAM_GBA(boolean browseFile, unsigned long sramSize, uint32_t pos)
 
 		// Create a new folder for the save file
 		char basePath[64];
-		sprintf(basePath, "GBA/SAVE/%s", romName);
+		sprintf(basePath, "/GBA/SAVE/%s", romName);
 		int highestFolder = findHighestFolder(basePath);
 		foldern = highestFolder + 1;
 
-		sprintf(targetFolder, "GBA/SAVE/%s/%d", romName, foldern);
+		sprintf(targetFolder, "/GBA/SAVE/%s/%d", romName, foldern);
 		my_mkdir(targetFolder);
 		f_chdir(targetFolder);
 
@@ -1120,11 +1120,11 @@ void readEeprom_GBA(word eepSize)
 
 	// Create a new folder for the save file
 	char basePath[64];
-	sprintf(basePath, "GBA/SAVE/%s", romName);
+	sprintf(basePath, "/GBA/SAVE/%s", romName);
 	int highestFolder = findHighestFolder(basePath);
 	foldern = highestFolder + 1;
 
-	sprintf(targetFolder, "GBA/SAVE/%s/%d", romName, foldern);
+	sprintf(targetFolder, "/GBA/SAVE/%s/%d", romName, foldern);
 	my_mkdir(targetFolder);
 	f_chdir(targetFolder);
 
@@ -1422,11 +1422,11 @@ void readFLASH_GBA(boolean browseFile, unsigned long flashSize, uint32_t pos)
 
 		// Create a new folder for the save file
 		char basePath[64];
-		sprintf(basePath, "GBA/SAVE/%s", romName);
+		sprintf(basePath, "/GBA/SAVE/%s", romName);
 		int highestFolder = findHighestFolder(basePath);
 		foldern = highestFolder + 1;
 
-		sprintf(targetFolder, "GBA/SAVE/%s/%d", romName, foldern);
+		sprintf(targetFolder, "/GBA/SAVE/%s/%d", romName, foldern);
 		my_mkdir(targetFolder);
 		f_chdir(targetFolder);
 

@@ -36,7 +36,7 @@
 #include "flashparam.h"
 
 #define VERSION_NUM "v1.1-a.2"
-#define BUILD_DATE  "Sep 2, 2026"
+#define BUILD_DATE  "Sep 4, 2026"
 
 /* PC5 corresponds to the 3.3v (GBA) cart voltage setting (active low)
 PB0 corresponds to the 5v (GB) cart voltage setting (active low)*/

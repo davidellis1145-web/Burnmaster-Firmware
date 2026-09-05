@@ -40,7 +40,7 @@ unsigned long writeErrors;
 
 /********************************************************************************
  * Find the highest numbered folder in the given path							*
- * Example: If folders 0, 1, 3 exist in "GB/SAVE/GAME/", returns 3				*
+ * Example: If folders 0, 1, 3 exist in "/GB/SAVE/GAME/", returns 3				*
  * Returns -1 if no folders found, otherwise returns the highest folder number	*
  * Note: Functions that call this use (foldern = (return value) + 1) -1 + 1 = 0	*
  * Note: Generated with AI assistance (GitHub Copilot) on 2/24/26				*
@@ -196,9 +196,8 @@ void SetErrorLvl(uint8_t errorStat)
 {
 	if (errorStat)
 	{
-		errorLvl = 1; // Check if this would already be set by errorLvl argument in SetErrorLvl
+		errorLvl = 1;
 		LED_CLEAR();
-		//LED_RED_ON;
 		timer_autoreload_value_config(TIMER1, SPEED_ERROR);
 	}
 	else

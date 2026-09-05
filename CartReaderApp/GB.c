@@ -479,12 +479,12 @@ here:
 		strcat(targetFile, ".gb");
 		// Find the highest existing folder number and use next one
 		char basePath[64];
-		sprintf(basePath, "GB/ROM/%s", romName);
+		sprintf(basePath, "/GB/ROM/%s", romName);
 		int highestFolder = findHighestFolder(basePath);
 		foldern = highestFolder + 1;
 
 		f_chdir("/");
-		sprintf(targetFolder, "GB/ROM/%s/%d", romName, foldern);
+		sprintf(targetFolder, "/GB/ROM/%s/%d", romName, foldern);
 
 		FRESULT rst;
 		FIL tfile;
@@ -614,9 +614,9 @@ boolean compare_checksum_GB()
 
 	// Find the highest existing folder number
 	char basePath[64];
-	sprintf(basePath, "GB/ROM/%s", romName);
+	sprintf(basePath, "/GB/ROM/%s", romName);
 	int highestFolder = findHighestFolder(basePath);
-	sprintf(targetFolder, "GB/ROM/%s/%d", romName, highestFolder);
+	sprintf(targetFolder, "/GB/ROM/%s/%d", romName, highestFolder);
 
 	char calcsumStr[5];
 	sprintf(calcsumStr, "%04X", calc_checksum_GB(targetFile, targetFolder));
@@ -675,11 +675,11 @@ here:
 
 			// Find the highest existing folder number and use next one
 			char basePath[64];
-			sprintf(basePath, "GB/SAVE/%s", romName);
+			sprintf(basePath, "/GB/SAVE/%s", romName);
 			int highestFolder = findHighestFolder(basePath);
 			foldern = highestFolder + 1;
 
-			sprintf(targetFolder, "GB/SAVE/%s/%d", romName, foldern);
+			sprintf(targetFolder, "/GB/SAVE/%s/%d", romName, foldern);
 			my_mkdir(targetFolder);
 			f_chdir(targetFolder);
 
@@ -1045,7 +1045,6 @@ Sets the global variables flashBanks, flashX16Mode and flashSwitchLastBits */
 void identifyCFI_GB()
 {
 	// Reset flash
-	OledClear();
 	dataOut_GB();
 	writeByte_GB(0x6000, 0); // Set ROM Mode
 	writeByte_GB(0x2000, 0); // Set Bank to 0
@@ -1055,6 +1054,7 @@ void identifyCFI_GB()
 
 	dataIn_GB();
 	OledClear();
+	OledShowString(0, 0, "Query CFI...", 8);
 	// Try x8 mode first
 	char cfiQRYx8[7];
 	char cfiQRYx16[7];
@@ -1103,10 +1103,9 @@ void identifyCFI_GB()
 		else
 		{
 			printf("CFI Query failed!");
-			OledShowString(0,0,"CFI Query failed!",8);
-			OledShowString(0,3,"Press OK to ignore or",8);
-			OledShowString(0,4,"powercycle and retry.",8);
-			WaitOKBtn(0);
+			OledShowString(0,2,"CFI Query failed!",8);
+			OledShowString(0,4,"Press OK to ignore or",8);
+			print_Error("powercycle and retry.", false);
 			return;
 		}
 	}
@@ -1149,12 +1148,15 @@ bool writeCFI_GB()
 		}
 		else
 		{
+			SetErrorLvl(1);
 			OledClear();
 			sprintf(msgbuf,"Error:\nFlash has too few\nbanks! Flash has %d\nbut needs %d banks.",flashBanks,romBanks);
 			OledShowString(0,0,msgbuf,8);
 			OledShowString(0,7,"Press OK to reset...",8);
 			f_close(&tf);
 			WaitOKBtn(0);
+			SetErrorLvl(0);
+			delay(200);
 			ResetSystem();
 		}
 
