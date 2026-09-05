@@ -70,7 +70,7 @@ int findHighestFolder(const char* basePath)
 		if ((finfo.fattrib & AM_DIR) && (finfo.fname[0] >= '0' && finfo.fname[0] <= '9'))
 		{
 			int folderNum = atoi(finfo.fname);
-			
+
 			if (folderNum > maxFolder)
 			{
 				maxFolder = folderNum;

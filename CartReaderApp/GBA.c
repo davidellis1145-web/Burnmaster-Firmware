@@ -508,17 +508,24 @@ boolean compare_checksum_GBA()
 
 	if (highestFolder == -1)
 	{
-		OledClear();
-		OledShowString(0, 1, "** ERROR **", 8);
-		print_Error("No backup found", false);
-		return 0;
-	}
+		char tmsg[32] = {0};
 
+		sprintf(tmsg, "basePath = %d", basePath);
+		OledShowString(0, 5, tmsg, 8);
+		WaitOKBtn(1);
+		OledClear();
+		return 0;
+		/*OledShowString(0, 1, "** ERROR **", 8);
+		print_Error("No backup found", false);
+		return 0;*/
+	}
+	
 	sprintf(targetFolder, "/GBA/ROM/%s/%d", romName, highestFolder);
 	f_chdir(targetFolder);
 	
 	/*strcpy(targetFile, romName);
 	strcat(targetFile, ".gba");*/
+	
 	sprintf(targetFile, "%s.gba", romName);
 
 	FIL tf;
